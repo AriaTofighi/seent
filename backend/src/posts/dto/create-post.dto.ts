@@ -1,4 +1,4 @@
-import { IsBoolean, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreatePostDto {
   @IsUUID()
@@ -11,5 +11,6 @@ export class CreatePostDto {
   public: boolean;
 
   @IsUUID()
+  @IsOptional()
   parentPostId?: string;
 }

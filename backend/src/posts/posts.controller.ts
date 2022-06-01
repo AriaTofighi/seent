@@ -1,5 +1,4 @@
 import { UpdatePostDto } from "./dto/update-post.dto";
-import { PostFindManyQuery } from "./entities/post.entity";
 import { PostsService } from "./posts.service";
 import {
   Controller,
@@ -12,6 +11,7 @@ import {
   Query,
 } from "@nestjs/common";
 import { CreatePostDto } from "./dto/create-post.dto";
+import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 
 @Controller("/api/posts")
 export class PostsController {
@@ -23,7 +23,7 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query() query: PostFindManyQuery) {
+  findAll(@Query() query: FindPostsQueryDto) {
     const { skip, take, postId } = query;
     return this.postsService.findMany({
       skip,

@@ -28,6 +28,13 @@ export class PostsService {
       cursor,
       where,
       orderBy,
+      include: {
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 
