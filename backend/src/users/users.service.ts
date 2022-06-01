@@ -1,7 +1,6 @@
+import { GetUserDto } from "./dto/get-user.dto";
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
 import { Prisma, User } from "@prisma/client";
 
 @Injectable()
@@ -10,30 +9,17 @@ export class UsersService {
 
   async findOne(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput
-  ): Promise<User | null> {
+  ): Promise<GetUserDto | null> {
     return this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
   }
 
-  async findMany(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.UserWhereUniqueInput;
-    where?: Prisma.UserWhereInput;
-    orderBy?: Prisma.UserOrderByWithRelationInput;
-  }): Promise<User[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.user.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+  async findMany(params: UserFindManyParams): Promise<GetUserDto[]> {
+    return this.prisma.user.findMany(params);
   }
 
-  async create(data: Prisma.UserCreateInput): Promise<User> {
+  async create(data: Prisma.UserCreateInput): Promise<GetUserDto> {
     return this.prisma.user.create({
       data,
     });
@@ -42,7 +28,7 @@ export class UsersService {
   async update(params: {
     where: Prisma.UserWhereUniqueInput;
     data: Prisma.UserUpdateInput;
-  }): Promise<User> {
+  }): Promise<GetUserDto> {
     const { where, data } = params;
     return this.prisma.user.update({
       data,
@@ -50,9 +36,17 @@ export class UsersService {
     });
   }
 
-  async delete(where: Prisma.UserWhereUniqueInput): Promise<User> {
+  async delete(where: Prisma.UserWhereUniqueInput): Promise<GetUserDto> {
     return this.prisma.user.delete({
       where,
     });
   }
 }
+
+export type UserFindManyParams = {
+  skip?: number;
+  take?: number;
+  cursor?: Prisma.UserWhereUniqueInput;
+  where?: Prisma.UserWhereInput;
+  orderBy?: Prisma.UserOrderByWithRelationInput;
+};

@@ -28,11 +28,11 @@ model User {
 model Post {
   postId       String   @id @default(uuid())
   authorId     String
-  author       User     @relation(fields: [authorId], references: [userId])
+  author       User?    @relation(fields: [authorId], references: [userId])
   body         String   @db.VarChar(360)
   public       Boolean
-  parentPostId String
-  parentPost   Post     @relation("PostToPost", fields: [parentPostId], references: [postId])
+  parentPostId String?
+  parentPost   Post?    @relation("PostToPost", fields: [parentPostId], references: [postId])
   childPosts   Post[]   @relation("PostToPost")
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt

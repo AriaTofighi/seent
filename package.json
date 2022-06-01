@@ -1,0 +1,17 @@
+{
+  "name": "seent",
+  "version": "1.0.0",
+  "description": "A social network.",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AriaTofighi/seent.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AriaTofighi/seent/issues"
+  },
+  "homepage": "https://github.com/AriaTofighi/seent#readme"
+}
