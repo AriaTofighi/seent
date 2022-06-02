@@ -49,7 +49,6 @@ export class PostsService {
     data: Prisma.PostUpdateInput;
   }): Promise<Post> {
     const { where, data } = params;
-    console.log(data);
     return this.prisma.post.update({
       data,
       where,

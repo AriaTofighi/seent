@@ -13,7 +13,7 @@ import {
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 
-@Controller("/api/posts")
+@Controller("api/posts")
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 

@@ -1,10 +1,7 @@
-import { Prisma } from "@prisma/client";
+import { CreateUserDto } from "./create-user.dto";
+import { OmitType } from "@nestjs/mapped-types";
+import { PartialType } from "@nestjs/mapped-types";
 
-export class UpdateUserDto implements Prisma.UserUpdateInput {
-  email?: string;
-  name?: string;
-  birthday?: Date | string;
-  location?: string;
-  bio?: string;
-  gender?: string;
-}
+export class UpdateUserDto extends PartialType(
+  OmitType(CreateUserDto, ["email"] as const)
+) {}

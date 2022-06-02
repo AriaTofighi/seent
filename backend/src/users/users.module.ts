@@ -6,5 +6,6 @@ import { UsersController } from "./users.controller";
 @Module({
   controllers: [UsersController],
   providers: [UsersService, PrismaService],
+  exports: [UsersService],
 })
 export class UsersModule {}

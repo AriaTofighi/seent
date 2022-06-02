@@ -1,10 +1,9 @@
 import { Prisma } from "@prisma/client";
 import {
   IsDate,
-  IsDateString,
   IsEmail,
   IsNotEmpty,
-  isNumberString,
+  IsOptional,
   IsString,
   Length,
 } from "class-validator";
@@ -22,7 +21,15 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   @IsDate()
   birthday: Date;
 
+  @IsString()
+  @IsOptional()
   location?: string;
+
+  @IsOptional()
+  @IsString()
   bio?: string;
+
+  @IsOptional()
+  @IsString()
   gender?: string;
 }

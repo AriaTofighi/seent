@@ -2,6 +2,7 @@ import { GetUserDto } from "./dto/get-user.dto";
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
+import { exclude } from "utils/modelHelpers";
 
 @Injectable()
 export class UsersService {
@@ -9,18 +10,20 @@ export class UsersService {
 
   async findOne(
     userWhereUniqueInput: Prisma.UserWhereUniqueInput
-  ): Promise<GetUserDto | null> {
-    return this.prisma.user.findUnique({
+  ): Promise<User | null> {
+    const user: User = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
     });
+    return user;
   }
 
   async findMany(params: UserFindManyParams): Promise<GetUserDto[]> {
-    return this.prisma.user.findMany(params);
+    const users = await this.prisma.user.findMany(params);
+    return users;
   }
 
   async create(data: Prisma.UserCreateInput): Promise<GetUserDto> {
-    return this.prisma.user.create({
+    return await this.prisma.user.create({
       data,
     });
   }
