@@ -6,6 +6,7 @@ import styles from "../styles/Home.module.css";
 import useSWR from "swr";
 import { User } from "../../backend/src/users/entities/user.entity";
 import { NextPageWithLayout } from "./_app";
+import MainLayout from "../components/layouts/MainLayout";
 
 const fetcher = (...args: any) => fetch(args).then((res) => res.json());
 
@@ -28,8 +29,6 @@ const Home: NextPageWithLayout = () => {
   );
 };
 
-Home.getLayout = (page: ReactElement) => {
-  return <div style={{ backgroundColor: "blue" }}>{page}</div>;
-};
+Home.getLayout = (page: ReactElement) => <MainLayout>{page}</MainLayout>;
 
 export default Home;

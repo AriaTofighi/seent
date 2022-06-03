@@ -15,9 +15,9 @@ import {
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { UserFindManyQuery } from "./entities/user.entity";
 import { exclude } from "utils/modelHelpers";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { UserFindManyQuery } from "./types/user.types";
 
 @Controller("/api/users")
 export class UsersController {
