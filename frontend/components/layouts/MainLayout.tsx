@@ -1,38 +1,41 @@
-import {
-  AppBar,
-  Box,
-  Button,
-  Container,
-  IconButton,
-  Toolbar,
-  Typography,
-} from "@mui/material";
-import React from "react";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Box, Container } from "@mui/material";
+import TopAppBar from "../navigation/TopAppBar";
+import SideBar from "../navigation/SideBar";
+import { styled, useTheme } from "@mui/system";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { Styles } from "../../types/types";
+
+const styles: Styles = {
+  root: {
+    minHeight: "150vh",
+  },
+  container: {
+    minHeight: "150vh",
+    p: 0,
+    display: "flex",
+    maxWidth: 900,
+    margin: "auto",
+    background: "background.default",
+    position: "sticky",
+    top: 0,
+  },
+  mainContent: {
+    width: 600,
+  },
+};
 
 const MainLayout = ({ children }: any) => {
+  const theme = useTheme();
+  const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
+
   return (
-    <Box>
-      <Container maxWidth={"md"}>
-        <AppBar position="static">
-          <Toolbar>
-            <IconButton
-              size="large"
-              edge="start"
-              color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              News
-            </Typography>
-            <Button color="inherit">Login</Button>
-          </Toolbar>
-        </AppBar>
-        {children}
-      </Container>
+    <Box sx={styles.container}>
+      {!mobileMode && <SideBar />}
+
+      <Box sx={styles.mainContent}>
+        <TopAppBar />
+        <Box p={2}>{children}</Box>
+      </Box>
     </Box>
   );
 };
