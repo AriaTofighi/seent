@@ -1,8 +1,8 @@
 import { Avatar, Card, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
-import { Styles } from "../types/types";
-import { formatDate } from "../utils/helpers";
+import { Styles } from "../../types/types";
+import { formatDate } from "../../utils/helpers";
 
 type Props = {
   body: string;
@@ -29,7 +29,7 @@ const PostCard = ({ body, author, createdAt }: Props) => {
   return (
     <Box>
       <Fade in>
-        <Card sx={styles.root} variant="outlined">
+        <Card sx={styles.root} variant="elevation">
           <Stack spacing={2} direction="row" alignItems="center">
             <Avatar src="" />
             <Typography variant="subtitle2">{author}</Typography>
@@ -39,11 +39,14 @@ const PostCard = ({ body, author, createdAt }: Props) => {
             {body}
           </Typography>
 
-          <Stack>
+          <Stack direction="row" justifyContent="space-between" mt={1}>
             <Box>
               <Typography variant="caption">{formattedDate}</Typography>
             </Box>
-            <Box></Box>
+            <Stack direction="row" gap={2}>
+              <Typography variant="caption">Like</Typography>
+              <Typography variant="caption">Comment</Typography>
+            </Stack>
           </Stack>
         </Card>
       </Fade>

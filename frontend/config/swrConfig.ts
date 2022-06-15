@@ -1,8 +1,10 @@
+import axios from "axios";
+
 const swrConfig = {
-  fetcher: (url: string, init: any) =>
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/${url}`, init).then((res) =>
-      res.json()
-    ),
+  fetcher: async (url: string, init: any) => {
+    const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/${url}`);
+    return res.data;
+  },
 };
 
 export default swrConfig;

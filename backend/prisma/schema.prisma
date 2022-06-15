@@ -14,7 +14,7 @@ model User {
   userId    String   @id @default(uuid())
   email     String   @unique
   name      String
-  password  String   @db.Char(60)
+  password  String
   birthday  DateTime
   location  String?
   bio       String?

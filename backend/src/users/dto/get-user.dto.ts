@@ -1,6 +1,6 @@
 import { User } from "@prisma/client";
 
-export class GetUserDto implements Omit<User, "password"> {
+export class GetUserDto implements User {
   email: string;
   birthday: Date;
   location: string;
@@ -11,4 +11,5 @@ export class GetUserDto implements Omit<User, "password"> {
   updatedAt: Date;
   userId: string;
   name: string;
+  password: string;
 }

@@ -6,21 +6,16 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import { Styles } from "../../types/types";
 
 const styles: Styles = {
-  root: {
-    minHeight: "150vh",
-  },
   container: {
-    minHeight: "150vh",
-    p: 0,
+    height: "150vh",
     display: "flex",
     maxWidth: 900,
     margin: "auto",
-    background: "background.default",
-    position: "sticky",
-    top: 0,
   },
   mainContent: {
+    maxWidth: 600,
     width: 600,
+    height: "100%",
   },
 };
 

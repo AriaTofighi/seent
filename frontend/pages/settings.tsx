@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { ReactElement } from "react";
 import useSWR from "swr";
 import MainLayout from "../components/layouts/MainLayout";
-import { NextPageWithLayout } from "./_app";
+import { NextPageWithLayout } from "../types/types";
 
 const Settings: NextPageWithLayout = () => {
   const { data: posts, error, isValidating } = useSWR("posts");

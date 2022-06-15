@@ -11,6 +11,8 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import Link from "next/link";
+import { useUser } from "../../contexts/UserContext";
 
 const styles: Styles = {
   root: {
@@ -21,9 +23,7 @@ const styles: Styles = {
     borderRight: "1px solid",
     borderColor: "primary.light",
     width: 240,
-  },
-  inner: {
-    position: "sticky",
+    height: "100vh",
   },
 };
 
@@ -31,21 +31,30 @@ const SideBar = () => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
   const [openSideBar, setOpenSideBar] = useState(false);
+  const { user } = useUser();
 
   const content = (
     <>
-      <Typography variant="h6" my={1.5} p={2}>
-        Seent
-      </Typography>
+      <Link href="/">
+        <a>
+          <Typography variant="h6" my={1.5} p={2}>
+            Seent
+          </Typography>
+        </a>
+      </Link>
       <MenuItem icon={<HomeIcon />} href="/feed">
         Feed
       </MenuItem>
-      <MenuItem icon={<PersonIcon />} href="/profile">
-        Profile
-      </MenuItem>
-      <MenuItem icon={<SettingsIcon />} href="/settings">
-        Settings
-      </MenuItem>
+      {user && (
+        <>
+          <MenuItem icon={<PersonIcon />} href="/profile">
+            Profile
+          </MenuItem>
+          <MenuItem icon={<SettingsIcon />} href="/settings">
+            Settings
+          </MenuItem>
+        </>
+      )}
     </>
   );
 

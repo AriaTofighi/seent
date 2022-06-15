@@ -11,10 +11,8 @@ import { ThemeProvider } from "@mui/system";
 import getTheme from "../theme/theme";
 import { SWRConfig } from "swr";
 import swrConfig from "../config/swrConfig";
-
-export type NextPageWithLayout = NextPage & {
-  getLayout?: (page: ReactElement) => ReactNode;
-};
+import { UserProvider } from "../contexts/UserContext";
+import { NextPageWithLayout } from "../types/types";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -30,14 +28,16 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
   );
 
   return (
-    <StyledEngineProvider injectFirst>
-      <ThemeProvider theme={getTheme(mode)}>
+    <ThemeProvider theme={getTheme(mode)}>
+      <StyledEngineProvider injectFirst>
         <CssBaseline />
         <SWRConfig value={swrConfig}>
-          <ComponentWithLayout />
+          <UserProvider>
+            <ComponentWithLayout />
+          </UserProvider>
         </SWRConfig>
-      </ThemeProvider>
-    </StyledEngineProvider>
+      </StyledEngineProvider>
+    </ThemeProvider>
   );
 }
 
