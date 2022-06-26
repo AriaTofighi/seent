@@ -43,10 +43,10 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
   update(@Param("id") postId: string, @Body() updatePostDto: UpdatePostDto) {
-    const { body, public: isPublic } = updatePostDto;
+    const { body, isPublic } = updatePostDto;
     return this.postsService.update({
       where: { postId },
-      data: { body, public: isPublic },
+      data: { body, isPublic },
     });
   }
 

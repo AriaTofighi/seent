@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
-import { ReactElement, useEffect } from "react";
-import MainLayout from "../components/layouts/MainLayout";
+import { useEffect } from "react";
+import { getMainLayout } from "../components/layouts/MainLayout";
 import { NextPageWithLayout } from "../types/types";
 
 const Home: NextPageWithLayout = () => {
@@ -13,6 +13,6 @@ const Home: NextPageWithLayout = () => {
   return <></>;
 };
 
-Home.getLayout = (page: ReactElement) => <MainLayout>{page}</MainLayout>;
+Home.getLayout = getMainLayout;
 
 export default Home;

@@ -14,7 +14,7 @@ type Props = {
 
 const TOKEN_KEY = "token_seent";
 
-const UserContext = createContext({
+const UserContext = createContext<any>({
   user: undefined,
   setUser: (t: string) => {},
   loading: true,

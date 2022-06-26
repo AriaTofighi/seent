@@ -18,11 +18,10 @@ const defaultValues = {
 };
 
 type Props = {
-  setMode: (mode: string) => void;
   onClose: () => void;
 };
 
-const RegisterForm = ({ setMode, onClose }: Props) => {
+const RegisterForm = ({ onClose }: Props) => {
   const { control, reset, handleSubmit } = useForm({ defaultValues });
   const { setUser } = useUser();
 
@@ -80,14 +79,9 @@ const RegisterForm = ({ setMode, onClose }: Props) => {
             rules={{ required: true }}
           />
           <Button type="submit" variant="outlined">
-            Sign up
-          </Button>
-          <Button
-            sx={{ width: "fit-content", textTransform: "initial" }}
-            variant="text"
-            onClick={() => setMode(AUTH_DIALOG_MODES.SIGN_IN)}
-          >
-            Have an account? Sign in
+            <Typography variant="body2" color="secondary.light">
+              Sign up
+            </Typography>
           </Button>
         </Box>
       </form>

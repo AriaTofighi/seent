@@ -18,6 +18,10 @@ import RegisterForm from "../auth/RegisterForm";
 import AuthDialog from "../auth/AuthDialog";
 import { useUser } from "../../contexts/UserContext";
 
+type Props = {
+  toggleSidebar: () => void;
+};
+
 const StyledAppBar = styled(AppBar)({
   boxShadow: "none",
   top: 0,
@@ -36,7 +40,7 @@ const dialogStyles: SxProps = {
   },
 };
 
-const TopAppBar = () => {
+const TopAppBar = ({ toggleSidebar }: Props) => {
   const [showLogin, setShowLogin] = useState(false);
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
@@ -46,13 +50,19 @@ const TopAppBar = () => {
     <StyledAppBar position="relative" color="transparent" enableColorOnDark>
       <Toolbar>
         {mobileMode && (
-          <IconButton size="large" edge="start" color="inherit" sx={{ mr: 2 }}>
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            sx={{ mr: 2 }}
+            onClick={toggleSidebar}
+          >
             <MenuIcon />
           </IconButton>
         )}
 
         <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Feed
+          Hi, {user?.name}
         </Typography>
         <Button
           color="inherit"

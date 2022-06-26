@@ -4,6 +4,7 @@ import SideBar from "../navigation/SideBar";
 import { styled, useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Styles } from "../../types/types";
+import { ReactElement, useState } from "react";
 
 const styles: Styles = {
   container: {
@@ -22,17 +23,25 @@ const styles: Styles = {
 const MainLayout = ({ children }: any) => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
+  const [openSidebar, setOpenSidebar] = useState(false);
+
+  const toggleSidebar = () => {
+    setOpenSidebar(!openSidebar);
+  };
 
   return (
     <Box sx={styles.container}>
-      {!mobileMode && <SideBar />}
-
+      <SideBar open={openSidebar} setOpen={setOpenSidebar} />
       <Box sx={styles.mainContent}>
-        <TopAppBar />
+        <TopAppBar toggleSidebar={toggleSidebar} />
         <Box p={2}>{children}</Box>
       </Box>
     </Box>
   );
 };
+
+export const getMainLayout = (page: ReactElement) => (
+  <MainLayout>{page}</MainLayout>
+);
 
 export default MainLayout;

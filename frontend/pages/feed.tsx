@@ -1,12 +1,13 @@
 import { Box, Fab } from "@mui/material";
-import React, { ReactElement } from "react";
+import React, { ReactElement, useState } from "react";
 import useSWR from "swr";
-import MainLayout from "../components/layouts/MainLayout";
+import MainLayout, { getMainLayout } from "../components/layouts/MainLayout";
 import PostCard from "../components/posts/PostCard";
 import { NextPageWithLayout, Styles } from "../types/types";
 import { useUser } from "../contexts/UserContext";
 import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
+import PostDialog from "../components/posts/PostDialog";
 
 const styles: Styles = {
   posts: { display: "flex", flexDirection: "column", gap: 2 },
@@ -21,9 +22,16 @@ const styles: Styles = {
 };
 
 const Feed: NextPageWithLayout = () => {
-  const { data: posts, error, isValidating } = useSWR("posts");
-  const { user } = useUser();
-  console.log(user);
+  const { data: posts } = useSWR("posts");
+  const [open, setOpen] = useState(false);
+
+  const handleNewPost = () => {
+    setOpen(true);
+  };
+
+  const handleCloseNewPost = () => {
+    setOpen(false);
+  };
 
   return (
     <>
@@ -33,25 +41,24 @@ const Feed: NextPageWithLayout = () => {
       </Head>
       <Box sx={styles.root}>
         <Box sx={styles.posts}>
-          {posts?.map(({ body, author, postId, createdAt }: any) => (
-            <PostCard
-              key={postId}
-              body={body}
-              author={author.name}
-              createdAt={createdAt}
-            />
+          {posts?.map(({ postId, ...rest }: any) => (
+            <PostCard key={postId} post={{ postId, ...rest }} />
           ))}
         </Box>
-        <Fab size="small" color="secondary" sx={styles.createPostBtn}>
+        <Fab
+          size="small"
+          color="secondary"
+          sx={styles.createPostBtn}
+          onClick={handleNewPost}
+        >
           <AddIcon />
         </Fab>
       </Box>
+      <PostDialog open={open} setOpen={setOpen} onClose={handleCloseNewPost} />
     </>
   );
 };
 
-Feed.getLayout = (page: ReactElement): ReactElement => (
-  <MainLayout>{page}</MainLayout>
-);
+Feed.getLayout = getMainLayout;
 
 export default Feed;

@@ -14,27 +14,31 @@ import {
 import Link from "next/link";
 import { useUser } from "../../contexts/UserContext";
 
+type Props = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+};
+
 const styles: Styles = {
   root: {
-    background: "background.default",
     color: "text.primary",
     position: "sticky",
     top: 0,
     borderRight: "1px solid",
     borderColor: "primary.light",
     width: 240,
+    minWidth: 200,
     height: "100vh",
   },
 };
 
-const SideBar = () => {
+const SideBar = ({ open, setOpen }: Props) => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
-  const [openSideBar, setOpenSideBar] = useState(false);
   const { user } = useUser();
 
   const content = (
-    <>
+    <Box sx={styles.root}>
       <Link href="/">
         <a>
           <Typography variant="h6" my={1.5} p={2}>
@@ -55,22 +59,28 @@ const SideBar = () => {
           </MenuItem>
         </>
       )}
-    </>
+    </Box>
   );
 
   return mobileMode ? (
     <SwipeableDrawer
+      PaperProps={{
+        sx: {
+          backgroundColor: "background.default",
+          backgroundImage: "none",
+        },
+      }}
       anchor="left"
-      open={openSideBar}
+      open={open}
       variant="temporary"
-      onClose={() => setOpenSideBar(false)}
-      onOpen={() => setOpenSideBar(true)}
+      onClose={() => setOpen(false)}
+      onOpen={() => setOpen(true)}
       ModalProps={{ keepMounted: true }}
     >
       {content}
     </SwipeableDrawer>
   ) : (
-    <Box sx={styles.root}>{content}</Box>
+    <>{content}</>
   );
 };
 

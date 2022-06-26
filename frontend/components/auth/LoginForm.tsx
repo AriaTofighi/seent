@@ -13,11 +13,10 @@ const defaultValues = {
 };
 
 type Props = {
-  setMode: (mode: string) => void;
   onClose: () => void;
 };
 
-const LoginForm = ({ setMode, onClose }: Props) => {
+const LoginForm = ({ onClose }: Props) => {
   const { setUser, user } = useUser();
   const { control, reset, handleSubmit } = useForm({ defaultValues });
 
@@ -52,15 +51,8 @@ const LoginForm = ({ setMode, onClose }: Props) => {
             rules={{ required: true }}
           />
           <Button type="submit" variant="outlined">
-            Sign in
-          </Button>
-          <Button
-            sx={{ width: "fit-content", textTransform: "initial" }}
-            variant="text"
-            onClick={() => setMode(AUTH_DIALOG_MODES.SIGN_UP)}
-          >
-            <Typography variant="body2">
-              Don't have an account? Sign up
+            <Typography variant="body2" color="secondary.light">
+              Sign in
             </Typography>
           </Button>
         </Box>

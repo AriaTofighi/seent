@@ -3,6 +3,7 @@ import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
+import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
 import { NextPage } from "next";
 import { ReactElement, ReactNode, useState } from "react";
@@ -13,6 +14,7 @@ import { SWRConfig } from "swr";
 import swrConfig from "../config/swrConfig";
 import { UserProvider } from "../contexts/UserContext";
 import { NextPageWithLayout } from "../types/types";
+import { ToastContainer } from "react-toastify";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -34,6 +36,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <SWRConfig value={swrConfig}>
           <UserProvider>
             <ComponentWithLayout />
+            <ToastContainer />
           </UserProvider>
         </SWRConfig>
       </StyledEngineProvider>

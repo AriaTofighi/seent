@@ -1,7 +1,6 @@
 import { Box } from "@mui/material";
-import { ReactElement } from "react";
 import useSWR from "swr";
-import MainLayout from "../components/layouts/MainLayout";
+import { getMainLayout } from "../components/layouts/MainLayout";
 import { NextPageWithLayout } from "../types/types";
 
 const Settings: NextPageWithLayout = () => {
@@ -10,8 +9,6 @@ const Settings: NextPageWithLayout = () => {
   return <Box></Box>;
 };
 
-Settings.getLayout = (page: ReactElement): ReactElement => (
-  <MainLayout>{page}</MainLayout>
-);
+Settings.getLayout = getMainLayout;
 
 export default Settings;

@@ -8,7 +8,7 @@ export class CreatePostDto {
   body: string;
 
   @IsBoolean()
-  public: boolean;
+  isPublic: boolean;
 
   @IsUUID()
   @IsOptional()
