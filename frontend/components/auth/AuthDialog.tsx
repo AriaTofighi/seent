@@ -23,8 +23,13 @@ export const MODES = {
   SIGN_UP: "signup",
 };
 
-const AuthDialog = ({ open, onClose }: any) => {
-  const [mode, setMode] = useState(MODES.SIGN_IN);
+type Props = {
+  open: boolean;
+  onClose: () => void;
+};
+
+const AuthDialog = ({ open, onClose }: Props) => {
+  const [mode, setMode] = useState(MODES.SIGN_UP);
 
   const signInMode = mode === MODES.SIGN_IN;
 

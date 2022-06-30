@@ -41,10 +41,8 @@ const dialogStyles: SxProps = {
 };
 
 const TopAppBar = ({ toggleSidebar }: Props) => {
-  const [showLogin, setShowLogin] = useState(false);
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
-  const { user, logout } = useUser();
 
   return (
     <StyledAppBar position="relative" color="transparent" enableColorOnDark>
@@ -60,19 +58,7 @@ const TopAppBar = ({ toggleSidebar }: Props) => {
             <MenuIcon />
           </IconButton>
         )}
-
-        <Typography variant="h6" sx={{ flexGrow: 1 }}>
-          Hi, {user?.name}
-        </Typography>
-        <Button
-          color="inherit"
-          onClick={user ? logout : () => setShowLogin(!showLogin)}
-          sx={{ textTransform: "initial" }}
-        >
-          <Typography>{user ? "Sign out" : "Sign in"}</Typography>
-        </Button>
       </Toolbar>
-      <AuthDialog open={showLogin} onClose={() => setShowLogin(false)} />
     </StyledAppBar>
   );
 };

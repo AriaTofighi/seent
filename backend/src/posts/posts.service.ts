@@ -11,6 +11,13 @@ export class PostsService {
   ): Promise<Post | null> {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
+      include: {
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
   }
 

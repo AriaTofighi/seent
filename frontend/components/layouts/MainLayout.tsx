@@ -33,7 +33,7 @@ const MainLayout = ({ children }: any) => {
     <Box sx={styles.container}>
       <SideBar open={openSidebar} setOpen={setOpenSidebar} />
       <Box sx={styles.mainContent}>
-        <TopAppBar toggleSidebar={toggleSidebar} />
+        {mobileMode && <TopAppBar toggleSidebar={toggleSidebar} />}
         <Box p={2}>{children}</Box>
       </Box>
     </Box>

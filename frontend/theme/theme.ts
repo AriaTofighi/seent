@@ -6,7 +6,7 @@ const getTheme = (mode: PaletteMode) => {
 
   return createTheme({
     typography: {
-      fontFamily: ["Montserrat", "sans-serif"].join(","),
+      fontFamily: ["Ubuntu", "sans-serif"].join(","),
     },
     components: {
       MuiInputBase: {

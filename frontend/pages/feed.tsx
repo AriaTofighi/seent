@@ -1,13 +1,16 @@
 import { Box, Fab } from "@mui/material";
-import React, { ReactElement, useState } from "react";
+import React, { useState } from "react";
 import useSWR from "swr";
-import MainLayout, { getMainLayout } from "../components/layouts/MainLayout";
+import { getMainLayout } from "../components/layouts/MainLayout";
 import PostCard from "../components/posts/PostCard";
 import { NextPageWithLayout, Styles } from "../types/types";
 import { useUser } from "../contexts/UserContext";
 import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
-import PostDialog from "../components/posts/PostDialog";
+import dynamic from "next/dynamic";
+const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
+  ssr: false,
+});
 
 const styles: Styles = {
   posts: { display: "flex", flexDirection: "column", gap: 2 },

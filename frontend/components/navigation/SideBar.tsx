@@ -6,6 +6,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
+  Button,
   SwipeableDrawer,
   Typography,
   useMediaQuery,
@@ -13,6 +14,8 @@ import {
 } from "@mui/material";
 import Link from "next/link";
 import { useUser } from "../../contexts/UserContext";
+import AuthDialog from "../auth/AuthDialog";
+import { useRouter } from "next/router";
 
 type Props = {
   open: boolean;
@@ -29,19 +32,23 @@ const styles: Styles = {
     width: 240,
     minWidth: 200,
     height: "100vh",
+    p: 2,
   },
 };
 
 const SideBar = ({ open, setOpen }: Props) => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  const [showLogin, setShowLogin] = useState(false);
+  const router = useRouter();
+  console.log(router);
 
   const content = (
     <Box sx={styles.root}>
       <Link href="/">
         <a>
-          <Typography variant="h6" my={1.5} p={2}>
+          <Typography variant="h6" my={2}>
             Seent
           </Typography>
         </a>
@@ -59,6 +66,16 @@ const SideBar = ({ open, setOpen }: Props) => {
           </MenuItem>
         </>
       )}
+      <Button
+        color="inherit"
+        onClick={user ? logout : () => setShowLogin(!showLogin)}
+        sx={{ textTransform: "initial", mt: 2 }}
+        variant={user ? "text" : "outlined"}
+        fullWidth={Boolean(!user)}
+      >
+        <Typography variant="h6">{user ? "Sign out" : "Sign up"}</Typography>
+      </Button>
+      <AuthDialog open={showLogin} onClose={() => setShowLogin(false)} />
     </Box>
   );
 
