@@ -53,7 +53,7 @@ const SideBar = ({ open, setOpen }: Props) => {
           </Typography>
         </a>
       </Link>
-      <MenuItem icon={<HomeIcon />} href="/feed">
+      <MenuItem icon={<HomeIcon width="16" />} href="/feed">
         Feed
       </MenuItem>
       {user && (

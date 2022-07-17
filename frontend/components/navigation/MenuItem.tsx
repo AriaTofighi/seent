@@ -32,7 +32,6 @@ const styles: Styles = {
 };
 
 const MenuItem = ({ children, icon, href }: Props) => {
-  console.log(href);
   const { route } = useRouter();
   const defaultContent = (
     <Box sx={{ ...styles.root }}>

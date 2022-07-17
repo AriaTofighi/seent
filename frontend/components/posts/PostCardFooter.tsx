@@ -6,9 +6,10 @@ import { stopPropagation } from "../../utils/helpers";
 
 type Props = {
   postDate: string;
+  onReply: () => void;
 };
 
-const PostCardFooter = ({ postDate }: Props) => {
+const PostCardFooter = ({ postDate, onReply }: Props) => {
   return (
     <Stack
       direction="row"
@@ -26,7 +27,7 @@ const PostCardFooter = ({ postDate }: Props) => {
           </IconButton>
         </Tooltip>
         <Tooltip title="Reply">
-          <IconButton sx={{ p: 0 }}>
+          <IconButton sx={{ p: 0 }} onClick={onReply}>
             <ReplyIcon color="secondary" fontSize="small" />
           </IconButton>
         </Tooltip>

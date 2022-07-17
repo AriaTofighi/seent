@@ -15,12 +15,12 @@ import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { deletePost } from "../../services/api/postAxios";
 import { useUser } from "../../contexts/UserContext";
 import { useSWRConfig } from "swr";
-
 import Link from "next/link";
 import PostCardFooter from "./PostCardFooter";
 
 type Props = {
   post: any;
+  onReply: (parentPostId: string) => void;
 };
 
 const styles: Styles = {
@@ -32,13 +32,14 @@ const styles: Styles = {
     transition: "all 0.3s cubic-bezier(.25,.8,.25,1)",
     cursor: "pointer",
     whiteSpace: "pre-line",
+    "&:hover": {
+      backgroundColor: "#e0dfdf",
+    },
   },
-  body: {
-    backgroundColor: "secondary.light",
-  },
+  body: {},
 };
 
-const PostCard = ({ post }: Props) => {
+const PostCard = ({ post, onReply }: Props) => {
   const {
     author: { name: author },
     authorId,
@@ -66,6 +67,10 @@ const PostCard = ({ post }: Props) => {
     mutate("posts");
   };
 
+  const handleReply = () => {
+    onReply(postId);
+  };
+
   return (
     <>
       <Card variant="elevation" sx={styles.root}>
@@ -87,7 +92,7 @@ const PostCard = ({ post }: Props) => {
             <Typography variant="body1" mt={1.5} sx={styles.body}>
               {body}
             </Typography>
-            <PostCardFooter postDate={formattedDate} />
+            <PostCardFooter postDate={formattedDate} onReply={handleReply} />
           </Box>
         </Link>
       </Card>

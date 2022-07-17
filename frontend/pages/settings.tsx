@@ -6,7 +6,7 @@ import { NextPageWithLayout } from "../types/types";
 const Settings: NextPageWithLayout = () => {
   const { data: posts, error, isValidating } = useSWR("posts");
 
-  return <Box></Box>;
+  return <Box>Settings</Box>;
 };
 
 Settings.getLayout = getMainLayout;

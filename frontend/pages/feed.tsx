@@ -8,6 +8,7 @@ import { useUser } from "../contexts/UserContext";
 import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
 import dynamic from "next/dynamic";
+
 const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
   ssr: false,
 });
@@ -24,16 +25,25 @@ const styles: Styles = {
   },
 };
 
+export const DEFAULT_POST_DIALOG_STATE = {
+  open: false,
+  parentPostId: "",
+};
+
 const Feed: NextPageWithLayout = () => {
   const { data: posts } = useSWR("posts");
-  const [open, setOpen] = useState(false);
+  const [postDialog, setPostDialog] = useState(DEFAULT_POST_DIALOG_STATE);
 
   const handleNewPost = () => {
-    setOpen(true);
+    setPostDialog({ open: true, parentPostId: "" });
   };
 
   const handleCloseNewPost = () => {
-    setOpen(false);
+    setPostDialog({ open: false, parentPostId: "" });
+  };
+
+  const onReply = (parentPostId: string) => {
+    setPostDialog({ open: true, parentPostId });
   };
 
   return (
@@ -45,7 +55,11 @@ const Feed: NextPageWithLayout = () => {
       <Box sx={styles.root}>
         <Box sx={styles.posts}>
           {posts?.map(({ postId, ...rest }: any) => (
-            <PostCard key={postId} post={{ postId, ...rest }} />
+            <PostCard
+              key={postId}
+              post={{ postId, ...rest }}
+              onReply={onReply}
+            />
           ))}
         </Box>
         <Fab
@@ -57,7 +71,14 @@ const Feed: NextPageWithLayout = () => {
           <AddIcon />
         </Fab>
       </Box>
-      <PostDialog open={open} setOpen={setOpen} onClose={handleCloseNewPost} />
+      <PostDialog
+        open={postDialog.open}
+        setPostDialog={setPostDialog}
+        onClose={handleCloseNewPost}
+        parentPost={posts?.find(
+          (p: any) => p.postId === postDialog.parentPostId
+        )}
+      />
     </>
   );
 };

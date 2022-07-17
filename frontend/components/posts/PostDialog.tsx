@@ -8,7 +8,13 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { MouseEvent, useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  MouseEvent,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { useForm } from "react-hook-form";
 import { Styles } from "../../types/types";
 import TextInput from "../controls/TextInput";
@@ -19,11 +25,18 @@ import { useUser } from "../../contexts/UserContext";
 import { createPost } from "../../services/api/postAxios";
 import { useSWRConfig } from "swr";
 import EmojiPicker from "emoji-picker-react";
+import { DEFAULT_POST_DIALOG_STATE } from "../../pages/feed";
+
+type PostDialog = {
+  open: boolean;
+  parentPostId?: undefined;
+};
 
 type Props = {
   open: boolean;
   onClose: () => void;
-  setOpen: (open: boolean) => void;
+  setPostDialog: any;
+  parentPost?: any;
 };
 
 const styles: Styles = {
@@ -39,18 +52,16 @@ const PRIVACY_MODES = {
   PRIVATE: false,
 };
 
-const PostDialog = ({ open, setOpen }: Props) => {
+const PostDialog = ({ open, setPostDialog, parentPost }: Props) => {
   const { control, reset, handleSubmit, setValue, getValues } = useForm({
     defaultValues,
   });
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
-  const [chosenEmoji, setChosenEmoji] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { user } = useUser();
   const { mutate } = useSWRConfig();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
-    setChosenEmoji(emojiObject);
     const body = getValues("body");
     setValue("body", body + emojiObject.emoji);
   };
@@ -59,21 +70,21 @@ const PostDialog = ({ open, setOpen }: Props) => {
     const { body } = formValues;
     await createPost(user.userId, privacyMode, body);
     mutate("posts");
-    setOpen(false);
+    setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
   };
 
   return (
     <Dialog
       open={open}
-      onClose={() => setOpen(false)}
+      onClose={() => setPostDialog(DEFAULT_POST_DIALOG_STATE)}
       fullWidth
       maxWidth={"xs"}
     >
       <DialogContent>
         <Box sx={styles.root}>
           <Typography variant="h5" mb={3}>
-            What's on your mind?
+            {parentPost?.body ? parentPost.body : "What's on your mind?"}
           </Typography>
           <form onSubmit={handleSubmit(handleSubmitPost)}>
             <TextInput
