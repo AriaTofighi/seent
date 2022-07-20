@@ -27,11 +27,11 @@ export class PostsController {
 
   @Get()
   findAll(@Query() query: FindPostsQueryDto) {
-    const { skip, take, postId } = query;
+    const { skip, take, postId, parentPostId } = query;
     return this.postsService.findMany({
       skip,
       take,
-      where: { postId },
+      where: { postId, parentPostId },
     });
   }
 

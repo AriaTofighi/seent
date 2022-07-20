@@ -1,32 +1,43 @@
-import { Typography } from "@mui/material";
+import { Divider, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import React, { useState } from "react";
 import useSWR from "swr";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import PostCard from "../../components/posts/PostCard";
+import usePostDialog from "../../hooks/usePostDialog";
 import { NextPageWithLayout } from "../../types/types";
-import { DEFAULT_POST_DIALOG_STATE } from "../feed";
+
+const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
+  ssr: false,
+});
 
 const PostDetails: NextPageWithLayout = ({}: any) => {
   const { query } = useRouter();
-  const [postDialog, setPostDialog] = useState(DEFAULT_POST_DIALOG_STATE);
-
   const {
-    data: post,
-    isValidating,
-    error,
-  } = useSWR(query.id ? `posts/${query.id}` : null);
-  const postLoading = !error && !post;
+    onReply,
+    handleNewPost,
+    postDialog,
+    setPostDialog,
+    handleCloseNewPost,
+  } = usePostDialog();
 
-  if (postLoading) {
+  const { data: post, error: postErr } = useSWR(
+    query.id ? `posts/${query.id}` : null
+  );
+
+  const { data: posts, error: postsErr } = useSWR("posts");
+
+  const replies = posts?.filter((p: any) => p.parentPostId === query.id);
+
+  const postLoading = !postErr && !post;
+  const repliesLoading = !posts && !postsErr;
+
+  if (postLoading || repliesLoading) {
     return <div>Loading...</div>;
   }
-
-  const onReply = (parentPostId: string) => {
-    setPostDialog({ open: true, parentPostId });
-  };
 
   return (
     <>
@@ -37,7 +48,26 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
 
       <Box>
         <PostCard post={post} onReply={onReply} />
+        <Divider variant="fullWidth" sx={{ my: 2 }} />
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Replies
+        </Typography>
+
+        {replies.map((r: any) => (
+          <Box key={r.postId}>
+            <PostCard post={r} onReply={onReply} />
+            <Box my={2} />
+          </Box>
+        ))}
       </Box>
+      <PostDialog
+        open={postDialog?.open}
+        setPostDialog={setPostDialog}
+        onClose={handleCloseNewPost}
+        parentPost={posts?.find(
+          (p: any) => p.postId === postDialog?.parentPostId
+        )}
+      />
     </>
   );
 };

@@ -12,4 +12,8 @@ export class FindPostsQueryDto {
   @IsUUID()
   @IsOptional()
   postId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  parentPostId?: string;
 }

@@ -8,6 +8,7 @@ import { useUser } from "../contexts/UserContext";
 import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
 import dynamic from "next/dynamic";
+import usePostDialog from "../hooks/usePostDialog";
 
 const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
   ssr: false,
@@ -25,33 +26,15 @@ const styles: Styles = {
   },
 };
 
-type PostDialogState = {
-  open: boolean;
-  parentPostId?: string;
-};
-
-export const DEFAULT_POST_DIALOG_STATE = {
-  open: false,
-  parentPostId: undefined,
-};
-
 const Feed: NextPageWithLayout = () => {
   const { data: posts } = useSWR("posts");
-  const [postDialog, setPostDialog] = useState<PostDialogState>(
-    DEFAULT_POST_DIALOG_STATE
-  );
-
-  const handleNewPost = () => {
-    setPostDialog({ open: true });
-  };
-
-  const handleCloseNewPost = () => {
-    setPostDialog({ ...postDialog, open: false });
-  };
-
-  const onReply = (parentPostId: string) => {
-    setPostDialog({ open: true, parentPostId });
-  };
+  const {
+    onReply,
+    handleNewPost,
+    postDialog,
+    setPostDialog,
+    handleCloseNewPost,
+  } = usePostDialog();
 
   return (
     <>
