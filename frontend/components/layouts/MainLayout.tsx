@@ -8,7 +8,6 @@ import { ReactElement, useState } from "react";
 
 const styles: Styles = {
   container: {
-    height: "150vh",
     display: "flex",
     maxWidth: 900,
     margin: "auto",

@@ -18,6 +18,7 @@ import Link from "next/link";
 import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
 import PostCardBody from "./PostCardBody";
+import { useRouter } from "next/router";
 
 type Props = {
   post: any;
@@ -52,6 +53,7 @@ const PostCard = ({ post, onReply }: Props) => {
   const showMenu = Boolean(anchorEl);
   const { user } = useUser();
   const { mutate } = useSWRConfig();
+  const router = useRouter();
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -65,6 +67,7 @@ const PostCard = ({ post, onReply }: Props) => {
   const handleDeletePost = async () => {
     await deletePost(postId);
     mutate("posts");
+    router.push("/feed");
   };
 
   const handleReply = () => {

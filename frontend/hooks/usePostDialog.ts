@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 export type PostDialogState = {
   open: boolean;
   parentPostId?: string;
@@ -14,11 +15,11 @@ const usePostDialog = () => {
     DEFAULT_POST_DIALOG_STATE
   );
 
-  const handleNewPost = () => {
+  const onNewPost = () => {
     setPostDialog({ open: true });
   };
 
-  const handleCloseNewPost = () => {
+  const onCloseDialog = () => {
     setPostDialog({ ...postDialog, open: false });
   };
 
@@ -29,8 +30,8 @@ const usePostDialog = () => {
   return {
     postDialog,
     setPostDialog,
-    handleNewPost,
-    handleCloseNewPost,
+    onNewPost,
+    onCloseDialog,
     onReply,
   };
 };

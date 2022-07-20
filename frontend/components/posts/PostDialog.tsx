@@ -26,11 +26,11 @@ import { useUser } from "../../contexts/UserContext";
 import { createPost } from "../../services/api/postAxios";
 import { useSWRConfig } from "swr";
 import EmojiPicker from "emoji-picker-react";
-import { DEFAULT_POST_DIALOG_STATE } from "../../pages/feed";
 import CloseIcon from "@mui/icons-material/Close";
 import PostCardHeader from "./PostCardHeader";
 import PostCardBody from "./PostCardBody";
 import PostCard from "./PostCard";
+import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 
 type PostDialog = {
   open: boolean;

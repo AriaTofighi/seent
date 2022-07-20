@@ -28,13 +28,8 @@ const styles: Styles = {
 
 const Feed: NextPageWithLayout = () => {
   const { data: posts } = useSWR("posts");
-  const {
-    onReply,
-    handleNewPost,
-    postDialog,
-    setPostDialog,
-    handleCloseNewPost,
-  } = usePostDialog();
+  const { onReply, onNewPost, postDialog, setPostDialog, onCloseDialog } =
+    usePostDialog();
 
   return (
     <>
@@ -56,7 +51,7 @@ const Feed: NextPageWithLayout = () => {
           size="small"
           color="secondary"
           sx={styles.createPostBtn}
-          onClick={handleNewPost}
+          onClick={onNewPost}
         >
           <AddIcon />
         </Fab>
@@ -64,7 +59,7 @@ const Feed: NextPageWithLayout = () => {
       <PostDialog
         open={postDialog.open}
         setPostDialog={setPostDialog}
-        onClose={handleCloseNewPost}
+        onClose={onCloseDialog}
         parentPost={posts?.find(
           (p: any) => p.postId === postDialog.parentPostId
         )}

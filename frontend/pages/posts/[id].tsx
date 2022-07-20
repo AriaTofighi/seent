@@ -3,7 +3,7 @@ import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React from "react";
 import useSWR from "swr";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import PostCard from "../../components/posts/PostCard";
@@ -16,13 +16,8 @@ const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
 
 const PostDetails: NextPageWithLayout = ({}: any) => {
   const { query } = useRouter();
-  const {
-    onReply,
-    handleNewPost,
-    postDialog,
-    setPostDialog,
-    handleCloseNewPost,
-  } = usePostDialog();
+  const { onReply, onNewPost, postDialog, setPostDialog, onCloseDialog } =
+    usePostDialog();
 
   const { data: post, error: postErr } = useSWR(
     query.id ? `posts/${query.id}` : null
@@ -49,9 +44,9 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
       <Box>
         <PostCard post={post} onReply={onReply} />
         <Divider variant="fullWidth" sx={{ my: 2 }} />
-        <Typography variant="h5" sx={{ mb: 2 }}>
+        {/* <Typography variant="h5" sx={{ mb: 2 }}>
           Replies
-        </Typography>
+        </Typography> */}
 
         {replies.map((r: any) => (
           <Box key={r.postId}>
@@ -61,9 +56,9 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
         ))}
       </Box>
       <PostDialog
-        open={postDialog?.open}
+        open={postDialog.open}
         setPostDialog={setPostDialog}
-        onClose={handleCloseNewPost}
+        onClose={onCloseDialog}
         parentPost={posts?.find(
           (p: any) => p.postId === postDialog?.parentPostId
         )}
