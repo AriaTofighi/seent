@@ -25,21 +25,28 @@ const styles: Styles = {
   },
 };
 
+type PostDialogState = {
+  open: boolean;
+  parentPostId?: string;
+};
+
 export const DEFAULT_POST_DIALOG_STATE = {
   open: false,
-  parentPostId: "",
+  parentPostId: undefined,
 };
 
 const Feed: NextPageWithLayout = () => {
   const { data: posts } = useSWR("posts");
-  const [postDialog, setPostDialog] = useState(DEFAULT_POST_DIALOG_STATE);
+  const [postDialog, setPostDialog] = useState<PostDialogState>(
+    DEFAULT_POST_DIALOG_STATE
+  );
 
   const handleNewPost = () => {
-    setPostDialog({ open: true, parentPostId: "" });
+    setPostDialog({ open: true });
   };
 
   const handleCloseNewPost = () => {
-    setPostDialog({ open: false, parentPostId: "" });
+    setPostDialog({ ...postDialog, open: false });
   };
 
   const onReply = (parentPostId: string) => {

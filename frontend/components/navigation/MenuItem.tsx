@@ -2,7 +2,7 @@ import { Box } from "@mui/system";
 import React, { ReactNode } from "react";
 import Link from "next/link";
 import { Styles } from "../../types/types";
-import { Typography } from "@mui/material";
+import { Button, ButtonBase, Typography } from "@mui/material";
 import { Url } from "url";
 import { useRouter } from "next/router";
 
@@ -10,6 +10,7 @@ type Props = {
   children: ReactNode;
   icon?: ReactNode;
   href?: string;
+  onClick?: () => void;
 };
 
 const fadeTransitionTime = "0.3";
@@ -31,7 +32,7 @@ const styles: Styles = {
   },
 };
 
-const MenuItem = ({ children, icon, href }: Props) => {
+const MenuItem = ({ children, icon, href, onClick }: Props) => {
   const { route } = useRouter();
   const defaultContent = (
     <Box sx={{ ...styles.root }}>
@@ -40,15 +41,19 @@ const MenuItem = ({ children, icon, href }: Props) => {
     </Box>
   );
 
-  const content = href ? (
-    <Link href={href}>
-      <a>{defaultContent}</a>
-    </Link>
-  ) : (
-    defaultContent
+  return (
+    <>
+      {href ? (
+        <Link href={href}>
+          <a>{defaultContent}</a>
+        </Link>
+      ) : (
+        <ButtonBase sx={{ width: "100%" }} onClick={onClick}>
+          {defaultContent}
+        </ButtonBase>
+      )}
+    </>
   );
-
-  return <>{content}</>;
 };
 
 export default MenuItem;

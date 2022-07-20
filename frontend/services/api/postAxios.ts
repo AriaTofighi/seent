@@ -4,13 +4,15 @@ import { toast } from "react-toastify";
 export const createPost = async (
   authorId: string,
   isPublic: boolean,
-  body: string
+  body: string,
+  parentPostId?: string
 ) => {
   try {
     const response = await axios.post("posts", {
       authorId,
       isPublic,
       body,
+      parentPostId,
     });
     toast.success("Created post successfully");
     return response.data;

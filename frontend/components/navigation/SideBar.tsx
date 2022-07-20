@@ -7,6 +7,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
   Button,
+  Divider,
   SwipeableDrawer,
   Typography,
   useMediaQuery,
@@ -16,6 +17,7 @@ import Link from "next/link";
 import { useUser } from "../../contexts/UserContext";
 import AuthDialog from "../auth/AuthDialog";
 import { useRouter } from "next/router";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 type Props = {
   open: boolean;
@@ -42,7 +44,6 @@ const SideBar = ({ open, setOpen }: Props) => {
   const { user, logout } = useUser();
   const [showLogin, setShowLogin] = useState(false);
   const router = useRouter();
-  console.log(router);
 
   const content = (
     <Box sx={styles.root}>
@@ -64,17 +65,23 @@ const SideBar = ({ open, setOpen }: Props) => {
           <MenuItem icon={<SettingsIcon />} href="/settings">
             Settings
           </MenuItem>
+          <Divider />
+          <MenuItem icon={<LogoutIcon />} onClick={logout}>
+            Sign out
+          </MenuItem>
         </>
       )}
-      <Button
-        color="inherit"
-        onClick={user ? logout : () => setShowLogin(!showLogin)}
-        sx={{ textTransform: "initial", mt: 2 }}
-        variant={user ? "text" : "outlined"}
-        fullWidth={Boolean(!user)}
-      >
-        <Typography variant="h6">{user ? "Sign out" : "Sign up"}</Typography>
-      </Button>
+      {!user && (
+        <Button
+          color="inherit"
+          onClick={user ? logout : () => setShowLogin(!showLogin)}
+          sx={{ textTransform: "initial", mt: 2 }}
+          variant={user ? "text" : "outlined"}
+          fullWidth={Boolean(!user)}
+        >
+          <Typography variant="h6">{user ? "Sign out" : "Sign up"}</Typography>
+        </Button>
+      )}
       <AuthDialog open={showLogin} onClose={() => setShowLogin(false)} />
     </Box>
   );

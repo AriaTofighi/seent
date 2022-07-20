@@ -11,16 +11,17 @@ import { Box } from "@mui/system";
 import React, { MouseEvent, useState } from "react";
 import { Styles } from "../../types/types";
 import { formatDate, stopPropagation } from "../../utils/helpers";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { deletePost } from "../../services/api/postAxios";
 import { useUser } from "../../contexts/UserContext";
 import { useSWRConfig } from "swr";
 import Link from "next/link";
 import PostCardFooter from "./PostCardFooter";
+import PostCardHeader from "./PostCardHeader";
+import PostCardBody from "./PostCardBody";
 
 type Props = {
   post: any;
-  onReply: (parentPostId: string) => void;
+  onReply?: (parentPostId: string) => void;
 };
 
 const styles: Styles = {
@@ -36,7 +37,6 @@ const styles: Styles = {
       backgroundColor: "#e0dfdf",
     },
   },
-  body: {},
 };
 
 const PostCard = ({ post, onReply }: Props) => {
@@ -68,6 +68,7 @@ const PostCard = ({ post, onReply }: Props) => {
   };
 
   const handleReply = () => {
+    if (!onReply) return;
     onReply(postId);
   };
 
@@ -76,23 +77,15 @@ const PostCard = ({ post, onReply }: Props) => {
       <Card variant="elevation" sx={styles.root}>
         <Link href={`/posts/${postId}`}>
           <Box>
-            <Stack direction="row" justifyContent="space-between">
-              <Stack spacing={2} direction="row" alignItems="center">
-                <Avatar src="" />
-                <Typography variant="subtitle2">{author}</Typography>
-              </Stack>
-              <Box>
-                {user?.userId === authorId && (
-                  <IconButton onClick={handleShowMenu}>
-                    <MoreHorizIcon color="primary" />
-                  </IconButton>
-                )}
-              </Box>
-            </Stack>
-            <Typography variant="body1" mt={1.5} sx={styles.body}>
-              {body}
-            </Typography>
-            <PostCardFooter postDate={formattedDate} onReply={handleReply} />
+            <PostCardHeader
+              author={author}
+              userIsOwner={user?.userId === authorId}
+              handleShowMenu={handleShowMenu}
+            />
+            <PostCardBody body={body} />
+            {onReply && (
+              <PostCardFooter postDate={formattedDate} onReply={handleReply} />
+            )}
           </Box>
         </Link>
       </Card>

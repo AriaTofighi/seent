@@ -2,6 +2,7 @@ import {
   Button,
   Dialog,
   DialogContent,
+  Divider,
   IconButton,
   Stack,
   Tooltip,
@@ -26,6 +27,10 @@ import { createPost } from "../../services/api/postAxios";
 import { useSWRConfig } from "swr";
 import EmojiPicker from "emoji-picker-react";
 import { DEFAULT_POST_DIALOG_STATE } from "../../pages/feed";
+import CloseIcon from "@mui/icons-material/Close";
+import PostCardHeader from "./PostCardHeader";
+import PostCardBody from "./PostCardBody";
+import PostCard from "./PostCard";
 
 type PostDialog = {
   open: boolean;
@@ -40,7 +45,9 @@ type Props = {
 };
 
 const styles: Styles = {
-  root: {},
+  root: {
+    mt: -1,
+  },
 };
 
 const defaultValues = {
@@ -52,7 +59,7 @@ const PRIVACY_MODES = {
   PRIVATE: false,
 };
 
-const PostDialog = ({ open, setPostDialog, parentPost }: Props) => {
+const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
   const { control, reset, handleSubmit, setValue, getValues } = useForm({
     defaultValues,
   });
@@ -68,7 +75,7 @@ const PostDialog = ({ open, setPostDialog, parentPost }: Props) => {
 
   const handleSubmitPost = async (formValues: any) => {
     const { body } = formValues;
-    await createPost(user.userId, privacyMode, body);
+    await createPost(user.userId, privacyMode, body, parentPost.postId);
     mutate("posts");
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
@@ -83,17 +90,30 @@ const PostDialog = ({ open, setPostDialog, parentPost }: Props) => {
     >
       <DialogContent>
         <Box sx={styles.root}>
-          <Typography variant="h5" mb={3}>
-            {parentPost?.body ? parentPost.body : "What's on your mind?"}
-          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="flex-end"
+            alignItems="flex-start"
+            sx={{ mb: 1 }}
+          >
+            <IconButton onClick={onClose} size="small" edge="start">
+              <CloseIcon />
+            </IconButton>
+          </Stack>
+          {parentPost?.body ? (
+            <PostCard post={parentPost} />
+          ) : (
+            <Typography variant="h5">What's on your mind?</Typography>
+          )}
+
           <form onSubmit={handleSubmit(handleSubmitPost)}>
             <TextInput
               name="body"
               label=""
-              placeholder="Write here"
+              placeholder={parentPost ? "Write your reply here" : "Write here"}
               control={control}
               type="text"
-              sx={{ mb: 1 }}
+              sx={{ mb: 1, mt: 2 }}
               fullWidth
               multiline
               rows={4}
