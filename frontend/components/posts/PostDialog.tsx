@@ -82,19 +82,13 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => setPostDialog(DEFAULT_POST_DIALOG_STATE)}
-      fullWidth
-      maxWidth={"xs"}
-    >
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth={"sm"}>
       <DialogContent>
         <Box sx={styles.root}>
           <Stack
             direction="row"
             justifyContent="flex-end"
             alignItems="flex-start"
-            sx={{ mb: 1 }}
           >
             <IconButton onClick={onClose} size="small" edge="start">
               <CloseIcon />

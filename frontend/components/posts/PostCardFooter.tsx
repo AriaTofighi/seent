@@ -3,13 +3,16 @@ import React from "react";
 import ReplyIcon from "@mui/icons-material/Reply";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { stopPropagation } from "../../utils/helpers";
+import { FavoriteOutlined } from "@mui/icons-material";
 
 type Props = {
   postDate: string;
   onReply: () => void;
+  onReact: (type: string) => void;
+  reaction: string;
 };
 
-const PostCardFooter = ({ postDate, onReply }: Props) => {
+const PostCardFooter = ({ reaction, postDate, onReply, onReact }: Props) => {
   return (
     <Stack
       direction="row"
@@ -22,8 +25,15 @@ const PostCardFooter = ({ postDate, onReply }: Props) => {
       </Box>
       <Stack direction="row" gap={2} onClick={stopPropagation}>
         <Tooltip title="Like">
-          <IconButton sx={{ p: 0 }}>
-            <FavoriteBorderIcon color="secondary" fontSize="small" />
+          <IconButton
+            sx={{ p: 0 }}
+            onClick={() => onReact(reaction !== "like" ? "like" : "unlike")}
+          >
+            {reaction === "like" ? (
+              <FavoriteOutlined fontSize="small" color="error" />
+            ) : (
+              <FavoriteBorderIcon color="secondary" fontSize="small" />
+            )}
           </IconButton>
         </Tooltip>
         <Tooltip title="Reply">

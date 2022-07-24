@@ -42,11 +42,15 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
       </Head>
 
       <Box>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Post
+        </Typography>
         <PostCard post={post} onReply={onReply} />
-        <Divider variant="fullWidth" sx={{ my: 2 }} />
-        {/* <Typography variant="h5" sx={{ mb: 2 }}>
-          Replies
-        </Typography> */}
+        {replies.length > 0 && (
+          <Typography variant="h5" sx={{ my: 2 }}>
+            Replies
+          </Typography>
+        )}
 
         {replies.map((r: any) => (
           <Box key={r.postId}>

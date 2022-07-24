@@ -54,6 +54,9 @@ const getTheme = (mode: PaletteMode) => {
     },
     palette: {
       mode,
+      error: {
+        main: "#e31b23",
+      },
       ...(lightMode
         ? {
             primary: {

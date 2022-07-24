@@ -8,6 +8,7 @@ import { signUp } from "../../services/api/authAxios";
 import { convertDateForPicker } from "../../utils/helpers";
 import { useUser } from "../../contexts/UserContext";
 import { MODES as AUTH_DIALOG_MODES } from "./AuthDialog";
+import { toast } from "react-toastify";
 
 const defaultValues = {
   name: "",
@@ -28,8 +29,13 @@ const RegisterForm = ({ onClose }: Props) => {
   const handleSignUp = async (formData: any) => {
     const { name, email, birthday, password, confirmPassword } = formData;
     const res = await signUp(name, email, password, birthday);
-    setUser(res.accessToken);
-    onClose();
+    console.log(res);
+    if (!res) {
+      toast.error("Not authorized");
+    } else {
+      setUser(res.accessToken);
+      onClose();
+    }
   };
 
   return (

@@ -1,10 +1,9 @@
-import { Box, Fab } from "@mui/material";
-import React, { useState } from "react";
+import { Box, Fab, Typography } from "@mui/material";
+import React from "react";
 import useSWR from "swr";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import PostCard from "../components/posts/PostCard";
 import { NextPageWithLayout, Styles } from "../types/types";
-import { useUser } from "../contexts/UserContext";
 import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
 import dynamic from "next/dynamic";
@@ -18,11 +17,12 @@ const styles: Styles = {
   posts: { display: "flex", flexDirection: "column", gap: 2 },
   createPostBtn: {
     position: "sticky",
-    bottom: 0,
     right: 0,
+    bottom: 0,
   },
   root: {
     height: "100%",
+    position: "relative",
   },
 };
 
@@ -38,6 +38,10 @@ const Feed: NextPageWithLayout = () => {
         <meta property="og:title" content="Feed" key="title" />
       </Head>
       <Box sx={styles.root}>
+        <Typography variant="h5" sx={{ mb: 2 }}>
+          Feed
+        </Typography>
+
         <Box sx={styles.posts}>
           {posts?.map(({ postId, ...rest }: any) => (
             <PostCard
@@ -48,7 +52,7 @@ const Feed: NextPageWithLayout = () => {
           ))}
         </Box>
         <Fab
-          size="small"
+          size="medium"
           color="secondary"
           sx={styles.createPostBtn}
           onClick={onNewPost}

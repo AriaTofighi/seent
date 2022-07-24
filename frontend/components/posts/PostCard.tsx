@@ -75,6 +75,12 @@ const PostCard = ({ post, onReply }: Props) => {
     onReply(postId);
   };
 
+  const handleReact = (type: string) => {
+    console.log(type);
+  };
+
+  const reaction = "unlike";
+
   return (
     <>
       <Card variant="elevation" sx={styles.root}>
@@ -84,10 +90,16 @@ const PostCard = ({ post, onReply }: Props) => {
               author={author}
               userIsOwner={user?.userId === authorId}
               handleShowMenu={handleShowMenu}
+              replyMode={Boolean(onReply)}
             />
             <PostCardBody body={body} />
             {onReply && (
-              <PostCardFooter postDate={formattedDate} onReply={handleReply} />
+              <PostCardFooter
+                postDate={formattedDate}
+                onReply={handleReply}
+                onReact={handleReact}
+                reaction={reaction}
+              />
             )}
           </Box>
         </Link>
