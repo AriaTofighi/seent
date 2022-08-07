@@ -44,11 +44,15 @@ const Feed: NextPageWithLayout = () => {
 
         <Box sx={styles.posts}>
           {posts?.map(({ postId, ...rest }: any) => (
-            <PostCard
-              key={postId}
-              post={{ postId, ...rest }}
-              onReply={onReply}
-            />
+            <>
+              {!{ ...rest }.parentPostId && (
+                <PostCard
+                  key={postId}
+                  post={{ postId, ...rest }}
+                  onReply={onReply}
+                />
+              )}
+            </>
           ))}
         </Box>
         <Fab

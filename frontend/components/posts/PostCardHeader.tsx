@@ -17,7 +17,7 @@ const PostCardHeader = ({
       <Box>
         {userIsOwner && handleShowMenu && replyMode && (
           <IconButton onClick={handleShowMenu}>
-            <MoreHorizIcon color="primary" />
+            <MoreHorizIcon color="action" />
           </IconButton>
         )}
       </Box>

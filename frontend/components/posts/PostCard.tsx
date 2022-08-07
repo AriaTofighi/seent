@@ -1,19 +1,11 @@
-import {
-  Avatar,
-  Card,
-  IconButton,
-  Menu,
-  MenuItem,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Button, Card, Menu, MenuItem } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { MouseEvent, useState } from "react";
 import { Styles } from "../../types/types";
 import { formatDate, stopPropagation } from "../../utils/helpers";
 import { deletePost } from "../../services/api/postAxios";
 import { useUser } from "../../contexts/UserContext";
-import { useSWRConfig } from "swr";
+import useSWR, { useSWRConfig } from "swr";
 import Link from "next/link";
 import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
@@ -23,37 +15,46 @@ import { useRouter } from "next/router";
 type Props = {
   post: any;
   onReply?: (parentPostId: string) => void;
+  expandable?: boolean;
 };
 
 const styles: Styles = {
   root: {
     p: 2,
-    boxShadow: "0px 4px 6px -1px, 0px 2px 4px -1px",
-    backgroundColor: "secondary.light",
-    color: "background.default",
-    transition: "all 0.3s cubic-bezier(.25,.8,.25,1)",
+    boxShadow: "black 0px 4px 6px -1px, 0px 2px 4px -1px",
+    backgroundColor: "secondary.dark",
+    color: "text.main",
+    transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
     cursor: "pointer",
     whiteSpace: "pre-line",
     "&:hover": {
-      backgroundColor: "#e0dfdf",
+      backgroundColor: "primary.main",
     },
   },
 };
 
-const PostCard = ({ post, onReply }: Props) => {
+const PostCard = ({ post, onReply, expandable = false }: Props) => {
   const {
     author: { name: author },
     authorId,
     createdAt,
     body,
     postId,
+    childPosts,
   } = post;
+  const { data: fullPost, error: postErr } = useSWR(
+    childPosts === undefined ? `posts/${postId}` : null
+  );
+
+  const useFullPost = childPosts === undefined;
+  const subPosts = useFullPost ? fullPost?.childPosts : childPosts;
   const formattedDate = formatDate(createdAt);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const showMenu = Boolean(anchorEl);
   const { user } = useUser();
   const { mutate } = useSWRConfig();
   const router = useRouter();
+  const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -104,6 +105,34 @@ const PostCard = ({ post, onReply }: Props) => {
           </Box>
         </Link>
       </Card>
+
+      {expanded &&
+        subPosts
+          // .filter((p: any, index: number) => index < 99)
+          .map((p: any) => (
+            <Box
+              sx={{
+                mt: 1,
+                ml: 2,
+                // borderLeft: 10,
+                // borderRadius: 1,
+                // borderColor: "primary.main",
+              }}
+              key={p.postId}
+            >
+              <PostCard post={p} onReply={onReply} expandable />
+            </Box>
+          ))}
+
+      {subPosts?.length > 0 && !expanded && expandable && (
+        <Button
+          sx={{ textTransform: "none", ml: 1, mt: 1 }}
+          onClick={() => setExpanded(true)}
+        >
+          View replies
+        </Button>
+      )}
+
       <Menu anchorEl={anchorEl} open={showMenu} onClose={handleCloseMenu}>
         <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
       </Menu>

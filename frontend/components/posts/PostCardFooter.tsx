@@ -32,13 +32,13 @@ const PostCardFooter = ({ reaction, postDate, onReply, onReact }: Props) => {
             {reaction === "like" ? (
               <FavoriteOutlined fontSize="small" color="error" />
             ) : (
-              <FavoriteBorderIcon color="secondary" fontSize="small" />
+              <FavoriteBorderIcon color="action" fontSize="small" />
             )}
           </IconButton>
         </Tooltip>
         <Tooltip title="Reply">
           <IconButton sx={{ p: 0 }} onClick={onReply}>
-            <ReplyIcon color="secondary" fontSize="small" />
+            <ReplyIcon color="action" fontSize="small" />
           </IconButton>
         </Tooltip>
       </Stack>

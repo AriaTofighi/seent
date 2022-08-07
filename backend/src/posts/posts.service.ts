@@ -17,6 +17,18 @@ export class PostsService {
             name: true,
           },
         },
+        childPosts: {
+          select: {
+            body: true,
+            createdAt: true,
+            postId: true,
+            author: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
   }
@@ -39,6 +51,18 @@ export class PostsService {
         author: {
           select: {
             name: true,
+          },
+        },
+        childPosts: {
+          select: {
+            body: true,
+            createdAt: true,
+            postId: true,
+            author: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
