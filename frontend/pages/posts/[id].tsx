@@ -1,9 +1,8 @@
-import { Button, Divider, Typography } from "@mui/material";
+import { Button, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
 import useSWR from "swr";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import PostCard from "../../components/posts/PostCard";
@@ -16,6 +15,8 @@ const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
 
 const PostDetails: NextPageWithLayout = ({}: any) => {
   const { query } = useRouter();
+  const router = useRouter();
+
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
   const { data: post, error: postErr } = useSWR(
@@ -33,6 +34,10 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
     return <div>Loading...</div>;
   }
 
+  if (postErr) {
+    return <div>Error fetching data</div>;
+  }
+
   return (
     <>
       <Head>
@@ -41,9 +46,23 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
       </Head>
 
       <Box>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Post
-        </Typography>
+        <Stack
+          justifyContent="space-between"
+          direction="row"
+          alignItems="flex-start"
+        >
+          <Typography variant="h5" sx={{ mb: 2 }}>
+            Post
+          </Typography>
+          {post.parentPost && (
+            <Button
+              sx={{ textTransform: "none" }}
+              onClick={() => router.push(`/posts/${post.parentPostId}`)}
+            >
+              View parent post
+            </Button>
+          )}
+        </Stack>
         <PostCard post={post} onReply={onReply} />
         {replies.length > 0 && (
           <Typography variant="h5" sx={{ my: 2 }}>

@@ -18,7 +18,7 @@ const PostCardFooter = ({ reaction, postDate, onReply, onReact }: Props) => {
       direction="row"
       justifyContent="space-between"
       alignItems="flex-end"
-      mt={1}
+      mt={0.5}
     >
       <Box>
         <Typography variant="caption">{postDate}</Typography>

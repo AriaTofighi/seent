@@ -26,23 +26,35 @@ export class PostsController {
   }
 
   @Get()
-  findAll(@Query() query: FindPostsQueryDto) {
+  async findAll(@Query() query: FindPostsQueryDto) {
     const { skip, take, postId, parentPostId } = query;
-    return this.postsService.findMany({
+    const posts = await this.postsService.findMany({
       skip,
       take,
       where: { postId, parentPostId },
     });
+
+    const postsWithDepth = posts.map(async (p: any) => {
+      const depth = await this.postsService.getDepth(p.postId);
+      return { ...p, depth };
+    });
+
+    return Promise.all(postsWithDepth);
   }
 
   @Get(":id")
-  findOne(@Param("id") postId: string) {
-    return this.postsService.findOne({ postId });
+  async findOne(@Param("id") postId: string) {
+    const post = await this.postsService.findOne({ postId });
+    const depth = await this.postsService.getDepth(postId);
+    return { ...post, depth };
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(@Param("id") postId: string, @Body() updatePostDto: UpdatePostDto) {
+  async update(
+    @Param("id") postId: string,
+    @Body() updatePostDto: UpdatePostDto
+  ) {
     const { body, isPublic } = updatePostDto;
     return this.postsService.update({
       where: { postId },

@@ -8,13 +8,23 @@ export class PostsService {
 
   async findOne(
     postWhereUniqueInput: Prisma.PostWhereUniqueInput
-  ): Promise<Post | null> {
+  ): Promise<any | null> {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: {
         author: {
           select: {
             name: true,
+          },
+        },
+        parentPost: {
+          select: {
+            author: {
+              select: {
+                name: true,
+              },
+            },
+            postId: true,
           },
         },
         childPosts: {
@@ -90,5 +100,17 @@ export class PostsService {
     return this.prisma.post.delete({
       where,
     });
+  }
+
+  async getDepth(postId: string) {
+    let depth = 0;
+    const post = await this.findOne({ postId });
+    let curParentPost = post.parentPost;
+    while (curParentPost) {
+      const post = await this.findOne({ postId: curParentPost.postId });
+      depth++;
+      curParentPost = post.parentPost;
+    }
+    return depth;
   }
 }

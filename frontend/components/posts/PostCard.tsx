@@ -1,7 +1,6 @@
 import { Button, Card, Menu, MenuItem } from "@mui/material";
-import { Box } from "@mui/system";
+import { Box, styled } from "@mui/system";
 import React, { MouseEvent, useState } from "react";
-import { Styles } from "../../types/types";
 import { formatDate, stopPropagation } from "../../utils/helpers";
 import { deletePost } from "../../services/api/postAxios";
 import { useUser } from "../../contexts/UserContext";
@@ -11,29 +10,30 @@ import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
 import PostCardBody from "./PostCardBody";
 import { useRouter } from "next/router";
+import { alpha } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
 type Props = {
   post: any;
   onReply?: (parentPostId: string) => void;
   expandable?: boolean;
+  depth?: number;
 };
 
-const styles: Styles = {
-  root: {
-    p: 2,
-    boxShadow: "black 0px 4px 6px -1px, 0px 2px 4px -1px",
-    backgroundColor: "secondary.dark",
-    color: "text.main",
-    transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
-    cursor: "pointer",
-    whiteSpace: "pre-line",
-    "&:hover": {
-      backgroundColor: "primary.main",
-    },
+const StyledCard = styled(Card)(({ theme }) => ({
+  padding: theme.spacing(2),
+  backgroundColor: theme.palette.background.default,
+  color: theme.palette.text.main,
+  transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
+  cursor: "pointer",
+  whiteSpace: "pre-line",
+  "&:hover": {
+    backgroundColor: alpha(theme.palette.primary.main, 0.2),
   },
-};
+}));
 
-const PostCard = ({ post, onReply, expandable = false }: Props) => {
+const PostCard = ({ post, onReply, depth = 0, expandable = false }: Props) => {
   const {
     author: { name: author },
     authorId,
@@ -42,11 +42,12 @@ const PostCard = ({ post, onReply, expandable = false }: Props) => {
     postId,
     childPosts,
   } = post;
-  const { data: fullPost, error: postErr } = useSWR(
-    childPosts === undefined ? `posts/${postId}` : null
+  const useFullPost = childPosts === undefined;
+
+  const { data: fullPost, error: fullPostErr } = useSWR(
+    useFullPost ? `posts/${postId}` : null
   );
 
-  const useFullPost = childPosts === undefined;
   const subPosts = useFullPost ? fullPost?.childPosts : childPosts;
   const formattedDate = formatDate(createdAt);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -54,6 +55,7 @@ const PostCard = ({ post, onReply, expandable = false }: Props) => {
   const { user } = useUser();
   const { mutate } = useSWRConfig();
   const router = useRouter();
+  // const [expanded, setExpanded] = useState<boolean>(expandable && depth < 1);
   const [expanded, setExpanded] = useState<boolean>(false);
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
@@ -82,9 +84,13 @@ const PostCard = ({ post, onReply, expandable = false }: Props) => {
 
   const reaction = "unlike";
 
+  if (useFullPost && !fullPost && !fullPostErr) {
+    return <Box></Box>;
+  }
+
   return (
     <>
-      <Card variant="elevation" sx={styles.root}>
+      <StyledCard variant="elevation">
         <Link href={`/posts/${postId}`}>
           <Box>
             <PostCardHeader
@@ -93,7 +99,10 @@ const PostCard = ({ post, onReply, expandable = false }: Props) => {
               handleShowMenu={handleShowMenu}
               replyMode={Boolean(onReply)}
             />
-            <PostCardBody body={body} />
+            <PostCardBody
+              body={body}
+              replyAuthor={fullPost?.parentPost.author.name}
+            />
             {onReply && (
               <PostCardFooter
                 postDate={formattedDate}
@@ -104,32 +113,45 @@ const PostCard = ({ post, onReply, expandable = false }: Props) => {
             )}
           </Box>
         </Link>
-      </Card>
+      </StyledCard>
+
+      {subPosts?.length > 0 && expanded && (
+        <Button
+          sx={{
+            textTransform: "none",
+            mt: 1,
+            ml: 1,
+          }}
+          onClick={() => setExpanded(false)}
+        >
+          <Box>Hide replies</Box>
+          <ExpandLessIcon sx={{ mr: -0.5 }} />
+        </Button>
+      )}
 
       {expanded &&
-        subPosts
-          // .filter((p: any, index: number) => index < 99)
-          .map((p: any) => (
-            <Box
-              sx={{
-                mt: 1,
-                ml: 2,
-                // borderLeft: 10,
-                // borderRadius: 1,
-                // borderColor: "primary.main",
-              }}
-              key={p.postId}
-            >
-              <PostCard post={p} onReply={onReply} expandable />
-            </Box>
-          ))}
+        subPosts.map((p: any) => (
+          <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
+            <PostCard post={p} onReply={onReply} expandable depth={depth + 1} />
+          </Box>
+        ))}
 
-      {subPosts?.length > 0 && !expanded && expandable && (
+      {subPosts?.length > 0 && !expanded && expandable && depth <= 3 && (
         <Button
           sx={{ textTransform: "none", ml: 1, mt: 1 }}
           onClick={() => setExpanded(true)}
         >
-          View replies
+          View {subPosts?.length} {subPosts?.length > 1 ? "replies" : "reply"}
+          <ExpandMoreIcon sx={{ mr: -0.5 }} />
+        </Button>
+      )}
+
+      {subPosts?.length > 0 && depth > 3 && (
+        <Button
+          sx={{ textTransform: "none", ml: 1, mt: 1 }}
+          onClick={() => router.push(`/posts/${postId}`)}
+        >
+          View more replies in full post
         </Button>
       )}
 
