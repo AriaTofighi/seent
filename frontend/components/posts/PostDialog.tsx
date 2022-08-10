@@ -75,7 +75,7 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
 
   const handleSubmitPost = async (formValues: any) => {
     const { body } = formValues;
-    await createPost(user.userId, privacyMode, body, parentPost.postId);
+    await createPost(user.userId, privacyMode, body, parentPost?.postId);
     mutate("posts");
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
@@ -95,7 +95,7 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
             </IconButton>
           </Stack>
           {parentPost?.body ? (
-            <PostCard post={parentPost} />
+            <PostCard postId={parentPost.postId} showActions={false} />
           ) : (
             <Typography variant="h5">What's on your mind?</Typography>
           )}

@@ -15,7 +15,10 @@ const styles: Styles = {
   mainContent: {
     maxWidth: 600,
     width: 600,
-    height: "100%",
+    borderRight: "1px solid",
+    borderLeft: "1px solid",
+    borderColor: "primary.light",
+    minHeight: "100vh",
   },
 };
 

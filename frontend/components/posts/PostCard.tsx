@@ -11,18 +11,28 @@ import PostCardHeader from "./PostCardHeader";
 import PostCardBody from "./PostCardBody";
 import { useRouter } from "next/router";
 import { alpha } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import usePostDialog from "../../hooks/usePostDialog";
+import dynamic from "next/dynamic";
+import { Styles } from "../../types/types";
+import {
+  createReaction,
+  deleteReaction,
+} from "../../services/api/reactionAxios";
+import { toast } from "react-toastify";
+
+const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
+  ssr: false,
+});
 
 type Props = {
-  post: any;
-  onReply?: (parentPostId: string) => void;
+  postId: string;
   expandable?: boolean;
   depth?: number;
+  showActions?: boolean;
 };
 
 const StyledCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(2),
+  padding: theme.spacing(1.5),
   backgroundColor: theme.palette.background.default,
   color: theme.palette.text.main,
   transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
@@ -33,30 +43,43 @@ const StyledCard = styled(Card)(({ theme }) => ({
   },
 }));
 
-const PostCard = ({ post, onReply, depth = 0, expandable = false }: Props) => {
-  const {
-    author: { name: author },
-    authorId,
-    createdAt,
-    body,
-    postId,
-    childPosts,
-  } = post;
-  const useFullPost = childPosts === undefined;
+const styles: Styles = {
+  textBtn: {
+    textTransform: "none",
+    ml: 1,
+    mt: 1,
+  },
+};
 
-  const { data: fullPost, error: fullPostErr } = useSWR(
-    useFullPost ? `posts/${postId}` : null
-  );
-
-  const subPosts = useFullPost ? fullPost?.childPosts : childPosts;
-  const formattedDate = formatDate(createdAt);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const showMenu = Boolean(anchorEl);
-  const { user } = useUser();
+const PostCard = ({
+  postId,
+  depth = 0,
+  expandable = false,
+  showActions = true,
+}: Props) => {
+  const { data: posts, error: postsErr } = useSWR(`posts`);
   const { mutate } = useSWRConfig();
-  const router = useRouter();
-  // const [expanded, setExpanded] = useState<boolean>(expandable && depth < 1);
+
+  const post = posts?.find((p: any) => p.postId === postId);
+
+  const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [expanded, setExpanded] = useState<boolean>(false);
+  const { user } = useUser();
+  const showMenu = Boolean(anchorEl);
+  const router = useRouter();
+  const formattedDate = formatDate(post?.createdAt);
+  const maxExpansionDepth = 2;
+  const showViewMore =
+    post?.childPosts?.length > 0 &&
+    !expanded &&
+    expandable &&
+    depth <= maxExpansionDepth;
+  const showViewFullPost =
+    post?.childPosts?.length > 0 && depth > maxExpansionDepth;
+  const userReaction = post.reactions.find(
+    (r: any) => r.userId === user?.userId
+  );
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -70,22 +93,30 @@ const PostCard = ({ post, onReply, depth = 0, expandable = false }: Props) => {
   const handleDeletePost = async () => {
     await deletePost(postId);
     mutate("posts");
-    router.push("/feed");
   };
 
   const handleReply = () => {
     if (!onReply) return;
+    if (!user) {
+      return toast.info("Sign in to interact with others");
+    }
     onReply(postId);
   };
 
-  const handleReact = (type: string) => {
-    console.log(type);
+  const handleReact = async (type: string) => {
+    if (!user) {
+      return toast.info("Sign in to interact with others");
+    }
+    if (Boolean(userReaction)) {
+      await deleteReaction(postId, user.userId);
+    } else {
+      await createReaction(postId, user.userId, type);
+    }
+    mutate("posts");
   };
 
-  const reaction = "unlike";
-
-  if (useFullPost && !fullPost && !fullPostErr) {
-    return <Box></Box>;
+  if (!posts && !postsErr) {
+    return <Box>Loading...</Box>;
   }
 
   return (
@@ -94,61 +125,50 @@ const PostCard = ({ post, onReply, depth = 0, expandable = false }: Props) => {
         <Link href={`/posts/${postId}`}>
           <Box>
             <PostCardHeader
-              author={author}
-              userIsOwner={user?.userId === authorId}
+              author={post?.author.name}
+              userIsOwner={user?.userId === post?.authorId}
               handleShowMenu={handleShowMenu}
               replyMode={Boolean(onReply)}
             />
             <PostCardBody
-              body={body}
-              replyAuthor={fullPost?.parentPost.author.name}
+              body={post?.body}
+              replyAuthor={post?.parentPost?.author.name}
             />
-            {onReply && (
-              <PostCardFooter
-                postDate={formattedDate}
-                onReply={handleReply}
-                onReact={handleReact}
-                reaction={reaction}
-              />
-            )}
+            <PostCardFooter
+              postDate={formattedDate}
+              onReply={handleReply}
+              onReact={handleReact}
+              userReaction={userReaction}
+              allReactions={post.reactions}
+              showActions={showActions}
+            />
           </Box>
         </Link>
       </StyledCard>
 
-      {subPosts?.length > 0 && expanded && (
-        <Button
-          sx={{
-            textTransform: "none",
-            mt: 1,
-            ml: 1,
-          }}
-          onClick={() => setExpanded(false)}
-        >
+      {post?.childPosts?.length > 0 && expanded && (
+        <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
           <Box>Hide replies</Box>
-          <ExpandLessIcon sx={{ mr: -0.5 }} />
         </Button>
       )}
 
       {expanded &&
-        subPosts.map((p: any) => (
+        post?.childPosts.map((p: any) => (
           <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
-            <PostCard post={p} onReply={onReply} expandable depth={depth + 1} />
+            <PostCard postId={p.postId} expandable depth={depth + 1} />
           </Box>
         ))}
 
-      {subPosts?.length > 0 && !expanded && expandable && depth <= 3 && (
-        <Button
-          sx={{ textTransform: "none", ml: 1, mt: 1 }}
-          onClick={() => setExpanded(true)}
-        >
-          View {subPosts?.length} {subPosts?.length > 1 ? "replies" : "reply"}
-          <ExpandMoreIcon sx={{ mr: -0.5 }} />
+      {showViewMore && (
+        <Button sx={styles.textBtn} onClick={() => setExpanded(true)}>
+          View {post?.childPosts?.length}{" "}
+          {post?.childPosts?.length > 1 ? "replies" : "reply"}
         </Button>
       )}
 
-      {subPosts?.length > 0 && depth > 3 && (
+      {showViewFullPost && (
         <Button
-          sx={{ textTransform: "none", ml: 1, mt: 1 }}
+          sx={styles.textBtn}
           onClick={() => router.push(`/posts/${postId}`)}
         >
           View more replies in full post
@@ -158,6 +178,14 @@ const PostCard = ({ post, onReply, depth = 0, expandable = false }: Props) => {
       <Menu anchorEl={anchorEl} open={showMenu} onClose={handleCloseMenu}>
         <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
       </Menu>
+      <PostDialog
+        open={postDialog.open}
+        setPostDialog={setPostDialog}
+        onClose={onCloseDialog}
+        parentPost={posts?.find(
+          (p: any) => p.postId === postDialog?.parentPostId
+        )}
+      />
     </>
   );
 };

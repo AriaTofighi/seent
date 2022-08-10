@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, ReactionType } from "@prisma/client";
 import { IsNotEmpty, IsString, IsUUID } from "class-validator";
 
 export class CreateReactionDto implements Prisma.ReactionCreateInput {
@@ -10,5 +10,5 @@ export class CreateReactionDto implements Prisma.ReactionCreateInput {
 
   @IsString()
   @IsNotEmpty()
-  type: string;
+  type: ReactionType;
 }

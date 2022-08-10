@@ -2,47 +2,39 @@ import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, Reaction } from "@prisma/client";
 import { GetReactionDto } from "./dto/get-reaction.dto";
+import { CreateReactionDto } from "./dto/create-reaction.dto";
 
 @Injectable()
 export class ReactionsService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(
-    reactionWhereUniqueInput: Prisma.ReactionWhereUniqueInput
-  ): Promise<Reaction | null> {
-    const reaction: Reaction = await this.prisma.reaction.findUnique({
-      where: reactionWhereUniqueInput,
+  async findMany(params: ReactionFindManyParams): Promise<Reaction[]> {
+    const { skip, take, cursor, where, orderBy } = params;
+    const reactions = this.prisma.reaction.findMany({
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
     });
-    return reaction;
-  }
-
-  async findMany(params: ReactionFindManyParams): Promise<GetReactionDto[]> {
-    const reactions = await this.prisma.reaction.findMany(params);
     return reactions;
   }
 
-  async create(data: Prisma.ReactionCreateInput): Promise<GetReactionDto> {
+  async create(data: Prisma.ReactionCreateInput): Promise<CreateReactionDto> {
     return await this.prisma.reaction.create({
       data,
     });
   }
 
-  async update(params: {
-    where: Prisma.ReactionWhereUniqueInput;
-    data: Prisma.ReactionUpdateInput;
-  }): Promise<GetReactionDto> {
-    const { where, data } = params;
-    return this.prisma.reaction.update({
-      data,
-      where,
-    });
-  }
-
-  async delete(
-    where: Prisma.ReactionWhereUniqueInput
-  ): Promise<GetReactionDto> {
+  async delete(where: Prisma.ReactionWhereUniqueInput): Promise<Reaction> {
+    console.log(where);
     return this.prisma.reaction.delete({
-      where,
+      where: {
+        postId_userId: {
+          userId: where.postId_userId.userId,
+          postId: where.postId_userId.postId,
+        },
+      },
     });
   }
 }

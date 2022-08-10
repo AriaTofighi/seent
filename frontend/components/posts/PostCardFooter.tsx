@@ -5,14 +5,28 @@ import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import { stopPropagation } from "../../utils/helpers";
 import { FavoriteOutlined } from "@mui/icons-material";
 
+const REACTION_TYPES = {
+  LIKE: "LIKE",
+  DISLIKE: "DISLIKE",
+};
+
 type Props = {
   postDate: string;
   onReply: () => void;
   onReact: (type: string) => void;
-  reaction: string;
+  userReaction: any;
+  allReactions: any[];
+  showActions: boolean;
 };
 
-const PostCardFooter = ({ reaction, postDate, onReply, onReact }: Props) => {
+const PostCardFooter = ({
+  allReactions,
+  userReaction,
+  postDate,
+  onReply,
+  onReact,
+  showActions,
+}: Props) => {
   return (
     <Stack
       direction="row"
@@ -23,25 +37,32 @@ const PostCardFooter = ({ reaction, postDate, onReply, onReact }: Props) => {
       <Box>
         <Typography variant="caption">{postDate}</Typography>
       </Box>
-      <Stack direction="row" gap={2} onClick={stopPropagation}>
-        <Tooltip title="Like">
-          <IconButton
-            sx={{ p: 0 }}
-            onClick={() => onReact(reaction !== "like" ? "like" : "unlike")}
-          >
-            {reaction === "like" ? (
-              <FavoriteOutlined fontSize="small" color="error" />
-            ) : (
-              <FavoriteBorderIcon color="action" fontSize="small" />
-            )}
-          </IconButton>
-        </Tooltip>
-        <Tooltip title="Reply">
-          <IconButton sx={{ p: 0 }} onClick={onReply}>
-            <ReplyIcon color="action" fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      </Stack>
+      {showActions && (
+        <Stack direction="row" gap={2} onClick={stopPropagation}>
+          <Box>
+            <Typography variant="caption" sx={{ mr: 1.5 }}>
+              {allReactions?.length > 0 && allReactions.length}
+            </Typography>
+            <Tooltip title="Like">
+              <IconButton
+                sx={{ p: 0 }}
+                onClick={() => onReact(REACTION_TYPES.LIKE)}
+              >
+                {userReaction?.type === REACTION_TYPES.LIKE ? (
+                  <FavoriteOutlined fontSize="small" color="error" />
+                ) : (
+                  <FavoriteBorderIcon color="action" fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Box>
+          <Tooltip title="Reply">
+            <IconButton sx={{ p: 0 }} onClick={onReply}>
+              <ReplyIcon color="action" fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      )}
     </Stack>
   );
 };

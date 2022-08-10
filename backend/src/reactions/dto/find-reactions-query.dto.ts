@@ -1,3 +1,4 @@
+import { ReactionType } from "@prisma/client";
 import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class FindReactionsQueryDto {
@@ -19,5 +20,5 @@ export class FindReactionsQueryDto {
 
   @IsString()
   @IsOptional()
-  type?: string;
+  type?: ReactionType;
 }

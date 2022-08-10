@@ -1,23 +1,15 @@
 import { Button, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import dynamic from "next/dynamic";
 import Head from "next/head";
 import { useRouter } from "next/router";
 import useSWR from "swr";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import PostCard from "../../components/posts/PostCard";
-import usePostDialog from "../../hooks/usePostDialog";
 import { NextPageWithLayout } from "../../types/types";
-
-const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
-  ssr: false,
-});
 
 const PostDetails: NextPageWithLayout = ({}: any) => {
   const { query } = useRouter();
   const router = useRouter();
-
-  const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
   const { data: post, error: postErr } = useSWR(
     query.id ? `posts/${query.id}` : null
@@ -59,11 +51,11 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
               sx={{ textTransform: "none" }}
               onClick={() => router.push(`/posts/${post.parentPostId}`)}
             >
-              View parent post
+              View original post
             </Button>
           )}
         </Stack>
-        <PostCard post={post} onReply={onReply} />
+        <PostCard postId={post?.postId} />
         {replies.length > 0 && (
           <Typography variant="h5" sx={{ my: 2 }}>
             Replies
@@ -73,19 +65,11 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
         {replies.map((r: any) => {
           return (
             <Box key={r.postId} sx={{ mb: 1 }}>
-              <PostCard post={r} onReply={onReply} expandable />
+              <PostCard postId={r.postId} expandable />
             </Box>
           );
         })}
       </Box>
-      <PostDialog
-        open={postDialog.open}
-        setPostDialog={setPostDialog}
-        onClose={onCloseDialog}
-        parentPost={posts?.find(
-          (p: any) => p.postId === postDialog?.parentPostId
-        )}
-      />
     </>
   );
 };

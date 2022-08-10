@@ -17,7 +17,6 @@ const styles: Styles = {
   posts: { display: "flex", flexDirection: "column", gap: 2 },
   createPostBtn: {
     position: "sticky",
-    right: 0,
     bottom: 0,
   },
   root: {
@@ -28,7 +27,7 @@ const styles: Styles = {
 
 const Feed: NextPageWithLayout = () => {
   const { data: posts } = useSWR("posts");
-  const { onReply, onNewPost, postDialog, setPostDialog, onCloseDialog } =
+  const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
 
   return (
@@ -45,13 +44,7 @@ const Feed: NextPageWithLayout = () => {
         <Box sx={styles.posts}>
           {posts?.map(({ postId, ...rest }: any) => {
             if (!{ ...rest }.parentPostId) {
-              return (
-                <PostCard
-                  post={{ postId, ...rest }}
-                  key={postId}
-                  onReply={onReply}
-                />
-              );
+              return <PostCard postId={postId} key={postId} />;
             }
           })}
         </Box>

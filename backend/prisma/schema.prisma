@@ -26,22 +26,43 @@ model User {
 }
 
 model Post {
-  postId       String   @id @default(uuid())
+  postId       String     @id @default(uuid())
   authorId     String
-  author       User?    @relation(fields: [authorId], references: [userId])
-  body         String   @db.VarChar(360)
+  author       User?      @relation(fields: [authorId], references: [userId])
+  body         String     @db.VarChar(360)
   isPublic     Boolean
   parentPostId String?
-  parentPost   Post?    @relation("PostToPost", fields: [parentPostId], references: [postId])
-  childPosts   Post[]   @relation("PostToPost")
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  parentPost   Post?      @relation("PostToPost", fields: [parentPostId], references: [postId])
+  childPosts   Post[]     @relation("PostToPost")
+  reactions    Reaction[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
 }
 
 model Reaction {
-  postId String @default(uuid())
-  userId String @default(uuid())
-  type   String
+  postId    String       @default(uuid())
+  userId    String       @default(uuid())
+  type      ReactionType
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  post      Post?        @relation(fields: [postId], references: [postId])
 
   @@id([postId, userId])
+}
+
+model Image {
+  imageId   String    @id @default(uuid())
+  type      ImageType
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+enum ReactionType {
+  LIKE
+  DISLIKE
+}
+
+enum ImageType {
+  USER_AVATAR
+  POST_IMG
 }

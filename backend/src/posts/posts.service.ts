@@ -37,6 +37,7 @@ export class PostsService {
                 name: true,
               },
             },
+            authorId: true,
           },
         },
       },
@@ -73,6 +74,24 @@ export class PostsService {
                 name: true,
               },
             },
+            authorId: true,
+          },
+        },
+        parentPost: {
+          select: {
+            author: {
+              select: {
+                name: true,
+              },
+            },
+            postId: true,
+          },
+        },
+        reactions: {
+          select: {
+            type: true,
+            userId: true,
+            postId: true,
           },
         },
       },

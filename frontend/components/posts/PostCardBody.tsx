@@ -15,7 +15,10 @@ const PostCardBody = ({ body, replyAuthor }: any) => {
         </Typography>
       )} */}
 
-      <Typography variant="body1" component="span">
+      <Typography
+        variant="body1"
+        sx={{ wordWrap: "break-word", whiteSpace: "normal" }}
+      >
         {body}
       </Typography>
     </Box>

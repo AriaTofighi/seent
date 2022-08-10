@@ -1,10 +1,9 @@
+import { DeleteReactionDto } from "./dto/delete-reaction-dto";
 import {
   Controller,
   Get,
   Post,
   Body,
-  Patch,
-  Param,
   Delete,
   Query,
   UseGuards,
@@ -13,8 +12,6 @@ import {
 } from "@nestjs/common";
 import { ReactionsService } from "./reactions.service";
 import { CreateReactionDto } from "./dto/create-reaction.dto";
-import { UpdateReactionDto } from "./dto/update-reaction.dto";
-import { exclude } from "utils/modelHelpers";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindReactionsQueryDto } from "./dto/find-reactions-query.dto";
 
@@ -38,36 +35,18 @@ export class ReactionsController {
     });
   }
 
-  // @Get(":id")
-  // async findOne(@Param("id") reactionId: string) {
-  //   const reaction = await this.reactionsService.findOne({ reactionId });
-  //   return reaction;
-  // }
+  @UseGuards(JwtAuthGuard)
+  @Delete()
+  remove(@Body() deleteReactionDto: DeleteReactionDto, @Req() req: any) {
+    if (req.user.userId !== deleteReactionDto.userId) {
+      throw new UnauthorizedException();
+    }
 
-  // @UseGuards(JwtAuthGuard)
-  // @Patch(":id")
-  // update(
-  //   @Param("id") reactionId: string,
-  //   @Body() updateReactionDto: UpdateReactionDto,
-  //   @Req() req
-  // ) {
-  //   if (req.reaction.reactionId !== reactionId) {
-  //     throw new UnauthorizedException();
-  //   }
-
-  //   return this.reactionsService.update({
-  //     where: { reactionId },
-  //     data: updateReactionDto,
-  //   });
-  // }
-
-  // @UseGuards(JwtAuthGuard)
-  // @Delete(":id")
-  // remove(@Param("id") reactionId: string, @Req() req) {
-  //   if (req.reaction.reactionId !== reactionId) {
-  //     throw new UnauthorizedException();
-  //   }
-
-  //   return this.reactionsService.delete({ reactionId });
-  // }
+    return this.reactionsService.delete({
+      postId_userId: {
+        userId: deleteReactionDto.userId,
+        postId: deleteReactionDto.postId,
+      },
+    });
+  }
 }
