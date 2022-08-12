@@ -1,22 +1,15 @@
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, Reaction } from "@prisma/client";
-import { GetReactionDto } from "./dto/get-reaction.dto";
 import { CreateReactionDto } from "./dto/create-reaction.dto";
+import { ReactionFindManyParams } from "./reactions.types";
 
 @Injectable()
 export class ReactionsService {
   constructor(private prisma: PrismaService) {}
 
   async findMany(params: ReactionFindManyParams): Promise<Reaction[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    const reactions = this.prisma.reaction.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-    });
+    const reactions = this.prisma.reaction.findMany(params);
     return reactions;
   }
 
@@ -27,7 +20,6 @@ export class ReactionsService {
   }
 
   async delete(where: Prisma.ReactionWhereUniqueInput): Promise<Reaction> {
-    console.log(where);
     return this.prisma.reaction.delete({
       where: {
         postId_userId: {
@@ -38,11 +30,3 @@ export class ReactionsService {
     });
   }
 }
-
-export type ReactionFindManyParams = {
-  skip?: number;
-  take?: number;
-  cursor?: Prisma.ReactionWhereUniqueInput;
-  where?: Prisma.ReactionWhereInput;
-  orderBy?: Prisma.ReactionOrderByWithRelationInput;
-};

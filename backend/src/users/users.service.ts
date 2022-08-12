@@ -2,7 +2,6 @@ import { GetUserDto } from "./dto/get-user.dto";
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, User } from "@prisma/client";
-import { exclude } from "utils/modelHelpers";
 
 @Injectable()
 export class UsersService {

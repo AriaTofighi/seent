@@ -19,6 +19,8 @@ model User {
   location  String?
   bio       String?
   gender    String?
+  avatarId  String?
+  avatar    Image?   @relation(fields: [avatarId], references: [imageId])
   locked    Boolean  @default(false)
   posts     Post[]
   createdAt DateTime @default(now())
@@ -43,18 +45,29 @@ model Reaction {
   postId    String       @default(uuid())
   userId    String       @default(uuid())
   type      ReactionType
+  post      Post?        @relation(fields: [postId], references: [postId])
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
-  post      Post?        @relation(fields: [postId], references: [postId])
 
   @@id([postId, userId])
 }
 
 model Image {
   imageId   String    @id @default(uuid())
+  url       String
   type      ImageType
+  User      User[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model PostImage {
+  postId    String   @default(uuid())
+  imageId   String   @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([postId, imageId])
 }
 
 enum ReactionType {

@@ -1,6 +1,7 @@
 import { User } from "@prisma/client";
 
 export class GetUserDto implements User {
+  avatarId: string;
   email: string;
   birthday: Date;
   location: string;

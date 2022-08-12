@@ -16,7 +16,7 @@ import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { exclude } from "utils/modelHelpers";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { UserFindManyQuery } from "./types/user.types";
+import { FindUsersQueryDto } from "./dto/find-users-query.dto";
 
 @Controller("/api/users")
 export class UsersController {
@@ -28,7 +28,7 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@Query() query: UserFindManyQuery) {
+  findAll(@Query() query: FindUsersQueryDto) {
     const { skip, take, userId, email, name } = query;
     return this.usersService.findMany({
       skip,
