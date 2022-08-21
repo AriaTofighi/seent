@@ -11,20 +11,20 @@ datasource db {
 }
 
 model User {
-  userId    String   @id @default(uuid())
-  email     String   @unique
+  userId    String     @id @default(uuid())
+  email     String     @unique
   name      String
   password  String
   birthday  DateTime
   location  String?
   bio       String?
   gender    String?
-  avatarId  String?
-  avatar    Image?   @relation(fields: [avatarId], references: [imageId])
-  locked    Boolean  @default(false)
+  locked    Boolean    @default(false)
+  role      Role       @default(USER)
   posts     Post[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  reactions Reaction[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model Post {
@@ -42,32 +42,30 @@ model Post {
 }
 
 model Reaction {
-  postId    String       @default(uuid())
-  userId    String       @default(uuid())
-  type      ReactionType
-  post      Post?        @relation(fields: [postId], references: [postId])
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  reactionId String       @id @default(uuid())
+  postId     String
+  userId     String
+  type       ReactionType
+  post       Post?        @relation(fields: [postId], references: [postId])
+  user       User?        @relation(fields: [userId], references: [userId])
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 
-  @@id([postId, userId])
+  @@unique([postId, userId])
 }
 
 model Image {
   imageId   String    @id @default(uuid())
-  url       String
+  url       String    @unique
   type      ImageType
-  User      User[]
+  entityId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
 
-model PostImage {
-  postId    String   @default(uuid())
-  imageId   String   @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@id([postId, imageId])
+enum Role {
+  USER
+  ADMIN
 }
 
 enum ReactionType {
@@ -77,5 +75,6 @@ enum ReactionType {
 
 enum ImageType {
   USER_AVATAR
-  POST_IMG
+  USER_BANNER
+  POST
 }

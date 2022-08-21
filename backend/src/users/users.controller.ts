@@ -10,43 +10,48 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  ClassSerializerInterceptor,
+  UseInterceptors,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import { exclude } from "utils/modelHelpers";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindUsersQueryDto } from "./dto/find-users-query.dto";
+import { UserEntity } from "./entities/user.entity";
 
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller("/api/users")
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() user: CreateUserDto) {
+  async create(@Body() user: CreateUserDto) {
     return this.usersService.create(user);
   }
 
   @Get()
-  findAll(@Query() query: FindUsersQueryDto) {
+  async findMany(@Query() query: FindUsersQueryDto) {
     const { skip, take, userId, email, name } = query;
-    return this.usersService.findMany({
+    const users = await this.usersService.findMany({
       skip,
       take,
       where: { userId, email, name },
     });
+
+    return users.map((u) => new UserEntity(u));
   }
 
   @Get(":id")
   async findOne(@Param("id") userId: string) {
     const user = await this.usersService.findOne({ userId });
-    const userWithoutPassword = exclude(user, "password");
-    return userWithoutPassword;
+    const userEntity = new UserEntity(user);
+    return userEntity;
   }
 
   @UseGuards(JwtAuthGuard)
   @Patch(":id")
-  update(
+  async update(
     @Param("id") userId: string,
     @Body() updateUserDto: UpdateUserDto,
     @Req() req
@@ -63,7 +68,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  remove(@Param("id") userId: string, @Req() req) {
+  async remove(@Param("id") userId: string, @Req() req) {
     if (req.user.userId !== userId) {
       throw new UnauthorizedException();
     }

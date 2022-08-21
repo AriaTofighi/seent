@@ -1,20 +1,7 @@
-import {
-  IsEmail,
-  IsNumber,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsEmail, IsOptional, IsString, IsUUID } from "class-validator";
+import { FindManyQuery } from "src/types";
 
-export class FindUsersQueryDto {
-  @IsNumber()
-  @IsOptional()
-  skip?: number;
-
-  @IsNumber()
-  @IsOptional()
-  take?: number;
-
+export class FindUsersQueryDto extends FindManyQuery {
   @IsEmail()
   @IsOptional()
   email?: string;

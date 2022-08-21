@@ -37,16 +37,17 @@ export class ReactionsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete()
-  remove(@Body() deleteReactionDto: DeleteReactionDto, @Req() req: any) {
-    if (req.user.userId !== deleteReactionDto.userId) {
+  async remove(@Body() deleteReactionDto: DeleteReactionDto, @Req() req: any) {
+    const reaction = await this.reactionsService.findOne({
+      reactionId: deleteReactionDto.reactionId,
+    });
+
+    if (req.user.userId !== reaction.userId) {
       throw new UnauthorizedException();
     }
 
     return this.reactionsService.delete({
-      postId_userId: {
-        userId: deleteReactionDto.userId,
-        postId: deleteReactionDto.postId,
-      },
+      reactionId: deleteReactionDto.reactionId,
     });
   }
 }

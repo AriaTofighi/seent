@@ -26,7 +26,7 @@ export class PostsController {
   }
 
   @Get()
-  async findAll(@Query() query: FindPostsQueryDto) {
+  async findMany(@Query() query: FindPostsQueryDto) {
     const { skip, take, postId, parentPostId } = query;
     const posts = await this.postsService.findMany({
       skip,

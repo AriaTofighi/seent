@@ -1,14 +1,11 @@
 import { ReactionType } from "@prisma/client";
-import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
+import { FindManyQuery } from "src/types";
 
-export class FindReactionsQueryDto {
-  @IsNumber()
+export class FindReactionsQueryDto extends FindManyQuery {
+  @IsUUID()
   @IsOptional()
-  skip?: number;
-
-  @IsNumber()
-  @IsOptional()
-  take?: number;
+  reactionId?: string;
 
   @IsUUID()
   @IsOptional()

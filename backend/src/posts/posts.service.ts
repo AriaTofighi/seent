@@ -1,4 +1,4 @@
-import { PrismaService } from "./../prisma.service";
+import { PrismaService } from "../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, Post } from "@prisma/client";
 
@@ -6,9 +6,7 @@ import { Prisma, Post } from "@prisma/client";
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(
-    postWhereUniqueInput: Prisma.PostWhereUniqueInput
-  ): Promise<any | null> {
+  async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
     return this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: {

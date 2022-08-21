@@ -1,14 +1,7 @@
-import { IsNumber, IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsUUID } from "class-validator";
+import { FindManyQuery } from "src/types";
 
-export class FindPostsQueryDto {
-  @IsNumber()
-  @IsOptional()
-  skip?: number;
-
-  @IsNumber()
-  @IsOptional()
-  take?: number;
-
+export class FindPostsQueryDto extends FindManyQuery {
   @IsUUID()
   @IsOptional()
   postId?: string;

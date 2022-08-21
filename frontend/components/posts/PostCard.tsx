@@ -146,7 +146,7 @@ const PostCard = ({
         </Link>
       </StyledCard>
 
-      {post?.childPosts?.length > 0 && expanded && (
+      {!showViewMore && (
         <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
           <Box>Hide replies</Box>
         </Button>
