@@ -1,13 +1,18 @@
+import { ImagesService } from "src/images/images.service";
 import { PrismaService } from "../prisma.service";
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Prisma, Post } from "@prisma/client";
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    @Inject(forwardRef(() => ImagesService))
+    private imagesService: ImagesService
+  ) {}
 
   async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
-    return this.prisma.post.findUnique({
+    const post = await this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: {
         author: {
@@ -40,6 +45,11 @@ export class PostsService {
         },
       },
     });
+    const images = await this.imagesService.findMany({});
+    const image = images.find((i) => i.entityId === post.postId) ?? null;
+    const postWithImages = { ...post, image: image };
+
+    return postWithImages;
   }
 
   async findMany(params: {
@@ -50,7 +60,7 @@ export class PostsService {
     orderBy?: Prisma.PostOrderByWithRelationInput;
   }): Promise<Post[]> {
     const { skip, take, cursor, where, orderBy } = params;
-    return this.prisma.post.findMany({
+    const posts = await this.prisma.post.findMany({
       skip,
       take,
       cursor,
@@ -90,10 +100,19 @@ export class PostsService {
             type: true,
             userId: true,
             postId: true,
+            reactionId: true,
           },
         },
       },
     });
+
+    const images = await this.imagesService.findMany({});
+    const postsWithImages = posts.map((p) => {
+      const image = images.find((i) => i.entityId === p.postId) ?? null;
+      return { ...p, image: image };
+    });
+
+    return postsWithImages;
   }
 
   async create(data: Prisma.PostCreateInput): Promise<Post> {

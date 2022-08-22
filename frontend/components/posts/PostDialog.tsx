@@ -14,6 +14,7 @@ import React, {
   MouseEvent,
   SetStateAction,
   useEffect,
+  useRef,
   useState,
 } from "react";
 import { useForm } from "react-hook-form";
@@ -31,6 +32,8 @@ import PostCardHeader from "./PostCardHeader";
 import PostCardBody from "./PostCardBody";
 import PostCard from "./PostCard";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
+import { fileToBase64 } from "../../utils/helpers";
+import Image from "next/image";
 
 type PostDialog = {
   open: boolean;
@@ -50,8 +53,14 @@ const styles: Styles = {
   },
 };
 
+type DefaultValueType = {
+  body: string;
+  images: File | undefined;
+};
+
 const defaultValues = {
   body: "",
+  images: undefined,
 };
 
 const PRIVACY_MODES = {
@@ -60,13 +69,16 @@ const PRIVACY_MODES = {
 };
 
 const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
-  const { control, reset, handleSubmit, setValue, getValues } = useForm({
-    defaultValues,
-  });
+  const { control, reset, handleSubmit, setValue, getValues, watch } =
+    useForm<DefaultValueType>({
+      defaultValues,
+    });
+  const [chosenImages, setChosenImages] = useState<any>();
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { user } = useUser();
   const { mutate } = useSWRConfig();
+  const fileInputRef = useRef<any>();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
     const body = getValues("body");
@@ -74,11 +86,34 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
   };
 
   const handleSubmitPost = async (formValues: any) => {
-    const { body } = formValues;
-    await createPost(user.userId, privacyMode, body, parentPost?.postId);
+    const { body, images } = formValues;
+    const formData = new FormData();
+    formData.append("images", images);
+    formData.append("body", body);
+    formData.append("authorId", user.userId);
+    formData.append("isPublic", "true");
+    if (parentPost) {
+      formData.append("parentPostId", parentPost.postId);
+    }
+    await createPost(formData);
     mutate("posts");
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
+  };
+
+  const handleBrowse = () => {
+    // Reseting the file input to allow the user to pick the same file twice in a row.
+    fileInputRef.current.value = null;
+    fileInputRef.current.click();
+  };
+
+  const handleSelectedPic = async (e: any) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setValue("images", file);
+    const srcFile = await fileToBase64(file);
+    setChosenImages(srcFile);
   };
 
   return (
@@ -124,7 +159,7 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
                   </IconButton>
                 </Tooltip>
                 <Tooltip title="Media">
-                  <IconButton>
+                  <IconButton onClick={handleBrowse}>
                     <ImageIcon />
                   </IconButton>
                 </Tooltip>
@@ -145,9 +180,35 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
                 }}
               />
             )}
+            {chosenImages && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  flexWrap: "wrap",
+                  gap: 1,
+                  my: 2,
+                }}
+              >
+                <Image
+                  src={chosenImages}
+                  width="250"
+                  height="200"
+                  alt="Post"
+                  layout="fixed"
+                />
+              </Box>
+            )}
             <Button variant="contained" type="submit" fullWidth>
               Post
             </Button>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleSelectedPic}
+              style={{ display: "none" }}
+              ref={fileInputRef}
+            />
           </form>
         </Box>
       </DialogContent>

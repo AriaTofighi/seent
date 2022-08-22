@@ -9,6 +9,7 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  Param,
 } from "@nestjs/common";
 import { ReactionsService } from "./reactions.service";
 import { CreateReactionDto } from "./dto/create-reaction.dto";
@@ -36,10 +37,12 @@ export class ReactionsController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Delete()
-  async remove(@Body() deleteReactionDto: DeleteReactionDto, @Req() req: any) {
+  @Delete(":id")
+  async remove(@Param("id") reactionId: string, @Req() req: any) {
+    console.log(reactionId);
+
     const reaction = await this.reactionsService.findOne({
-      reactionId: deleteReactionDto.reactionId,
+      reactionId,
     });
 
     if (req.user.userId !== reaction.userId) {
@@ -47,7 +50,7 @@ export class ReactionsController {
     }
 
     return this.reactionsService.delete({
-      reactionId: deleteReactionDto.reactionId,
+      reactionId,
     });
   }
 }

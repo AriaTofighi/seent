@@ -1,19 +1,9 @@
 import { DEFAULT_API as axios } from "./AxiosInstance";
 import { toast } from "react-toastify";
 
-export const createPost = async (
-  authorId: string,
-  isPublic: boolean,
-  body: string,
-  parentPostId?: string
-) => {
+export const createPost = async (formData: FormData) => {
   try {
-    const response = await axios.post("posts", {
-      authorId,
-      isPublic,
-      body,
-      parentPostId,
-    });
+    const response = await axios.post("posts", formData);
     toast.success("Created post successfully");
     return response.data;
   } catch (error) {

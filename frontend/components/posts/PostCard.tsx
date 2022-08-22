@@ -19,6 +19,8 @@ import {
   deleteReaction,
 } from "../../services/api/reactionAxios";
 import { toast } from "react-toastify";
+import { PostEntity } from "../../../backend/src/types";
+import Image from "next/image";
 
 const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
@@ -59,9 +61,7 @@ const PostCard = ({
 }: Props) => {
   const { data: posts, error: postsErr } = useSWR(`posts`);
   const { mutate } = useSWRConfig();
-
   const post = posts?.find((p: any) => p.postId === postId);
-
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -108,7 +108,7 @@ const PostCard = ({
       return toast.info("Sign in to interact with others");
     }
     if (Boolean(userReaction)) {
-      await deleteReaction(postId, user.userId);
+      await deleteReaction(userReaction.reactionId);
     } else {
       await createReaction(postId, user.userId, type);
     }
@@ -132,6 +132,7 @@ const PostCard = ({
             />
             <PostCardBody
               body={post?.body}
+              image={post?.image}
               replyAuthor={post?.parentPost?.author.name}
             />
             <PostCardFooter
@@ -146,7 +147,7 @@ const PostCard = ({
         </Link>
       </StyledCard>
 
-      {!showViewMore && (
+      {post?.childPosts?.length > 0 && expanded && (
         <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
           <Box>Hide replies</Box>
         </Button>

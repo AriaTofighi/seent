@@ -13,3 +13,11 @@ export const stopPropagation = (e: MouseEvent) => {
   e.stopPropagation();
   e.nativeEvent.stopImmediatePropagation();
 };
+
+export const fileToBase64 = (file: File) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });

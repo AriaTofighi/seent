@@ -10,19 +10,40 @@ import {
   Delete,
   Query,
   UseGuards,
+  UseInterceptors,
+  UploadedFiles,
 } from "@nestjs/common";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { FileUploadService } from "src/file-upload/file-upload.service";
+import { ImagesService } from "src/images/images.service";
+import { ImageType } from "@prisma/client";
 
 @Controller("api/posts")
 export class PostsController {
-  constructor(private readonly postsService: PostsService) {}
+  constructor(
+    private readonly postsService: PostsService,
+    private readonly fileUploadService: FileUploadService,
+    private readonly imagesService: ImagesService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  create(@Body() post: CreatePostDto) {
-    return this.postsService.create(post);
+  async create(@UploadedFiles() images, @Body() post: CreatePostDto) {
+    // TODO: support multiple images being uploaded from the frontend, currently can only upload one
+    const uploadedImage: any = await this.fileUploadService.upload(images[0]);
+    const newPost = await this.postsService.create(post);
+    const image = {
+      entityId: newPost.postId,
+      type: ImageType.POST,
+      url: uploadedImage.Location,
+    };
+    await this.imagesService.create(image);
+
+    return newPost;
   }
 
   @Get()

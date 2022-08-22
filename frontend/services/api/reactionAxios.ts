@@ -18,14 +18,9 @@ export const createReaction = async (
   }
 };
 
-export const deleteReaction = async (postId: string, userId: string) => {
+export const deleteReaction = async (reactionId: string) => {
   try {
-    const response = await axios.delete(`reactions`, {
-      data: {
-        postId,
-        userId,
-      },
-    });
+    const response = await axios.delete(`reactions/${reactionId}`);
     return response.data;
   } catch (error) {
     console.log(error);

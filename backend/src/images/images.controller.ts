@@ -13,17 +13,10 @@ import {
 } from "@nestjs/common";
 import { CreateImageDto } from "./dto/create-image.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { ImageType } from "@prisma/client";
-import { PostsService } from "src/posts/posts.service";
-import { UsersService } from "src/users/users.service";
 
 @Controller("api/images")
 export class ImagesController {
-  constructor(
-    private readonly imagesService: ImagesService,
-    private readonly postsService: PostsService,
-    private readonly usersService: UsersService
-  ) {}
+  constructor(private readonly imagesService: ImagesService) {}
 
   @UseGuards(JwtAuthGuard)
   create(@Body() image: CreateImageDto) {
@@ -51,20 +44,7 @@ export class ImagesController {
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async remove(@Param("id") imageId: string, @Req() req) {
-    const image = await this.imagesService.findOne({ imageId });
-    const { entityId } = image;
-
-    let userId;
-    if (
-      image.type === ImageType.USER_AVATAR ||
-      image.type === ImageType.USER_BANNER
-    ) {
-      const user = await this.usersService.findOne({ userId: entityId });
-      userId = user.userId;
-    } else if (image.type === ImageType.POST) {
-      const post = await this.postsService.findOne({ postId: entityId });
-      userId = post.authorId;
-    }
+    const userId = this.imagesService.getRelatedEntityUserId(imageId);
 
     if (req.user.userId !== userId) {
       throw new UnauthorizedException();

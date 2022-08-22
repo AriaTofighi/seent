@@ -13,7 +13,6 @@ const Profile: NextPageWithLayout = () => {
     const file = event?.target?.files[0];
     const convertedFile = await convertToBase64(file);
     const imageURL = await uploadUserImage(convertedFile, user.userId);
-    console.log(imageURL);
   };
 
   const convertToBase64 = (file: File) => {

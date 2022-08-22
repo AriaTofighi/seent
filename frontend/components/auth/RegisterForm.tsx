@@ -29,7 +29,6 @@ const RegisterForm = ({ onClose }: Props) => {
   const handleSignUp = async (formData: any) => {
     const { name, email, birthday, password, confirmPassword } = formData;
     const res = await signUp(name, email, password, birthday);
-    console.log(res);
     if (!res) {
       toast.error("Not authorized");
     } else {
