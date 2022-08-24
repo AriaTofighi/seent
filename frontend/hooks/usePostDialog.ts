@@ -5,7 +5,7 @@ export type PostDialogState = {
   parentPostId?: string;
 };
 
-export const DEFAULT_POST_DIALOG_STATE = {
+export const DEFAULT_POST_DIALOG_STATE: PostDialogState = {
   open: false,
   parentPostId: undefined,
 };

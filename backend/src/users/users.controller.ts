@@ -1,3 +1,5 @@
+import { ImageType } from "@prisma/client";
+import { ImagesService } from "./../images/images.service";
 import {
   Controller,
   Get,
@@ -12,6 +14,8 @@ import {
   UnauthorizedException,
   ClassSerializerInterceptor,
   UseInterceptors,
+  forwardRef,
+  Inject,
 } from "@nestjs/common";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
@@ -23,7 +27,11 @@ import { UserEntity } from "./entities/user.entity";
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller("/api/users")
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    @Inject(forwardRef(() => ImagesService))
+    private readonly imagesService: ImagesService
+  ) {}
 
   @Post()
   async create(@Body() user: CreateUserDto) {
@@ -45,7 +53,14 @@ export class UsersController {
   @Get(":id")
   async findOne(@Param("id") userId: string) {
     const user = await this.usersService.findOne({ userId });
-    const userEntity = new UserEntity(user);
+    const images = await this.imagesService.findMany({
+      where: { entityId: user.userId, type: ImageType.USER_AVATAR },
+    });
+    if (images.length > 1) {
+      return new UserEntity(user);
+    }
+    const userWithAvatar = { ...user, image: images[0] };
+    const userEntity = new UserEntity(userWithAvatar);
     return userEntity;
   }
 

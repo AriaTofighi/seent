@@ -1,7 +1,7 @@
-import { Box, Container } from "@mui/material";
+import { Box } from "@mui/material";
 import TopAppBar from "../navigation/TopAppBar";
 import SideBar from "../navigation/SideBar";
-import { styled, useTheme } from "@mui/system";
+import { useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Styles } from "../../types/types";
 import { ReactElement, useState } from "react";
@@ -11,13 +11,14 @@ const styles: Styles = {
     display: "flex",
     maxWidth: 900,
     margin: "auto",
+    justifyContent: "center",
   },
   mainContent: {
     maxWidth: 600,
     width: 600,
     borderRight: "1px solid",
     borderLeft: "1px solid",
-    borderColor: "primary.light",
+    borderColor: "secondary.dark",
     minHeight: "100vh",
   },
 };

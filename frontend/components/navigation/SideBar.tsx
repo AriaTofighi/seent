@@ -37,7 +37,7 @@ const styles: Styles = {
 
 const SideBar = ({ open, setOpen }: Props) => {
   const theme = useTheme();
-  const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
+  const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
   const { user, logout } = useUser();
   const [showLogin, setShowLogin] = useState(false);
   const router = useRouter();

@@ -2,21 +2,13 @@ import {
   Button,
   Dialog,
   DialogContent,
-  Divider,
   IconButton,
   Stack,
   Tooltip,
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import React, {
-  Dispatch,
-  MouseEvent,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import React, { MouseEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Styles } from "../../types/types";
 import TextInput from "../controls/TextInput";
@@ -28,8 +20,6 @@ import { createPost } from "../../services/api/postAxios";
 import { useSWRConfig } from "swr";
 import EmojiPicker from "emoji-picker-react";
 import CloseIcon from "@mui/icons-material/Close";
-import PostCardHeader from "./PostCardHeader";
-import PostCardBody from "./PostCardBody";
 import PostCard from "./PostCard";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { fileToBase64 } from "../../utils/helpers";
@@ -38,6 +28,10 @@ import Image from "next/image";
 type PostDialog = {
   open: boolean;
   parentPostId?: undefined;
+};
+
+type KeyValuePair = {
+  [property: string]: string;
 };
 
 type Props = {
@@ -50,6 +44,18 @@ type Props = {
 const styles: Styles = {
   root: {
     mt: -1,
+  },
+  images: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 1,
+    my: 2,
+  },
+  emojiPicker: {
+    width: "100%",
+    marginBottom: "20px",
+    boxShadow: "none",
   },
 };
 
@@ -118,14 +124,19 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"sm"}>
-      <DialogContent>
+      <DialogContent sx={{ p: 2 }}>
         <Box sx={styles.root}>
           <Stack
             direction="row"
             justifyContent="flex-end"
             alignItems="flex-start"
           >
-            <IconButton onClick={onClose} size="small" edge="start">
+            <IconButton
+              onClick={onClose}
+              size="small"
+              edge="start"
+              sx={{ p: 0.5 }}
+            >
               <CloseIcon />
             </IconButton>
           </Stack>
@@ -173,23 +184,11 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
             {showEmojiPicker && (
               <EmojiPicker
                 onEmojiClick={onEmojiClick}
-                pickerStyle={{
-                  width: "100%",
-                  marginBottom: "20px",
-                  boxShadow: "none",
-                }}
+                pickerStyle={styles.emojiPicker as KeyValuePair}
               />
             )}
             {chosenImages && (
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  gap: 1,
-                  my: 2,
-                }}
-              >
+              <Box sx={styles.images}>
                 <Image
                   src={chosenImages}
                   width="250"

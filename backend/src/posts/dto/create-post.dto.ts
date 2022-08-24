@@ -1,11 +1,5 @@
 import { Prisma } from "@prisma/client";
-import {
-  IsBoolean,
-  IsDefined,
-  IsOptional,
-  IsString,
-  IsUUID,
-} from "class-validator";
+import { IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class CreatePostDto implements Prisma.PostCreateInput {
   @IsUUID()
@@ -21,5 +15,6 @@ export class CreatePostDto implements Prisma.PostCreateInput {
   @IsOptional()
   parentPostId?: string;
 
+  @IsOptional()
   images: any;
 }

@@ -5,6 +5,7 @@ const swrConfig = {
     const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/${url}`);
     return res.data;
   },
+  revalidateOnFocus: false,
 };
 
 export default swrConfig;

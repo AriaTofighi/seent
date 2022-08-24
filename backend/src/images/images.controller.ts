@@ -10,17 +10,35 @@ import {
   UseGuards,
   Req,
   UnauthorizedException,
+  UploadedFile,
+  UseInterceptors,
+  Post,
 } from "@nestjs/common";
 import { CreateImageDto } from "./dto/create-image.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { FileUploadService } from "src/file-upload/file-upload.service";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { ImageType } from "@prisma/client";
 
 @Controller("api/images")
 export class ImagesController {
-  constructor(private readonly imagesService: ImagesService) {}
+  constructor(
+    private readonly imagesService: ImagesService,
+    private readonly fileUploadService: FileUploadService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
-  create(@Body() image: CreateImageDto) {
-    return this.imagesService.create(image);
+  @UseInterceptors(FileInterceptor("image"))
+  @Post()
+  async create(@UploadedFile() imageFile, @Body() image: CreateImageDto) {
+    console.log(imageFile);
+    const uploadedImage: any = await this.fileUploadService.upload(imageFile);
+    const newImage = {
+      entityId: image.entityId,
+      type: image.type,
+      url: uploadedImage.Location,
+    };
+    return await this.imagesService.create(newImage);
   }
 
   @Get(":id")

@@ -23,6 +23,8 @@ model User {
   role      Role       @default(USER)
   posts     Post[]
   reactions Reaction[]
+  rooms     RoomUser[]
+  messages  Message[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -46,8 +48,8 @@ model Reaction {
   postId     String
   userId     String
   type       ReactionType
-  post       Post?        @relation(fields: [postId], references: [postId])
-  user       User?        @relation(fields: [userId], references: [userId])
+  post       Post?        @relation(fields: [postId], references: [postId], onDelete: Cascade)
+  user       User?        @relation(fields: [userId], references: [userId], onDelete: Cascade)
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
 
@@ -61,6 +63,37 @@ model Image {
   entityId  String
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
+}
+
+model Room {
+  roomId    String     @id @default(uuid())
+  messages  Message[]
+  users     RoomUser[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+model RoomUser {
+  roomUserId String   @id @default(uuid())
+  roomId     String
+  userId     String
+  room       Room?    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+  user       User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([roomId, userId])
+}
+
+model Message {
+  messageId String   @id @default(uuid())
+  content   String   @db.VarChar(360)
+  roomId    String
+  userId    String
+  room      Room?    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {

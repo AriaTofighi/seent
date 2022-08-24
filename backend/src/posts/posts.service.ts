@@ -2,6 +2,8 @@ import { ImagesService } from "src/images/images.service";
 import { PrismaService } from "../prisma.service";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Prisma, Post } from "@prisma/client";
+import { PostFindManyParams } from "./posts.types";
+import { createPaginator } from "prisma-pagination";
 
 @Injectable()
 export class PostsService {
@@ -52,67 +54,63 @@ export class PostsService {
     return postWithImages;
   }
 
-  async findMany(params: {
-    skip?: number;
-    take?: number;
-    cursor?: Prisma.PostWhereUniqueInput;
-    where?: Prisma.PostWhereInput;
-    orderBy?: Prisma.PostOrderByWithRelationInput;
-  }): Promise<Post[]> {
-    const { skip, take, cursor, where, orderBy } = params;
-    const posts = await this.prisma.post.findMany({
-      skip,
-      take,
-      cursor,
-      where,
-      orderBy,
-      include: {
-        author: {
-          select: {
-            name: true,
-          },
-        },
-        childPosts: {
-          select: {
-            body: true,
-            createdAt: true,
-            postId: true,
-            author: {
-              select: {
-                name: true,
-              },
+  async findMany(params: PostFindManyParams) {
+    const { where, orderBy, page, perPage } = params;
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<Post, Prisma.PostFindManyArgs>(
+      this.prisma.post,
+      {
+        where,
+        orderBy,
+        include: {
+          author: {
+            select: {
+              name: true,
             },
-            authorId: true,
           },
-        },
-        parentPost: {
-          select: {
-            author: {
-              select: {
-                name: true,
+          childPosts: {
+            select: {
+              body: true,
+              createdAt: true,
+              postId: true,
+              author: {
+                select: {
+                  name: true,
+                },
               },
+              authorId: true,
             },
-            postId: true,
           },
-        },
-        reactions: {
-          select: {
-            type: true,
-            userId: true,
-            postId: true,
-            reactionId: true,
+          parentPost: {
+            select: {
+              author: {
+                select: {
+                  name: true,
+                },
+              },
+              postId: true,
+            },
+          },
+          reactions: {
+            select: {
+              type: true,
+              userId: true,
+              postId: true,
+              reactionId: true,
+            },
           },
         },
       },
-    });
+      { page: page }
+    );
 
     const images = await this.imagesService.findMany({});
-    const postsWithImages = posts.map((p) => {
+    const postsWithImages = result.data.map((p) => {
       const image = images.find((i) => i.entityId === p.postId) ?? null;
       return { ...p, image: image };
     });
 
-    return postsWithImages;
+    return { ...result, data: postsWithImages };
   }
 
   async create(data: Prisma.PostCreateInput): Promise<Post> {

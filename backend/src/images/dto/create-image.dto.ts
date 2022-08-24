@@ -1,10 +1,12 @@
-import { ImageType, Prisma } from "@prisma/client";
+import { ImageType } from "@prisma/client";
+import { IsNotEmpty, IsUUID } from "class-validator";
 
-export class CreateImageDto implements Prisma.ImageCreateInput {
-  imageId?: string;
-  url: string;
+export class CreateImageDto {
+  @IsNotEmpty()
   type: ImageType;
+
+  @IsUUID()
   entityId: string;
-  createdAt?: string | Date;
-  updatedAt?: string | Date;
+
+  image: any;
 }

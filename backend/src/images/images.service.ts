@@ -49,10 +49,6 @@ export class ImagesService {
     });
   }
 
-  async uploadToS3(url: string) {
-    return "uploadedURL";
-  }
-
   async getRelatedEntityUserId(imageId: string) {
     const image = await this.findOne({ imageId });
     const { entityId } = image;

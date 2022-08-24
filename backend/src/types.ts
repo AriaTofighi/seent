@@ -8,9 +8,9 @@ export { UserEntity, ReactionEntity, PostEntity };
 export class FindManyQuery {
   @IsNumber()
   @IsOptional()
-  skip?: number;
+  page?: number;
 
   @IsNumber()
   @IsOptional()
-  take?: number;
+  perPage?: number;
 }

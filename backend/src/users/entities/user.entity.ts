@@ -1,3 +1,4 @@
+import { ImageEntity } from "./../../images/entities/image.entity";
 import { Role, User } from "@prisma/client";
 import { Exclude } from "class-transformer";
 
@@ -17,6 +18,8 @@ export class UserEntity implements User {
   role: Role;
   createdAt: Date;
   updatedAt: Date;
+
+  image: ImageEntity;
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

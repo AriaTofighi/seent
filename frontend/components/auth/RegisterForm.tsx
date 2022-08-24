@@ -70,7 +70,7 @@ const RegisterForm = ({ onClose }: Props) => {
           <TextInput
             name="password"
             label="Password"
-            placeholder="Email"
+            placeholder="Password"
             control={control}
             type="password"
             rules={{ required: true }}

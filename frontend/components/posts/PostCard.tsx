@@ -1,26 +1,18 @@
-import { Button, Card, Menu, MenuItem } from "@mui/material";
-import { Box, styled } from "@mui/system";
-import React, { MouseEvent, useState } from "react";
-import { formatDate, stopPropagation } from "../../utils/helpers";
-import { deletePost } from "../../services/api/postAxios";
-import { useUser } from "../../contexts/UserContext";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 import Link from "next/link";
+import { useState } from "react";
+import { Box } from "@mui/system";
+import dynamic from "next/dynamic";
+import { Button } from "@mui/material";
+import { useRouter } from "next/router";
+import StyledCard from "../UI/StyledCard";
+import PostCardBody from "./PostCardBody";
+import { Styles } from "../../types/types";
 import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
-import PostCardBody from "./PostCardBody";
-import { useRouter } from "next/router";
-import { alpha } from "@mui/material";
+import { formatDate } from "../../utils/helpers";
+import { useUser } from "../../contexts/UserContext";
 import usePostDialog from "../../hooks/usePostDialog";
-import dynamic from "next/dynamic";
-import { Styles } from "../../types/types";
-import {
-  createReaction,
-  deleteReaction,
-} from "../../services/api/reactionAxios";
-import { toast } from "react-toastify";
-import { PostEntity } from "../../../backend/src/types";
-import Image from "next/image";
 
 const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
@@ -33,18 +25,6 @@ type Props = {
   showActions?: boolean;
 };
 
-const StyledCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(1.5),
-  backgroundColor: theme.palette.background.default,
-  color: theme.palette.text.main,
-  transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
-  cursor: "pointer",
-  whiteSpace: "pre-line",
-  "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.main, 0.2),
-  },
-}));
-
 const styles: Styles = {
   textBtn: {
     textTransform: "none",
@@ -53,69 +33,36 @@ const styles: Styles = {
   },
 };
 
+const MAX_POST_DEPTH = 2;
+
 const PostCard = ({
   postId,
   depth = 0,
   expandable = false,
   showActions = true,
 }: Props) => {
-  const { data: posts, error: postsErr } = useSWR(`posts`);
-  const { mutate } = useSWRConfig();
-  const post = posts?.find((p: any) => p.postId === postId);
-  const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [expanded, setExpanded] = useState<boolean>(false);
   const { user } = useUser();
-  const showMenu = Boolean(anchorEl);
   const router = useRouter();
+  const [expanded, setExpanded] = useState<boolean>(false);
+  const { data: postsData, error: postsErr } = useSWR(`posts`);
+  const { postDialog, setPostDialog, onCloseDialog } = usePostDialog();
+
+  const posts = postsData?.data ?? [];
+  const post = posts?.find((p: any) => p.postId === postId);
   const formattedDate = formatDate(post?.createdAt);
-  const maxExpansionDepth = 2;
+
   const showViewMore =
     post?.childPosts?.length > 0 &&
     !expanded &&
     expandable &&
-    depth <= maxExpansionDepth;
+    depth <= MAX_POST_DEPTH;
   const showViewFullPost =
-    post?.childPosts?.length > 0 && depth > maxExpansionDepth;
-  const userReaction = post.reactions.find(
+    post?.childPosts?.length > 0 && depth > MAX_POST_DEPTH;
+  const userReaction = post?.reactions.find(
     (r: any) => r.userId === user?.userId
   );
 
-  const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
-    stopPropagation(event);
-  };
-
-  const handleCloseMenu = () => {
-    setAnchorEl(null);
-  };
-
-  const handleDeletePost = async () => {
-    await deletePost(postId);
-    mutate("posts");
-  };
-
-  const handleReply = () => {
-    if (!onReply) return;
-    if (!user) {
-      return toast.info("Sign in to interact with others");
-    }
-    onReply(postId);
-  };
-
-  const handleReact = async (type: string) => {
-    if (!user) {
-      return toast.info("Sign in to interact with others");
-    }
-    if (Boolean(userReaction)) {
-      await deleteReaction(userReaction.reactionId);
-    } else {
-      await createReaction(postId, user.userId, type);
-    }
-    mutate("posts");
-  };
-
-  if (!posts && !postsErr) {
+  if (!post && !postsErr) {
     return <Box>Loading...</Box>;
   }
 
@@ -127,8 +74,7 @@ const PostCard = ({
             <PostCardHeader
               author={post?.author.name}
               userIsOwner={user?.userId === post?.authorId}
-              handleShowMenu={handleShowMenu}
-              replyMode={Boolean(onReply)}
+              showActions={showActions}
             />
             <PostCardBody
               body={post?.body}
@@ -137,27 +83,25 @@ const PostCard = ({
             />
             <PostCardFooter
               postDate={formattedDate}
-              onReply={handleReply}
-              onReact={handleReact}
               userReaction={userReaction}
               allReactions={post.reactions}
               showActions={showActions}
+              postId={postId}
             />
           </Box>
         </Link>
       </StyledCard>
 
-      {post?.childPosts?.length > 0 && expanded && (
-        <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
-          <Box>Hide replies</Box>
-        </Button>
-      )}
-
       {expanded &&
         post?.childPosts.map((p: any) => (
-          <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
-            <PostCard postId={p.postId} expandable depth={depth + 1} />
-          </Box>
+          <>
+            <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
+              Hide replies
+            </Button>
+            <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
+              <PostCard postId={p.postId} expandable depth={depth + 1} />
+            </Box>
+          </>
         ))}
 
       {showViewMore && (
@@ -176,9 +120,6 @@ const PostCard = ({
         </Button>
       )}
 
-      <Menu anchorEl={anchorEl} open={showMenu} onClose={handleCloseMenu}>
-        <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
-      </Menu>
       <PostDialog
         open={postDialog.open}
         setPostDialog={setPostDialog}

@@ -1,32 +1,19 @@
-import {
-  AppBar,
-  Button,
-  Dialog,
-  IconButton,
-  Slide,
-  Toolbar,
-  Typography,
-  useScrollTrigger,
-  SxProps,
-} from "@mui/material";
-import React, { useState } from "react";
+import { AppBar, IconButton, Toolbar, SxProps } from "@mui/material";
+import React from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { styled, useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import LoginForm from "../auth/LoginForm";
-import RegisterForm from "../auth/RegisterForm";
-import AuthDialog from "../auth/AuthDialog";
-import { useUser } from "../../contexts/UserContext";
 
 type Props = {
   toggleSidebar: () => void;
 };
 
-const StyledAppBar = styled(AppBar)({
+const StyledAppBar = styled(AppBar)(({ theme }) => ({
   boxShadow: "none",
   top: 0,
   height: 56,
-});
+  marginBottom: theme.spacing(-2),
+}));
 
 const dialogStyles: SxProps = {
   paper: {
