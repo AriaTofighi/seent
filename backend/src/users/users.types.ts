@@ -1,9 +1,8 @@
 import { Prisma } from "@prisma/client";
+import { FindManyQuery } from "src/types";
 
-export type UserFindManyParams = {
-  skip?: number;
-  take?: number;
+export class UserFindManyParams extends FindManyQuery {
   cursor?: Prisma.UserWhereUniqueInput;
   where?: Prisma.UserWhereInput;
   orderBy?: Prisma.UserOrderByWithRelationInput;
-};
+}

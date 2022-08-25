@@ -13,6 +13,7 @@ import PostCardHeader from "./PostCardHeader";
 import { formatDate } from "../../utils/helpers";
 import { useUser } from "../../contexts/UserContext";
 import usePostDialog from "../../hooks/usePostDialog";
+import { PostEntity, ReactionEntity } from "../../../backend/src/types";
 
 const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
@@ -23,6 +24,7 @@ type Props = {
   expandable?: boolean;
   depth?: number;
   showActions?: boolean;
+  post: PostEntity;
 };
 
 const styles: Styles = {
@@ -33,10 +35,11 @@ const styles: Styles = {
   },
 };
 
-const MAX_POST_DEPTH = 2;
+const MAX_POST_DEPTH_PER_PAGE = 2;
 
 const PostCard = ({
   postId,
+  post,
   depth = 0,
   expandable = false,
   showActions = true,
@@ -44,26 +47,27 @@ const PostCard = ({
   const { user } = useUser();
   const router = useRouter();
   const [expanded, setExpanded] = useState<boolean>(false);
-  const { data: postsData, error: postsErr } = useSWR(`posts`);
-  const { postDialog, setPostDialog, onCloseDialog } = usePostDialog();
+  const { data: childPostsData, error: childPostsErr } = useSWR(
+    expanded ? `posts?parentPostId=${postId}` : null
+  );
+  const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
-  const posts = postsData?.data ?? [];
-  const post = posts?.find((p: any) => p.postId === postId);
+  const childPosts = childPostsData?.data ?? [];
   const formattedDate = formatDate(post?.createdAt);
-
+  const childPostsLength = post?._count?.childPosts;
   const showViewMore =
-    post?.childPosts?.length > 0 &&
+    childPostsLength > 0 &&
     !expanded &&
     expandable &&
-    depth <= MAX_POST_DEPTH;
+    depth <= MAX_POST_DEPTH_PER_PAGE;
   const showViewFullPost =
-    post?.childPosts?.length > 0 && depth > MAX_POST_DEPTH;
+    childPostsLength > 0 && depth > MAX_POST_DEPTH_PER_PAGE;
   const userReaction = post?.reactions.find(
-    (r: any) => r.userId === user?.userId
+    (r: ReactionEntity) => r.userId === user?.userId
   );
 
-  if (!post && !postsErr) {
-    return <Box>Loading...</Box>;
+  if (expanded && !childPostsData && !childPostsErr) {
+    return <Box></Box>;
   }
 
   return (
@@ -75,6 +79,7 @@ const PostCard = ({
               author={post?.author.name}
               userIsOwner={user?.userId === post?.authorId}
               showActions={showActions}
+              postId={postId}
             />
             <PostCardBody
               body={post?.body}
@@ -87,27 +92,33 @@ const PostCard = ({
               allReactions={post.reactions}
               showActions={showActions}
               postId={postId}
+              onReply={onReply}
             />
           </Box>
         </Link>
       </StyledCard>
 
-      {expanded &&
-        post?.childPosts.map((p: any) => (
-          <>
-            <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
-              Hide replies
-            </Button>
+      {expanded && (
+        <>
+          <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
+            Hide replies
+          </Button>
+          {childPosts.map((p: PostEntity) => (
             <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
-              <PostCard postId={p.postId} expandable depth={depth + 1} />
+              <PostCard
+                postId={p.postId}
+                post={p}
+                expandable
+                depth={depth + 1}
+              />
             </Box>
-          </>
-        ))}
+          ))}
+        </>
+      )}
 
       {showViewMore && (
         <Button sx={styles.textBtn} onClick={() => setExpanded(true)}>
-          View {post?.childPosts?.length}{" "}
-          {post?.childPosts?.length > 1 ? "replies" : "reply"}
+          View {childPostsLength} {childPostsLength > 1 ? "replies" : "reply"}
         </Button>
       )}
 
@@ -124,9 +135,7 @@ const PostCard = ({
         open={postDialog.open}
         setPostDialog={setPostDialog}
         onClose={onCloseDialog}
-        parentPost={posts?.find(
-          (p: any) => p.postId === postDialog?.parentPostId
-        )}
+        parentPost={post}
       />
     </>
   );

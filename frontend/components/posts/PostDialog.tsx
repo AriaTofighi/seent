@@ -7,23 +7,23 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
+import Image from "next/image";
 import { Box } from "@mui/system";
-import React, { MouseEvent, useRef, useState } from "react";
+import PostCard from "./PostCard";
+import { useSWRConfig } from "swr";
 import { useForm } from "react-hook-form";
 import { Styles } from "../../types/types";
+import EmojiPicker from "emoji-picker-react";
 import TextInput from "../controls/TextInput";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ImageIcon from "@mui/icons-material/Image";
+import CloseIcon from "@mui/icons-material/Close";
+import { fileToBase64 } from "../../utils/helpers";
 import ShieldIcon from "@mui/icons-material/Shield";
 import { useUser } from "../../contexts/UserContext";
 import { createPost } from "../../services/api/postAxios";
-import { useSWRConfig } from "swr";
-import EmojiPicker from "emoji-picker-react";
-import CloseIcon from "@mui/icons-material/Close";
-import PostCard from "./PostCard";
+import React, { MouseEvent, useRef, useState } from "react";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
-import { fileToBase64 } from "../../utils/helpers";
-import Image from "next/image";
 
 type PostDialog = {
   open: boolean;
@@ -141,7 +141,11 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
             </IconButton>
           </Stack>
           {parentPost?.body ? (
-            <PostCard postId={parentPost.postId} showActions={false} />
+            <PostCard
+              postId={parentPost.postId}
+              post={parentPost}
+              showActions={false}
+            />
           ) : (
             <Typography variant="h5">What's on your mind?</Typography>
           )}

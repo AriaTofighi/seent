@@ -28,10 +28,10 @@ export class ReactionsController {
 
   @Get()
   findAll(@Query() query: FindReactionsQueryDto) {
-    const { skip, take, postId, type, userId } = query;
+    const { postId, type, userId, page, perPage } = query;
     return this.reactionsService.findMany({
-      skip,
-      take,
+      page,
+      perPage,
       where: { postId, type, userId },
     });
   }

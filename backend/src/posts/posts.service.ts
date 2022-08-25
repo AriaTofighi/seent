@@ -1,9 +1,9 @@
-import { ImagesService } from "src/images/images.service";
-import { PrismaService } from "../prisma.service";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { Prisma, Post } from "@prisma/client";
+import { PrismaService } from "../prisma.service";
 import { PostFindManyParams } from "./posts.types";
 import { createPaginator } from "prisma-pagination";
+import { ImagesService } from "src/images/images.service";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PostsService {
@@ -45,6 +45,14 @@ export class PostsService {
             authorId: true,
           },
         },
+        reactions: {
+          select: {
+            type: true,
+            userId: true,
+            postId: true,
+            reactionId: true,
+          },
+        },
       },
     });
     const images = await this.imagesService.findMany({});
@@ -68,17 +76,9 @@ export class PostsService {
               name: true,
             },
           },
-          childPosts: {
+          _count: {
             select: {
-              body: true,
-              createdAt: true,
-              postId: true,
-              author: {
-                select: {
-                  name: true,
-                },
-              },
-              authorId: true,
+              childPosts: true,
             },
           },
           parentPost: {

@@ -31,6 +31,7 @@ const PostCardHeader = ({ postId, author, userIsOwner, showActions }: any) => {
     await deletePost(postId);
     mutate("posts");
   };
+
   return (
     <>
       <Stack direction="row" justifyContent="space-between">

@@ -1,28 +1,28 @@
-import { ImageType } from "@prisma/client";
-import { ImagesService } from "./../images/images.service";
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  ClassSerializerInterceptor,
+  Controller,
   Delete,
+  forwardRef,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
   Query,
-  UseGuards,
   Req,
   UnauthorizedException,
-  ClassSerializerInterceptor,
+  UseGuards,
   UseInterceptors,
-  forwardRef,
-  Inject,
 } from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
+import { ImageType } from "@prisma/client";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { ImagesService } from "./../images/images.service";
+import { CreateUserDto } from "./dto/create-user.dto";
 import { FindUsersQueryDto } from "./dto/find-users-query.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
+import { UsersService } from "./users.service";
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller("/api/users")
@@ -40,14 +40,17 @@ export class UsersController {
 
   @Get()
   async findMany(@Query() query: FindUsersQueryDto) {
-    const { skip, take, userId, email, name } = query;
-    const users = await this.usersService.findMany({
-      skip,
-      take,
+    const { userId, email, name, page, perPage } = query;
+
+    const result = await this.usersService.findMany({
       where: { userId, email, name },
+      page,
+      perPage,
     });
 
-    return users.map((u) => new UserEntity(u));
+    const userEntities = result.data.map((u) => new UserEntity(u));
+
+    return { ...result, data: userEntities };
   }
 
   @Get(":id")

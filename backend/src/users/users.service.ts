@@ -1,7 +1,8 @@
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
-import { Prisma } from "@prisma/client";
+import { Prisma, User } from "@prisma/client";
 import { UserFindManyParams } from "./users.types";
+import { createPaginator } from "prisma-pagination";
 
 @Injectable()
 export class UsersService {
@@ -15,8 +16,19 @@ export class UsersService {
   }
 
   async findMany(params: UserFindManyParams) {
-    const users = await this.prisma.user.findMany(params);
-    return users;
+    const { where, orderBy, page, perPage } = params;
+
+    const paginate = createPaginator({ perPage: perPage });
+    const result = await paginate<User, Prisma.UserFindManyArgs>(
+      this.prisma.user,
+      {
+        where,
+        orderBy,
+      },
+      { page: page }
+    );
+
+    return result;
   }
 
   async create(data: Prisma.UserCreateInput) {

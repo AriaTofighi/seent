@@ -20,7 +20,6 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ImagesService } from "src/images/images.service";
 import { ImageType } from "@prisma/client";
-import { resourceLimits } from "worker_threads";
 
 @Controller("api/posts")
 export class PostsController {

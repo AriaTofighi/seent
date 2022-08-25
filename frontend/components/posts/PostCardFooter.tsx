@@ -1,17 +1,17 @@
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import React from "react";
-import ReplyIcon from "@mui/icons-material/Reply";
-import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-import { stopPropagation } from "../../utils/helpers";
-import { FavoriteOutlined } from "@mui/icons-material";
-import { useUser } from "../../contexts/UserContext";
-import usePostDialog from "../../hooks/usePostDialog";
+import { useSWRConfig } from "swr";
 import { toast } from "react-toastify";
+import ReplyIcon from "@mui/icons-material/Reply";
+import { useUser } from "../../contexts/UserContext";
+import { stopPropagation } from "../../utils/helpers";
+import usePostDialog from "../../hooks/usePostDialog";
+import { FavoriteOutlined } from "@mui/icons-material";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import {
   createReaction,
   deleteReaction,
 } from "../../services/api/reactionAxios";
-import { useSWRConfig } from "swr";
 
 const REACTION_TYPES = {
   LIKE: "LIKE",
@@ -24,6 +24,7 @@ type Props = {
   allReactions: any[];
   showActions: boolean;
   postId: string;
+  onReply: (postId: string) => void;
 };
 
 const PostCardFooter = ({
@@ -32,9 +33,9 @@ const PostCardFooter = ({
   postDate,
   showActions,
   postId,
+  onReply,
 }: Props) => {
   const { user } = useUser();
-  const { onReply } = usePostDialog();
   const { mutate } = useSWRConfig();
 
   const handleReply = () => {
@@ -67,14 +68,19 @@ const PostCardFooter = ({
         <Typography variant="caption">{postDate}</Typography>
       </Box>
       {showActions && (
-        <Stack direction="row" gap={2} onClick={stopPropagation}>
+        <Stack
+          direction="row"
+          gap={1}
+          onClick={stopPropagation}
+          alignItems="flex-start"
+        >
           <Box>
-            <Typography variant="caption" sx={{ mr: 1.5 }}>
+            <Typography variant="caption" sx={{ mr: 1 }}>
               {allReactions?.length > 0 && allReactions.length}
             </Typography>
             <Tooltip title="Like">
               <IconButton
-                sx={{ p: 0 }}
+                sx={{ p: 0.5 }}
                 onClick={() => handleReact(REACTION_TYPES.LIKE)}
               >
                 {userReaction?.type === REACTION_TYPES.LIKE ? (
@@ -86,7 +92,7 @@ const PostCardFooter = ({
             </Tooltip>
           </Box>
           <Tooltip title="Reply">
-            <IconButton sx={{ p: 0 }} onClick={handleReply}>
+            <IconButton sx={{ p: 0.5, mt: -0.1 }} onClick={handleReply}>
               <ReplyIcon color="action" fontSize="small" />
             </IconButton>
           </Tooltip>

@@ -7,7 +7,6 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import useSWR from "swr";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import PostCard from "../components/posts/PostCard";
 import { NextPageWithLayout, Styles } from "../types/types";
@@ -15,6 +14,9 @@ import AddIcon from "@mui/icons-material/Add";
 import Head from "next/head";
 import dynamic from "next/dynamic";
 import usePostDialog from "../hooks/usePostDialog";
+import useSWRInfinite from "swr/infinite";
+import _ from "lodash";
+import { PostEntity } from "../../backend/src/types";
 
 const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
   ssr: false,
@@ -32,60 +34,79 @@ const styles: Styles = {
   },
 };
 
-const DEFAULT_PAGE = 1;
+const getPostsKey = (index: number) => `posts?page=${index + 1}&isChild=false`;
 
 const Feed: NextPageWithLayout = () => {
+  const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
+    usePostDialog();
   const [sortedPosts, setSortedPosts] = useState<any[]>();
-  const [page, setPage] = useState(DEFAULT_PAGE);
-  // const {
-  //   data: posts,
-  //   error: postsErr,
-  //   isValidating,
-  // } = useSWR(`posts?take=${numOfPostsToTake}&isChild=false`);
   const {
     data: postsRes,
     error: postsErr,
+    size,
+    setSize,
     isValidating,
-  } = useSWR(`posts?page=${page}&isChild=false`);
-  const posts = postsRes?.data ?? [];
-  const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
-    usePostDialog();
+  } = useSWRInfinite(getPostsKey) as any;
+  const posts: any = [];
+  if (postsRes) {
+    for (const res of postsRes) {
+      posts.push(...res.data);
+    }
+  }
 
   useEffect(() => {
     if (!posts) return;
+
+    const postsCopy = _.cloneDeep(posts);
     setSortedPosts(
-      [...posts].sort(
+      postsCopy.sort(
         (p1: any, p2: any) => p2.reactions.length - p1.reactions.length
       )
     );
-  }, [posts]);
+  }, [postsRes]);
 
-  if (!posts && !postsErr) {
+  if (!postsRes && !postsErr) {
     <LinearProgress />;
   }
-  console.log(posts);
+
   return (
     <>
       <Head>
         <title>Feed</title>
         <meta property="og:title" content="Feed" key="title" />
       </Head>
+
       <Box sx={styles.root}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           Feed
         </Typography>
 
         <Box sx={styles.posts}>
-          {sortedPosts?.map(({ postId, ...rest }: any) => {
+          {sortedPosts?.map(({ postId, ...rest }: PostEntity) => {
             if (!{ ...rest }.parentPostId) {
-              return <PostCard postId={postId} key={postId} />;
+              return (
+                <PostCard
+                  postId={postId}
+                  post={{ ...rest, postId }}
+                  key={postId}
+                />
+              );
             }
           })}
         </Box>
-        <Button sx={{ mt: 1 }} fullWidth onClick={() => setPage(page + 1)}>
-          Load more posts
+
+        <Button
+          disabled={!(postsRes && postsRes[size - 1]?.meta?.next)}
+          sx={{ mt: 1 }}
+          fullWidth
+          onClick={() => setSize(size + 1)}
+        >
+          {postsRes && postsRes[size - 1]?.meta?.next
+            ? "Load more posts"
+            : "No more posts"}
         </Button>
         {isValidating && <LinearProgress sx={{ my: 1 }} />}
+
         <Stack
           width="100%"
           height={50}
@@ -103,6 +124,7 @@ const Feed: NextPageWithLayout = () => {
           </Fab>
         </Stack>
       </Box>
+
       <PostDialog
         open={postDialog.open}
         setPostDialog={setPostDialog}

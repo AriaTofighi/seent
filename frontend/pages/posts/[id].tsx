@@ -1,26 +1,29 @@
-import { Button, Stack, Typography } from "@mui/material";
-import { Box } from "@mui/system";
-import Head from "next/head";
-import { useRouter } from "next/router";
 import useSWR from "swr";
-import { getMainLayout } from "../../components/layouts/MainLayout";
+import Head from "next/head";
+import { Box } from "@mui/system";
+import { useRouter } from "next/router";
 import PostCard from "../../components/posts/PostCard";
 import { NextPageWithLayout } from "../../types/types";
+import { PostEntity } from "../../../backend/src/types";
+import { Button, Stack, Typography } from "@mui/material";
+import { getMainLayout } from "../../components/layouts/MainLayout";
 
-const PostDetails: NextPageWithLayout = ({}: any) => {
+const PostDetails: NextPageWithLayout = () => {
   const { query } = useRouter();
   const router = useRouter();
 
-  const { data: post, error: postErr } = useSWR(
+  const { data: post, error: postErr } = useSWR<PostEntity>(
     query.id ? `posts/${query.id}` : null
   );
 
-  const { data: posts, error: postsErr } = useSWR("posts");
-
-  const replies = posts?.filter((p: any) => p.parentPostId === query.id);
+  const { data: postsData, error: postsErr } = useSWR<{
+    data: PostEntity[];
+    meta: any;
+  }>(query.id ? `posts?parentPostId=${query.id}` : null);
+  const replies = postsData?.data ?? [];
 
   const postLoading = !postErr && !post;
-  const repliesLoading = !posts && !postsErr;
+  const repliesLoading = !postsData && !postsErr;
 
   if (postLoading || repliesLoading) {
     return <div>Loading...</div>;
@@ -29,6 +32,8 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
   if (postErr) {
     return <div>Error fetching data</div>;
   }
+
+  console.log(replies);
 
   return (
     <>
@@ -46,7 +51,7 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
           <Typography variant="h5" sx={{ mb: 2 }}>
             Post
           </Typography>
-          {post.parentPost && (
+          {post?.parentPost && (
             <Button
               sx={{ textTransform: "none" }}
               onClick={() => router.push(`/posts/${post.parentPostId}`)}
@@ -55,17 +60,17 @@ const PostDetails: NextPageWithLayout = ({}: any) => {
             </Button>
           )}
         </Stack>
-        <PostCard postId={post?.postId} />
+        <PostCard postId={post?.postId ?? ""} post={post as any} />
         {replies.length > 0 && (
           <Typography variant="h5" sx={{ my: 2 }}>
             Replies
           </Typography>
         )}
 
-        {replies.map((r: any) => {
+        {replies.map((r: PostEntity) => {
           return (
             <Box key={r.postId} sx={{ mb: 1 }}>
-              <PostCard postId={r.postId} expandable />
+              <PostCard postId={r.postId} post={r} expandable />
             </Box>
           );
         })}
