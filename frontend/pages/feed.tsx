@@ -17,6 +17,7 @@ import usePostDialog from "../hooks/usePostDialog";
 import useSWRInfinite from "swr/infinite";
 import _ from "lodash";
 import { PostEntity } from "../../backend/src/types";
+import { useUser } from "../contexts/UserContext";
 
 const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
   ssr: false,
@@ -39,34 +40,36 @@ const getPostsKey = (index: number) => `posts?page=${index + 1}&isChild=false`;
 const Feed: NextPageWithLayout = () => {
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
-  const [sortedPosts, setSortedPosts] = useState<any[]>();
+  const [sortedPosts, setSortedPosts] = useState<PostEntity[]>();
   const {
     data: postsRes,
     error: postsErr,
     size,
     setSize,
     isValidating,
+    mutate,
   } = useSWRInfinite(getPostsKey) as any;
-  const posts: any = [];
-  if (postsRes) {
+
+  useEffect(() => {
+    if (!postsRes) return;
+    const posts: PostEntity[] = [];
     for (const res of postsRes) {
       posts.push(...res.data);
     }
-  }
-
-  useEffect(() => {
-    if (!posts) return;
 
     const postsCopy = _.cloneDeep(posts);
-    setSortedPosts(
-      postsCopy.sort(
-        (p1: any, p2: any) => p2.reactions.length - p1.reactions.length
-      )
-    );
+    setSortedPosts(postsCopy);
+    // setSortedPosts(
+    //   postsCopy.sort((p1, p2) => p2.reactions.length - p1.reactions.length)
+    // );
   }, [postsRes]);
 
   if (!postsRes && !postsErr) {
-    <LinearProgress />;
+    return <LinearProgress />;
+  }
+
+  if (postsErr) {
+    return <Typography>Error loading data</Typography>;
   }
 
   return (
@@ -82,13 +85,14 @@ const Feed: NextPageWithLayout = () => {
         </Typography>
 
         <Box sx={styles.posts}>
-          {sortedPosts?.map(({ postId, ...rest }: PostEntity) => {
+          {sortedPosts?.map(({ postId, ...rest }) => {
             if (!{ ...rest }.parentPostId) {
               return (
                 <PostCard
                   postId={postId}
                   post={{ ...rest, postId }}
                   key={postId}
+                  mutate={mutate}
                 />
               );
             }
@@ -129,9 +133,10 @@ const Feed: NextPageWithLayout = () => {
         open={postDialog.open}
         setPostDialog={setPostDialog}
         onClose={onCloseDialog}
-        parentPost={posts?.find(
+        parentPost={sortedPosts?.find(
           (p: any) => p.postId === postDialog.parentPostId
         )}
+        mutate={mutate}
       />
     </>
   );

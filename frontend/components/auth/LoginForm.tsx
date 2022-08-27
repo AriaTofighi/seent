@@ -2,6 +2,7 @@ import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { useUser } from "../../contexts/UserContext";
 import { signIn } from "../../services/api/authAxios";
 import TextInput from "../controls/TextInput";
@@ -25,6 +26,7 @@ const LoginForm = ({ onClose }: Props) => {
     const res = await signIn(email, password);
     setUser(res.access_token);
     onClose();
+    toast.success("Signed in successfully");
   };
 
   return (

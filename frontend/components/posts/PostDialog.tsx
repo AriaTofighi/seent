@@ -39,6 +39,7 @@ type Props = {
   onClose: () => void;
   setPostDialog: any;
   parentPost?: any;
+  mutate: () => void;
 };
 
 const styles: Styles = {
@@ -74,7 +75,13 @@ const PRIVACY_MODES = {
   PRIVATE: false,
 };
 
-const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
+const PostDialog = ({
+  open,
+  setPostDialog,
+  parentPost,
+  onClose,
+  mutate,
+}: Props) => {
   const { control, reset, handleSubmit, setValue, getValues, watch } =
     useForm<DefaultValueType>({
       defaultValues,
@@ -83,7 +90,6 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { user } = useUser();
-  const { mutate } = useSWRConfig();
   const fileInputRef = useRef<any>();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
@@ -102,7 +108,7 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
       formData.append("parentPostId", parentPost.postId);
     }
     await createPost(formData);
-    mutate("posts");
+    mutate();
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
   };
@@ -123,7 +129,13 @@ const PostDialog = ({ open, setPostDialog, parentPost, onClose }: Props) => {
   };
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth={"sm"}>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      fullWidth
+      maxWidth={"sm"}
+      sx={{ m: -2 }}
+    >
       <DialogContent sx={{ p: 2 }}>
         <Box sx={styles.root}>
           <Stack

@@ -19,7 +19,7 @@ export class UserEntity implements User {
   createdAt: Date;
   updatedAt: Date;
 
-  image: ImageEntity;
+  images: Partial<ImageEntity>[];
 
   constructor(partial: Partial<UserEntity>) {
     Object.assign(this, partial);

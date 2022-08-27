@@ -1,22 +1,28 @@
-import { PrismaService } from "./../prisma.service";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ImageType, Prisma } from "@prisma/client";
+import { PrismaService } from "./../prisma.service";
 import { ImageFindManyParams } from "./images.types";
-import { PostsService } from "src/posts/posts.service";
-import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class ImagesService {
-  constructor(
-    private prisma: PrismaService,
-    @Inject(forwardRef(() => PostsService))
-    private readonly postsService: PostsService,
-    private readonly usersService: UsersService
-  ) {}
+  constructor(private prisma: PrismaService) {}
 
   async findOne(imageWhereUniqueInput: Prisma.ImageWhereUniqueInput) {
     const image = await this.prisma.image.findUnique({
       where: imageWhereUniqueInput,
+      include: {
+        user: {
+          select: {
+            userId: true,
+          },
+        },
+        post: {
+          select: {
+            postId: true,
+            authorId: true,
+          },
+        },
+      },
     });
     return image;
   }
@@ -51,7 +57,7 @@ export class ImagesService {
 
   async getRelatedEntityUserId(imageId: string) {
     const image = await this.findOne({ imageId });
-    const { entityId } = image;
+    const { user, post } = image;
 
     let userId: string | undefined;
 
@@ -59,10 +65,8 @@ export class ImagesService {
       image.type === ImageType.USER_AVATAR ||
       image.type === ImageType.USER_BANNER
     ) {
-      const user = await this.usersService.findOne({ userId: entityId });
       userId = user.userId;
     } else if (image.type === ImageType.POST) {
-      const post = await this.postsService.findOne({ postId: entityId });
       userId = post.authorId;
     }
     return userId;

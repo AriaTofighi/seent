@@ -49,7 +49,7 @@ const Profile: NextPageWithLayout = () => {
     const formData = new FormData();
     console.log(imageFile);
     formData.append("image", imageFile);
-    formData.append("entityId", user.userId);
+    formData.append("userId", user.userId);
     formData.append("type", "USER_AVATAR");
     await createImage(formData);
   };

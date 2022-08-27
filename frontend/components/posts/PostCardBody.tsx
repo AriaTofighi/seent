@@ -9,7 +9,7 @@ const PostCardBody = ({ body, replyAuthor, image }: any) => {
       {/* {replyAuthor && (
         <Typography
           variant="body1"
-          component="span"
+          component="span"o
           sx={{ mr: 0.5, fontWeight: "bold" }}
         >
           @{replyAuthor}
@@ -24,13 +24,23 @@ const PostCardBody = ({ body, replyAuthor, image }: any) => {
       </Typography>
       {image && (
         <Box
-          sx={{ width: "100%", height: "33vh", position: "relative", my: 1 }}
+          sx={{
+            maxWidth: "100%",
+            height: 500,
+            maxHeight: "33vh",
+            position: "relative",
+            my: 1,
+            border: "1px solid",
+            borderColor: "background.default",
+            borderRadius: 1,
+            bgcolor: "background.dark",
+          }}
         >
           <Image
             layout="fill"
-            objectFit="cover"
+            objectFit="contain"
             src={image?.url}
-            style={{ borderRadius: 4 }}
+            // style={{ borderRadius: 4 }}
           />
         </Box>
       )}

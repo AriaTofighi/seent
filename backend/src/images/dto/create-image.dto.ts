@@ -1,12 +1,17 @@
 import { ImageType } from "@prisma/client";
-import { IsNotEmpty, IsUUID } from "class-validator";
+import { IsNotEmpty, IsOptional, IsUUID } from "class-validator";
 
 export class CreateImageDto {
   @IsNotEmpty()
   type: ImageType;
 
   @IsUUID()
-  entityId: string;
+  @IsOptional()
+  userId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  postId?: string;
 
   image: any;
 }

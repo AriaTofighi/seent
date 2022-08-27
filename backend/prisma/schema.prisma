@@ -25,6 +25,7 @@ model User {
   reactions Reaction[]
   rooms     RoomUser[]
   messages  Message[]
+  images    Image[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -36,9 +37,10 @@ model Post {
   body         String     @db.VarChar(360)
   isPublic     Boolean
   parentPostId String?
-  parentPost   Post?      @relation("PostToPost", fields: [parentPostId], references: [postId])
+  parentPost   Post?      @relation("PostToPost", fields: [parentPostId], references: [postId], onDelete: Cascade)
   childPosts   Post[]     @relation("PostToPost")
   reactions    Reaction[]
+  images       Image[]
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 }
@@ -60,7 +62,10 @@ model Image {
   imageId   String    @id @default(uuid())
   url       String    @unique
   type      ImageType
-  entityId  String
+  userId    String?
+  postId    String?
+  user      User?     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  post      Post?     @relation(fields: [postId], references: [postId], onDelete: Cascade)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }

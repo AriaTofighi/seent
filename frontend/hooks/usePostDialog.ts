@@ -1,3 +1,5 @@
+import { useUser } from "./../contexts/UserContext";
+import { toast } from "react-toastify";
 import { useState } from "react";
 
 export type PostDialogState = {
@@ -14,8 +16,10 @@ const usePostDialog = () => {
   const [postDialog, setPostDialog] = useState<PostDialogState>(
     DEFAULT_POST_DIALOG_STATE
   );
+  const { user } = useUser();
 
   const onNewPost = () => {
+    if (!user) return toast.info("Sign in to make posts");
     setPostDialog({ open: true });
   };
 

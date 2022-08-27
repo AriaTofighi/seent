@@ -9,7 +9,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   cursor: "pointer",
   whiteSpace: "pre-line",
   "&:hover": {
-    backgroundColor: alpha(theme.palette.primary.main, 0.2),
+    backgroundColor: alpha(theme.palette.primary.main, 0.05),
   },
 }));
 

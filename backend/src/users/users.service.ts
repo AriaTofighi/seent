@@ -1,6 +1,6 @@
 import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
-import { Prisma, User } from "@prisma/client";
+import { ImageType, Prisma, User } from "@prisma/client";
 import { UserFindManyParams } from "./users.types";
 import { createPaginator } from "prisma-pagination";
 
@@ -11,6 +11,17 @@ export class UsersService {
   async findOne(userWhereUniqueInput: Prisma.UserWhereUniqueInput) {
     const user = await this.prisma.user.findUnique({
       where: userWhereUniqueInput,
+      include: {
+        images: {
+          select: {
+            imageId: true,
+            url: true,
+          },
+          where: {
+            type: ImageType.USER_AVATAR,
+          },
+        },
+      },
     });
     return user;
   }
@@ -24,6 +35,17 @@ export class UsersService {
       {
         where,
         orderBy,
+        include: {
+          images: {
+            select: {
+              imageId: true,
+              url: true,
+            },
+            where: {
+              type: ImageType.USER_AVATAR,
+            },
+          },
+        },
       },
       { page: page }
     );

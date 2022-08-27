@@ -1,19 +1,15 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { ImagesService } from "./images.service";
-import { ImagesController } from "./images.controller";
 import { PrismaService } from "src/prisma.service";
-import { UsersService } from "src/users/users.service";
-import { PostsService } from "src/posts/posts.service";
+import { PostsModule } from "src/posts/posts.module";
+import { UsersModule } from "src/users/users.module";
+import { ImagesController } from "./images.controller";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 
 @Module({
   controllers: [ImagesController],
-  providers: [
-    ImagesService,
-    PrismaService,
-    UsersService,
-    PostsService,
-    FileUploadService,
-  ],
+  providers: [ImagesService, PrismaService, FileUploadService],
+  exports: [ImagesService],
+  imports: [forwardRef(() => UsersModule), forwardRef(() => PostsModule)],
 })
 export class ImagesModule {}

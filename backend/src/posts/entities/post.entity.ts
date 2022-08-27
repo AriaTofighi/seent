@@ -12,10 +12,9 @@ export class PostEntity implements Post {
   createdAt: Date;
   updatedAt: Date;
 
-  childPosts: PostEntity[];
   reactions: ReactionEntity[];
   author: UserEntity;
-  image?: ImageEntity;
+  images?: ImageEntity[];
   parentPost?: PostEntity;
   _count: Count;
 

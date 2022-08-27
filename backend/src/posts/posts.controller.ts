@@ -34,14 +34,13 @@ export class PostsController {
   @Post()
   async create(@UploadedFiles() images, @Body() post: CreatePostDto) {
     // TODO: support multiple images being uploaded from the frontend, currently can only upload one
-    const postEntity = { ...post };
-    delete postEntity.images;
-    const newPost = await this.postsService.create(postEntity);
+    delete post.images;
+    const newPost = await this.postsService.create(post);
 
     if (images[0]) {
       const uploadedImage: any = await this.fileUploadService.upload(images[0]);
       const image = {
-        entityId: newPost.postId,
+        postId: newPost.postId,
         type: ImageType.POST,
         url: uploadedImage.Location,
       };
@@ -56,6 +55,9 @@ export class PostsController {
     const { postId, parentPostId, isChild, page, perPage } = query;
     const result = await this.postsService.findMany({
       where: { postId, parentPostId: isChild ? null : parentPostId },
+      // orderBy: {
+      //   createdAt: "desc",
+      // },
       page,
       perPage,
     });
@@ -93,7 +95,7 @@ export class PostsController {
   @Delete(":id")
   async remove(@Param("id") postId: string) {
     const images = await this.imagesService.findMany({
-      where: { entityId: postId },
+      where: { postId: postId },
     });
     const deletions = [];
     for (const image of images) {

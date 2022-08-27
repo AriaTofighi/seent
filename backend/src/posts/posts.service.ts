@@ -1,4 +1,4 @@
-import { Prisma, Post } from "@prisma/client";
+import { Prisma, Post, ImageType } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { PostFindManyParams } from "./posts.types";
 import { createPaginator } from "prisma-pagination";
@@ -20,6 +20,15 @@ export class PostsService {
         author: {
           select: {
             name: true,
+            images: {
+              where: {
+                type: ImageType.USER_AVATAR,
+              },
+              select: {
+                imageId: true,
+                url: true,
+              },
+            },
           },
         },
         parentPost: {
@@ -53,13 +62,17 @@ export class PostsService {
             reactionId: true,
           },
         },
+        images: {
+          select: {
+            imageId: true,
+            url: true,
+            type: true,
+          },
+        },
       },
     });
-    const images = await this.imagesService.findMany({});
-    const image = images.find((i) => i.entityId === post.postId) ?? null;
-    const postWithImages = { ...post, image: image };
 
-    return postWithImages;
+    return post;
   }
 
   async findMany(params: PostFindManyParams) {
@@ -74,6 +87,15 @@ export class PostsService {
           author: {
             select: {
               name: true,
+              images: {
+                where: {
+                  type: ImageType.USER_AVATAR,
+                },
+                select: {
+                  imageId: true,
+                  url: true,
+                },
+              },
             },
           },
           _count: {
@@ -99,18 +121,21 @@ export class PostsService {
               reactionId: true,
             },
           },
+          images: {
+            select: {
+              imageId: true,
+              url: true,
+              type: true,
+            },
+          },
         },
       },
       { page: page }
     );
 
-    const images = await this.imagesService.findMany({});
-    const postsWithImages = result.data.map((p) => {
-      const image = images.find((i) => i.entityId === p.postId) ?? null;
-      return { ...p, image: image };
-    });
+    result.data.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
 
-    return { ...result, data: postsWithImages };
+    return result;
   }
 
   async create(data: Prisma.PostCreateInput): Promise<Post> {

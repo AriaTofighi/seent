@@ -25,6 +25,7 @@ type Props = {
   showActions: boolean;
   postId: string;
   onReply: (postId: string) => void;
+  mutate: () => void;
 };
 
 const PostCardFooter = ({
@@ -34,9 +35,9 @@ const PostCardFooter = ({
   showActions,
   postId,
   onReply,
+  mutate,
 }: Props) => {
   const { user } = useUser();
-  const { mutate } = useSWRConfig();
 
   const handleReply = () => {
     if (!user) {
@@ -54,7 +55,7 @@ const PostCardFooter = ({
     } else {
       await createReaction(postId, user.userId, type);
     }
-    mutate("posts");
+    mutate();
   };
 
   return (

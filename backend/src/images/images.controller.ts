@@ -13,11 +13,13 @@ import {
   UploadedFile,
   UseInterceptors,
   Post,
+  BadRequestException,
 } from "@nestjs/common";
 import { CreateImageDto } from "./dto/create-image.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { FileInterceptor } from "@nestjs/platform-express";
+import { ImageEntity } from "./entities/image.entity";
 import { ImageType } from "@prisma/client";
 
 @Controller("api/images")
@@ -31,13 +33,21 @@ export class ImagesController {
   @UseInterceptors(FileInterceptor("image"))
   @Post()
   async create(@UploadedFile() imageFile, @Body() image: CreateImageDto) {
-    console.log(imageFile);
+    if (image.type === ImageType.USER_AVATAR) {
+      const userAvatars = await this.imagesService.findMany({
+        where: { type: ImageType.USER_AVATAR },
+      });
+      if (userAvatars.length > 0) {
+        throw new BadRequestException();
+      }
+    }
     const uploadedImage: any = await this.fileUploadService.upload(imageFile);
-    const newImage = {
-      entityId: image.entityId,
+    const newImage = new ImageEntity({
+      userId: image.userId,
+      postId: image.postId,
       type: image.type,
       url: uploadedImage.Location,
-    };
+    });
     return await this.imagesService.create(newImage);
   }
 

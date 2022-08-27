@@ -56,14 +56,7 @@ export class UsersController {
   @Get(":id")
   async findOne(@Param("id") userId: string) {
     const user = await this.usersService.findOne({ userId });
-    const images = await this.imagesService.findMany({
-      where: { entityId: user.userId, type: ImageType.USER_AVATAR },
-    });
-    if (images.length > 1) {
-      return new UserEntity(user);
-    }
-    const userWithAvatar = { ...user, image: images[0] };
-    const userEntity = new UserEntity(userWithAvatar);
+    const userEntity = new UserEntity(user);
     return userEntity;
   }
 

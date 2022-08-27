@@ -1,9 +1,11 @@
-import * as argon2 from "argon2";
-import { exclude } from "utils/modelHelpers";
-import { SignUpDto } from "./dto/signup.dto";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
+import * as argon2 from "argon2";
+import { ImagesService } from "src/images/images.service";
+import { UserEntity } from "src/types";
 import { UsersService } from "src/users/users.service";
+import { exclude } from "utils/modelHelpers";
+import { SignUpDto } from "./dto/signup.dto";
 import { JwtPayload } from "./strategies/local.strategy";
 
 @Injectable()
@@ -13,8 +15,8 @@ export class AuthService {
     private jwtService: JwtService
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    const user = await this.usersService.findOne({ email });
+  async validateUser(email: string, password: string) {
+    const user = new UserEntity(await this.usersService.findOne({ email }));
 
     if (user) {
       const validPassword = await argon2.verify(user.password, password);

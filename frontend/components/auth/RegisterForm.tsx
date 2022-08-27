@@ -34,6 +34,7 @@ const RegisterForm = ({ onClose }: Props) => {
     } else {
       setUser(res.accessToken);
       onClose();
+      toast.success("Signed up successfully");
     }
   };
 

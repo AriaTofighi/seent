@@ -1,4 +1,4 @@
-import useSWR from "swr";
+import useSWR, { KeyedMutator } from "swr";
 import Link from "next/link";
 import { useState } from "react";
 import { Box } from "@mui/system";
@@ -25,6 +25,7 @@ type Props = {
   depth?: number;
   showActions?: boolean;
   post: PostEntity;
+  mutate?: () => void;
 };
 
 const styles: Styles = {
@@ -41,20 +42,23 @@ const PostCard = ({
   postId,
   post,
   depth = 0,
+  mutate,
   expandable = false,
   showActions = true,
 }: Props) => {
+  const childPostsLength = post?._count?.childPosts;
   const { user } = useUser();
   const router = useRouter();
   const [expanded, setExpanded] = useState<boolean>(false);
-  const { data: childPostsData, error: childPostsErr } = useSWR(
-    expanded ? `posts?parentPostId=${postId}` : null
-  );
+  const {
+    data: childPostsData,
+    error: childPostsErr,
+    mutate: mutateChildPosts,
+  } = useSWR(expanded ? `posts?parentPostId=${postId}` : null);
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
   const childPosts = childPostsData?.data ?? [];
   const formattedDate = formatDate(post?.createdAt);
-  const childPostsLength = post?._count?.childPosts;
   const showViewMore =
     childPostsLength > 0 &&
     !expanded &&
@@ -66,8 +70,15 @@ const PostCard = ({
     (r: ReactionEntity) => r.userId === user?.userId
   );
 
-  if (expanded && !childPostsData && !childPostsErr) {
-    return <Box></Box>;
+  const mutateAll = () => {
+    if (mutate) {
+      mutate();
+    }
+    mutateChildPosts();
+  };
+
+  if (!post || !post.images) {
+    return <Box>Loading...</Box>;
   }
 
   return (
@@ -80,10 +91,12 @@ const PostCard = ({
               userIsOwner={user?.userId === post?.authorId}
               showActions={showActions}
               postId={postId}
+              avatar={post.author.images[0].url}
+              mutate={mutate}
             />
             <PostCardBody
               body={post?.body}
-              image={post?.image}
+              image={post?.images[0]}
               replyAuthor={post?.parentPost?.author.name}
             />
             <PostCardFooter
@@ -93,6 +106,7 @@ const PostCard = ({
               showActions={showActions}
               postId={postId}
               onReply={onReply}
+              mutate={mutateAll}
             />
           </Box>
         </Link>
@@ -110,6 +124,7 @@ const PostCard = ({
                 post={p}
                 expandable
                 depth={depth + 1}
+                mutate={mutateChildPosts}
               />
             </Box>
           ))}
@@ -136,6 +151,7 @@ const PostCard = ({
         setPostDialog={setPostDialog}
         onClose={onCloseDialog}
         parentPost={post}
+        mutate={mutateAll}
       />
     </>
   );

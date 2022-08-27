@@ -1,3 +1,4 @@
+import { ImageEntity } from "./../../images/entities/image.entity";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
@@ -18,7 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    return { email, userId: user.userId, name: user.name };
+    return user;
   }
 }
 
@@ -26,4 +27,5 @@ export type JwtPayload = {
   email: string;
   userId: string;
   name: string;
+  images: Partial<ImageEntity>[];
 };

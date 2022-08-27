@@ -4,7 +4,8 @@ export class ImageEntity implements Image {
   imageId: string;
   url: string;
   type: ImageType;
-  entityId: string;
+  userId: string;
+  postId: string;
   createdAt: Date;
   updatedAt: Date;
 

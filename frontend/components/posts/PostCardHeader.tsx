@@ -10,37 +10,47 @@ import {
   MenuItem,
 } from "@mui/material";
 import { deletePost } from "../../services/api/postAxios";
-import { useSWRConfig } from "swr";
 import { stopPropagation } from "../../utils/helpers";
+import { useRouter } from "next/router";
 
-const PostCardHeader = ({ postId, author, userIsOwner, showActions }: any) => {
-  const { mutate } = useSWRConfig();
+const PostCardHeader = ({
+  postId,
+  author,
+  userIsOwner,
+  showActions,
+  avatar,
+  mutate,
+}: any) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const showMenu = Boolean(anchorEl);
+  const router = useRouter();
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
     stopPropagation(event);
+    setAnchorEl(event.currentTarget);
   };
 
-  const handleCloseMenu = () => {
+  const handleCloseMenu = (event: MouseEvent<HTMLButtonElement>) => {
+    stopPropagation(event);
     setAnchorEl(null);
   };
 
-  const handleDeletePost = async () => {
+  const handleDeletePost = async (event: any) => {
+    stopPropagation(event);
     await deletePost(postId);
-    mutate("posts");
+    mutate();
+    router.push("/feed");
   };
 
   return (
     <>
       <Stack direction="row" justifyContent="space-between">
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar src="" />
+          <Avatar src={avatar} />
           <Typography variant="subtitle2">{author}</Typography>
         </Stack>
         <Box>
-          {userIsOwner && handleShowMenu && showActions && (
+          {userIsOwner && showActions && (
             <IconButton onClick={handleShowMenu}>
               <MoreHorizIcon color="action" />
             </IconButton>
