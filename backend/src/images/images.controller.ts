@@ -19,8 +19,7 @@ import { CreateImageDto } from "./dto/create-image.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { ImageEntity } from "./entities/image.entity";
-import { ImageType } from "@prisma/client";
+import { ImageType, Prisma } from "@prisma/client";
 
 @Controller("api/images")
 export class ImagesController {
@@ -42,12 +41,18 @@ export class ImagesController {
       }
     }
     const uploadedImage: any = await this.fileUploadService.upload(imageFile);
-    const newImage = new ImageEntity({
-      userId: image.userId,
-      postId: image.postId,
+    const newImage: Prisma.ImageCreateInput = {
+      post: {
+        connect: {
+          postId: image.postId,
+        },
+      },
       type: image.type,
       url: uploadedImage.Location,
-    });
+      user: {
+        connect: { userId: image.userId },
+      },
+    };
     return await this.imagesService.create(newImage);
   }
 
@@ -58,14 +63,16 @@ export class ImagesController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(FileInterceptor("image"))
   @Patch(":id")
-  async update(
-    @Param("id") imageId: string,
-    @Body() updateImageDto: UpdateImageDto
-  ) {
+  async update(@UploadedFile() imageFile, @Param("id") imageId: string) {
+    const uploadedImage: any = await this.fileUploadService.upload(imageFile);
+    const newImage: Prisma.ImageUpdateInput = {
+      url: uploadedImage.Location,
+    };
     return this.imagesService.update({
       where: { imageId },
-      data: updateImageDto,
+      data: newImage,
     });
   }
 

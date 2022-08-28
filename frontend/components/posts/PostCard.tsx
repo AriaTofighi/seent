@@ -1,19 +1,19 @@
-import useSWR, { KeyedMutator } from "swr";
+import useSWR from "swr";
 import Link from "next/link";
 import { useState } from "react";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import { Button } from "@mui/material";
 import { useRouter } from "next/router";
-import StyledCard from "../UI/StyledCard";
-import PostCardBody from "./PostCardBody";
 import { Styles } from "../../types/types";
-import PostCardFooter from "./PostCardFooter";
-import PostCardHeader from "./PostCardHeader";
 import { formatDate } from "../../utils/helpers";
 import { useUser } from "../../contexts/UserContext";
 import usePostDialog from "../../hooks/usePostDialog";
 import { PostEntity, ReactionEntity } from "../../../backend/src/types";
+import StyledCard from "../UI/StyledCard";
+import PostCardBody from "./PostCardBody";
+import PostCardFooter from "./PostCardFooter";
+import PostCardHeader from "./PostCardHeader";
 
 const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
@@ -28,12 +28,20 @@ type Props = {
   mutate?: () => void;
 };
 
-const styles: Styles = {
-  textBtn: {
-    textTransform: "none",
-    ml: 1,
-    mt: 1,
-  },
+const getStyles = (depth: number): Styles => {
+  return {
+    textBtn: {
+      textTransform: "none",
+    },
+    footerBtn: {
+      pb: 1,
+      pl: 1,
+      borderBottom: "1px solid",
+      borderLeft: depth > 0 ? "1px solid" : "none",
+      width: "100%",
+      borderColor: "divider",
+    },
+  };
 };
 
 const MAX_POST_DEPTH_PER_PAGE = 2;
@@ -46,7 +54,6 @@ const PostCard = ({
   expandable = false,
   showActions = true,
 }: Props) => {
-  const childPostsLength = post?._count?.childPosts;
   const { user } = useUser();
   const router = useRouter();
   const [expanded, setExpanded] = useState<boolean>(false);
@@ -57,6 +64,7 @@ const PostCard = ({
   } = useSWR(expanded ? `posts?parentPostId=${postId}` : null);
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
+  const childPostsLength = post?._count?.childPosts;
   const childPosts = childPostsData?.data ?? [];
   const formattedDate = formatDate(post?.createdAt);
   const showViewMore =
@@ -77,13 +85,24 @@ const PostCard = ({
     mutateChildPosts();
   };
 
+  const getBoxStyles = () => {
+    let styles = {};
+    if (childPostsLength > 0 && expandable) {
+      styles = { borderBottom: "none" };
+    }
+    if (depth > 0) {
+      styles = { ...styles, borderLeft: 1, borderColor: "divider" };
+    }
+    return styles;
+  };
+
   if (!post || !post.images) {
     return <Box>Loading...</Box>;
   }
 
   return (
     <>
-      <StyledCard variant="elevation">
+      <StyledCard variant="outlined" sx={getBoxStyles()}>
         <Link href={`/posts/${postId}`}>
           <Box>
             <PostCardHeader
@@ -91,7 +110,7 @@ const PostCard = ({
               userIsOwner={user?.userId === post?.authorId}
               showActions={showActions}
               postId={postId}
-              avatar={post.author.images[0].url}
+              avatar={post.author.images[0]?.url}
               mutate={mutate}
             />
             <PostCardBody
@@ -114,11 +133,17 @@ const PostCard = ({
 
       {expanded && (
         <>
-          <Button sx={styles.textBtn} onClick={() => setExpanded(false)}>
-            Hide replies
-          </Button>
+          <Box sx={getStyles(depth).footerBtn}>
+            <Button
+              sx={getStyles(depth).textBtn}
+              onClick={() => setExpanded(false)}
+            >
+              Hide replies
+            </Button>
+          </Box>
+
           {childPosts.map((p: PostEntity) => (
-            <Box sx={{ mt: 1, ml: 3 }} key={p.postId}>
+            <Box sx={{ ml: 3 }} key={p.postId}>
               <PostCard
                 postId={p.postId}
                 post={p}
@@ -132,18 +157,25 @@ const PostCard = ({
       )}
 
       {showViewMore && (
-        <Button sx={styles.textBtn} onClick={() => setExpanded(true)}>
-          View {childPostsLength} {childPostsLength > 1 ? "replies" : "reply"}
-        </Button>
+        <Box sx={getStyles(depth).footerBtn}>
+          <Button
+            sx={getStyles(depth).textBtn}
+            onClick={() => setExpanded(true)}
+          >
+            View {childPostsLength} {childPostsLength > 1 ? "replies" : "reply"}
+          </Button>
+        </Box>
       )}
 
       {showViewFullPost && (
-        <Button
-          sx={styles.textBtn}
-          onClick={() => router.push(`/posts/${postId}`)}
-        >
-          View more replies in full post
-        </Button>
+        <Box sx={getStyles(depth).footerBtn}>
+          <Button
+            sx={getStyles(depth).textBtn}
+            onClick={() => router.push(`/posts/${postId}`)}
+          >
+            View more replies in full post
+          </Button>
+        </Box>
       )}
 
       <PostDialog

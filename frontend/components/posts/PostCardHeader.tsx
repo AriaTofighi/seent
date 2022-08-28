@@ -46,7 +46,17 @@ const PostCardHeader = ({
     <>
       <Stack direction="row" justifyContent="space-between">
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar src={avatar} />
+          <Avatar
+            src={avatar}
+            onClick={(event) => {
+              // TODO: make user profile routes be like: ...sent.com/userId
+              // Could add a username field to let users choose a custom, unique identifier
+              stopPropagation(event);
+
+              router.push("/feed");
+              console.log("HIT");
+            }}
+          />
           <Typography variant="subtitle2">{author}</Typography>
         </Stack>
         <Box>

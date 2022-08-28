@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Card, Typography } from "@mui/material";
 import TopAppBar from "../navigation/TopAppBar";
 import SideBar from "../navigation/SideBar";
 import { useTheme } from "@mui/system";
@@ -9,7 +9,7 @@ import { ReactElement, useState } from "react";
 const styles: Styles = {
   container: {
     display: "flex",
-    maxWidth: 900,
+    maxWidth: 1400,
     margin: "auto",
     justifyContent: "center",
   },
@@ -18,7 +18,7 @@ const styles: Styles = {
     width: 600,
     borderRight: "1px solid",
     borderLeft: "1px solid",
-    borderColor: "secondary.dark",
+    borderColor: "divider",
     minHeight: "100vh",
   },
 };
@@ -37,8 +37,21 @@ const MainLayout = ({ children }: any) => {
       <SideBar open={openSidebar} setOpen={setOpenSidebar} />
       <Box sx={styles.mainContent}>
         {mobileMode && <TopAppBar toggleSidebar={toggleSidebar} />}
-        <Box p={2}>{children}</Box>
+        <Box>{children}</Box>
       </Box>
+      {/* <Card
+        component="aside"
+        sx={{
+          p: 2,
+          width: 300,
+          bgcolor: "background.default",
+          borderRadius: 0,
+          borderRight: "none",
+        }}
+        variant="outlined"
+      >
+        <Typography variant="h6">People to Follow</Typography>
+      </Card> */}
     </Box>
   );
 };

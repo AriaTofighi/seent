@@ -1,6 +1,7 @@
 import { Typography } from "@mui/material";
 import Head from "next/head";
 import { getMainLayout } from "../components/layouts/MainLayout";
+import Header from "../components/UI/Header";
 import { NextPageWithLayout } from "../types/types";
 
 const Settings: NextPageWithLayout = () => {
@@ -10,9 +11,7 @@ const Settings: NextPageWithLayout = () => {
         <title>Settings</title>
         <meta property="og:title" content="Settings" key="title" />
       </Head>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Settings
-      </Typography>
+      <Header>Settings</Header>
     </>
   );
 };

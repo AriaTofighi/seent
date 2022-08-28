@@ -71,6 +71,9 @@ const getTheme = (mode: PaletteMode) => {
             background: {
               default: lmColours.background.default,
             },
+            common: {
+              white: "rgba(0, 0, 0, 0.12)",
+            },
           }
         : {
             primary: {

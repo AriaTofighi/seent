@@ -18,20 +18,22 @@ import useSWRInfinite from "swr/infinite";
 import _ from "lodash";
 import { PostEntity } from "../../backend/src/types";
 import { useUser } from "../contexts/UserContext";
+import Header from "../components/UI/Header";
 
 const PostDialog = dynamic(() => import("../components/posts/PostDialog"), {
   ssr: false,
 });
 
 const styles: Styles = {
-  posts: { display: "flex", flexDirection: "column", gap: 2 },
+  posts: { display: "flex", flexDirection: "column", gap: 0 },
   createPostBtn: {
     position: "sticky",
     bottom: 0,
   },
   root: {
     height: "100%",
-    position: "relative",
+    position: "sticky",
+    top: 0,
   },
 };
 
@@ -80,9 +82,7 @@ const Feed: NextPageWithLayout = () => {
       </Head>
 
       <Box sx={styles.root}>
-        <Typography variant="h5" sx={{ mb: 2 }}>
-          Feed
-        </Typography>
+        <Header>Feed</Header>
 
         <Box sx={styles.posts}>
           {sortedPosts?.map(({ postId, ...rest }) => {

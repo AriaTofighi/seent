@@ -1,13 +1,13 @@
-import { Button, Card, Typography } from "@mui/material";
+import { Button, Card, LinearProgress, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Head from "next/head";
 import Image from "next/image";
-import React, { ChangeEvent, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import useSWR from "swr";
 import { getMainLayout } from "../components/layouts/MainLayout";
+import Header from "../components/UI/Header";
 import { useUser } from "../contexts/UserContext";
-import { createImage } from "../services/api/imageAxios";
-import { uploadUserImage } from "../services/api/userAxios";
+import { createImage, updateImage } from "../services/api/imageAxios";
 import { NextPageWithLayout, Styles } from "../types/types";
 import { fileToBase64 } from "../utils/helpers";
 
@@ -26,7 +26,7 @@ const Profile: NextPageWithLayout = () => {
   const fileInputRef = useRef<any>();
   const [chosenImage, setChosenImage] = useState<any>();
   const [imageFile, setImageFile] = useState<any>();
-  const { data: userData, error: postsErr } = useSWR(
+  const { data: userData, error: userErr } = useSWR(
     user ? `users/${user.userId}` : null
   );
 
@@ -51,8 +51,16 @@ const Profile: NextPageWithLayout = () => {
     formData.append("image", imageFile);
     formData.append("userId", user.userId);
     formData.append("type", "USER_AVATAR");
-    await createImage(formData);
+    if (userData.images.length > 0 && userData.images[0]) {
+      await updateImage(formData, userData.images[0].imageId);
+    } else {
+      await createImage(formData);
+    }
   };
+
+  if (!userData && !userErr) {
+    return <LinearProgress />;
+  }
 
   return (
     <>
@@ -60,9 +68,7 @@ const Profile: NextPageWithLayout = () => {
         <title>Profile</title>
         <meta property="og:title" content="Profile" key="title" />
       </Head>
-      <Typography variant="h5" sx={{ mb: 2 }}>
-        Profile
-      </Typography>
+      <Header>Profile</Header>
       <Card
         sx={{ width: "100%", bgcolor: "background.default", p: 2 }}
         variant="outlined"

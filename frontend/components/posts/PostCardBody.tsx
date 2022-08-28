@@ -25,22 +25,21 @@ const PostCardBody = ({ body, replyAuthor, image }: any) => {
       {image && (
         <Box
           sx={{
-            maxWidth: "100%",
             height: 500,
             maxHeight: "33vh",
             position: "relative",
             my: 1,
             border: "1px solid",
             borderColor: "background.default",
-            borderRadius: 1,
-            bgcolor: "background.dark",
+            borderRadius: 5,
+            bgcolor: "#040a0c",
           }}
         >
           <Image
             layout="fill"
             objectFit="contain"
             src={image?.url}
-            // style={{ borderRadius: 4 }}
+            alt="Post"
           />
         </Box>
       )}

@@ -3,10 +3,22 @@ import Head from "next/head";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import PostCard from "../../components/posts/PostCard";
-import { NextPageWithLayout } from "../../types/types";
+import { NextPageWithLayout, Styles } from "../../types/types";
 import { PostEntity } from "../../../backend/src/types";
 import { Button, Stack, Typography } from "@mui/material";
 import { getMainLayout } from "../../components/layouts/MainLayout";
+
+const styles: Styles = {
+  header: {
+    p: 2,
+    borderBottom: "1px solid",
+    width: "100%",
+    borderColor: "divider",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+};
 
 const PostDetails: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -52,17 +64,11 @@ const PostDetails: NextPageWithLayout = () => {
       </Head>
 
       <Box>
-        <Stack
-          justifyContent="space-between"
-          direction="row"
-          alignItems="flex-start"
-        >
-          <Typography variant="h5" sx={{ mb: 2 }}>
-            Post
-          </Typography>
+        <Stack sx={styles.header}>
+          <Typography variant="h5">Post</Typography>
           {post?.parentPost && (
             <Button
-              sx={{ textTransform: "none" }}
+              sx={{ textTransform: "none", m: 0 }}
               onClick={() => router.push(`/posts/${post.parentPostId}`)}
             >
               View original post
@@ -74,24 +80,28 @@ const PostDetails: NextPageWithLayout = () => {
           post={post as any}
           mutate={mutateAll}
         />
-        {replies.length > 0 && (
-          <Typography variant="h5" sx={{ my: 2 }}>
-            Replies
+        <Typography variant="h5" sx={styles.header}>
+          Replies
+        </Typography>
+
+        {replies.length > 0 ? (
+          replies.map((r: PostEntity) => {
+            return (
+              <Box key={r.postId}>
+                <PostCard
+                  postId={r.postId}
+                  post={r}
+                  expandable
+                  mutate={mutateAll}
+                />
+              </Box>
+            );
+          })
+        ) : (
+          <Typography sx={{ p: 3, textAlign: "center" }}>
+            There are no replies yet.
           </Typography>
         )}
-
-        {replies.map((r: PostEntity) => {
-          return (
-            <Box key={r.postId} sx={{ mb: 1 }}>
-              <PostCard
-                postId={r.postId}
-                post={r}
-                expandable
-                mutate={mutateAll}
-              />
-            </Box>
-          );
-        })}
       </Box>
     </>
   );

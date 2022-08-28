@@ -10,7 +10,6 @@ import {
 import Image from "next/image";
 import { Box } from "@mui/system";
 import PostCard from "./PostCard";
-import { useSWRConfig } from "swr";
 import { useForm } from "react-hook-form";
 import { Styles } from "../../types/types";
 import EmojiPicker from "emoji-picker-react";
@@ -108,8 +107,8 @@ const PostDialog = ({
       formData.append("parentPostId", parentPost.postId);
     }
     await createPost(formData);
-    mutate();
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
+    mutate();
     reset();
   };
 
