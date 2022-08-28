@@ -32,7 +32,7 @@ export class ImagesService {
     return images;
   }
 
-  async create(data: Prisma.ImageCreateInput) {
+  async create(data: Prisma.ImageUncheckedCreateInput) {
     return await this.prisma.image.create({
       data,
     });

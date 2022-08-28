@@ -13,4 +13,8 @@ export class FindPostsQueryDto extends FindManyQuery {
   @IsBoolean()
   @IsOptional()
   isChild: boolean;
+
+  @IsUUID()
+  @IsOptional()
+  authorId: string;
 }

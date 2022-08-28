@@ -1,10 +1,19 @@
-import { Button, Card, LinearProgress, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Card,
+  LinearProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import Head from "next/head";
 import Image from "next/image";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import useSWR from "swr";
+import { PostEntity } from "../../backend/src/types";
 import { getMainLayout } from "../components/layouts/MainLayout";
+import PostCard from "../components/posts/PostCard";
 import Header from "../components/UI/Header";
 import { useUser } from "../contexts/UserContext";
 import { createImage, updateImage } from "../services/api/imageAxios";
@@ -26,9 +35,16 @@ const Profile: NextPageWithLayout = () => {
   const fileInputRef = useRef<any>();
   const [chosenImage, setChosenImage] = useState<any>();
   const [imageFile, setImageFile] = useState<any>();
-  const { data: userData, error: userErr } = useSWR(
-    user ? `users/${user.userId}` : null
-  );
+  const {
+    data: userData,
+    error: userErr,
+    mutate: mutateUser,
+  } = useSWR(user ? `users/${user.userId}` : null);
+  const {
+    data: posts,
+    error: postsErr,
+    mutate: mutatePosts,
+  } = useSWR(user ? `posts?authorId=${user.userId}&isChild=false` : null);
 
   const handleBrowse = () => {
     // Reseting the file input to allow the user to pick the same file twice in a row.
@@ -47,7 +63,6 @@ const Profile: NextPageWithLayout = () => {
 
   const handleUpload = async () => {
     const formData = new FormData();
-    console.log(imageFile);
     formData.append("image", imageFile);
     formData.append("userId", user.userId);
     formData.append("type", "USER_AVATAR");
@@ -58,9 +73,17 @@ const Profile: NextPageWithLayout = () => {
     }
   };
 
+  useEffect(() => {
+    if (!imageFile) return;
+    handleUpload();
+    mutateUser();
+  }, [imageFile]);
+
   if (!userData && !userErr) {
     return <LinearProgress />;
   }
+
+  console.log(posts?.data);
 
   return (
     <>
@@ -69,14 +92,68 @@ const Profile: NextPageWithLayout = () => {
         <meta property="og:title" content="Profile" key="title" />
       </Head>
       <Header>Profile</Header>
-      <Card
-        sx={{ width: "100%", bgcolor: "background.default", p: 2 }}
-        variant="outlined"
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          gap: 2,
+          mt: 3,
+        }}
       >
-        <Typography variant="body2">Profile Picture</Typography>
-      </Card>
-
-      {chosenImage && (
+        <Avatar
+          src={userData?.images[0]?.url}
+          sx={{
+            maxWidth: {
+              lg: 135,
+              xs: 75,
+            },
+            width: "100%",
+            height: "auto",
+            cursor: "pointer",
+          }}
+          onClick={handleBrowse}
+        />
+        <Typography>{user.name}</Typography>
+      </Box>
+      <Stack
+        sx={{ width: "100%", justifyContent: "center", flexDirection: "row" }}
+      >
+        <Stack
+          sx={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            mt: 2,
+            mx: 3,
+            columnGap: 20,
+            rowGap: 3,
+            flexWrap: "wrap",
+          }}
+        >
+          <Stack sx={{ flexDirection: "column" }}>
+            <Typography>Posts</Typography>
+            <Typography>{posts?.data.length}</Typography>
+          </Stack>
+          <Stack sx={{ flexDirection: "column" }}>
+            <Typography>Likes</Typography>
+            <Typography>10</Typography>
+          </Stack>
+        </Stack>
+      </Stack>
+      {posts?.data?.map(({ postId, ...rest }: PostEntity) => {
+        if (!{ ...rest }.parentPostId) {
+          return (
+            <PostCard
+              postId={postId}
+              post={{ ...rest, postId }}
+              key={postId}
+              mutate={mutatePosts}
+            />
+          );
+        }
+      })}
+      {/* {chosenImage && (
         <Box sx={styles.images}>
           <Image
             src={chosenImage}
@@ -86,10 +163,10 @@ const Profile: NextPageWithLayout = () => {
             layout="fixed"
           />
         </Box>
-      )}
-      <Button onClick={handleBrowse}>Browse</Button>
+      )} */}
+      {/* <Button onClick={handleBrowse}>Browse</Button>
       <Button onClick={() => setChosenImage(null)}>Remove</Button>
-      <Button onClick={handleUpload}>Upload</Button>
+      <Button onClick={handleUpload}>Upload</Button> */}
       <input
         type="file"
         accept="image/*"
@@ -97,7 +174,7 @@ const Profile: NextPageWithLayout = () => {
         style={{ display: "none" }}
         ref={fileInputRef}
       />
-      {userData?.image && (
+      {/* {userData?.image && (
         <Box sx={styles.images}>
           <Image
             src={userData?.image?.url}
@@ -107,14 +184,7 @@ const Profile: NextPageWithLayout = () => {
             layout="fixed"
           />
         </Box>
-      )}
-
-      <Card
-        sx={{ width: "100%", bgcolor: "background.default", p: 2 }}
-        variant="outlined"
-      >
-        <Typography variant="body2">Email</Typography>
-      </Card>
+      )} */}
     </>
   );
 };

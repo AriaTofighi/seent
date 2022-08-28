@@ -33,25 +33,23 @@ export class ImagesController {
   @Post()
   async create(@UploadedFile() imageFile, @Body() image: CreateImageDto) {
     if (image.type === ImageType.USER_AVATAR) {
+      if (!image.userId) {
+        throw new BadRequestException();
+      }
+
       const userAvatars = await this.imagesService.findMany({
-        where: { type: ImageType.USER_AVATAR },
+        where: { type: ImageType.USER_AVATAR, userId: image.userId },
       });
       if (userAvatars.length > 0) {
         throw new BadRequestException();
       }
     }
     const uploadedImage: any = await this.fileUploadService.upload(imageFile);
-    const newImage: Prisma.ImageCreateInput = {
-      post: {
-        connect: {
-          postId: image.postId,
-        },
-      },
+    const newImage: Prisma.ImageUncheckedCreateInput = {
+      postId: image.postId,
+      userId: image.userId,
       type: image.type,
       url: uploadedImage.Location,
-      user: {
-        connect: { userId: image.userId },
-      },
     };
     return await this.imagesService.create(newImage);
   }

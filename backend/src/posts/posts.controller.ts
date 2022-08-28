@@ -52,12 +52,13 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto) {
-    const { postId, parentPostId, isChild, page, perPage } = query;
+    const { authorId, postId, parentPostId, isChild, page, perPage } = query;
     const result = await this.postsService.findMany({
-      where: { postId, parentPostId: isChild ? null : parentPostId },
-      // orderBy: {
-      //   createdAt: "desc",
-      // },
+      where: {
+        postId,
+        parentPostId: isChild ? null : parentPostId,
+        authorId: authorId,
+      },
       page,
       perPage,
     });

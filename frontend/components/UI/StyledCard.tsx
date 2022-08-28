@@ -14,6 +14,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   borderRadius: 0,
   "&:hover": {
     // Using styled() to make use of alpha(). Cannot use MUIv5 system colours
+    // Or maybe not -> sx={{ backgroundColor: (theme) => lighten(0.2, theme.palette.primary.main) }}
     backgroundColor: alpha(theme.palette.primary.main, 0.05),
   },
 }));
