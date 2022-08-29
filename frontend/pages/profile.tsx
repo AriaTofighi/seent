@@ -1,11 +1,4 @@
-import {
-  Avatar,
-  Button,
-  Card,
-  LinearProgress,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, Fade, LinearProgress, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Head from "next/head";
 import Image from "next/image";
@@ -31,7 +24,7 @@ const styles: Styles = {
 };
 
 const Profile: NextPageWithLayout = () => {
-  const { user } = useUser();
+  const { user, loading } = useUser();
   const fileInputRef = useRef<any>();
   const [chosenImage, setChosenImage] = useState<any>();
   const [imageFile, setImageFile] = useState<any>();
@@ -62,6 +55,7 @@ const Profile: NextPageWithLayout = () => {
   };
 
   const handleUpload = async () => {
+    if (!user) return;
     const formData = new FormData();
     formData.append("image", imageFile);
     formData.append("userId", user.userId);
@@ -83,8 +77,6 @@ const Profile: NextPageWithLayout = () => {
     return <LinearProgress />;
   }
 
-  console.log(posts?.data);
-
   return (
     <>
       <Head>
@@ -92,55 +84,62 @@ const Profile: NextPageWithLayout = () => {
         <meta property="og:title" content="Profile" key="title" />
       </Head>
       <Header>Profile</Header>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          gap: 2,
-          mt: 3,
-        }}
-      >
-        <Avatar
-          src={userData?.images[0]?.url}
-          sx={{
-            maxWidth: {
-              lg: 135,
-              xs: 75,
-            },
-            width: "100%",
-            height: "auto",
-            cursor: "pointer",
-          }}
-          onClick={handleBrowse}
-        />
-        <Typography>{user.name}</Typography>
-      </Box>
-      <Stack
-        sx={{ width: "100%", justifyContent: "center", flexDirection: "row" }}
-      >
-        <Stack
-          sx={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            mt: 2,
-            mx: 3,
-            columnGap: 20,
-            rowGap: 3,
-            flexWrap: "wrap",
-          }}
-        >
-          <Stack sx={{ flexDirection: "column" }}>
-            <Typography>Posts</Typography>
-            <Typography>{posts?.data.length}</Typography>
+      <Fade in timeout={500}>
+        <Box sx={{ borderBottom: "1px solid", borderColor: "divider", p: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
+            <Avatar
+              src={userData?.images[0]?.url}
+              sx={{
+                maxWidth: {
+                  lg: 135,
+                  xs: 75,
+                },
+                width: "100%",
+                height: "auto",
+                cursor: "pointer",
+              }}
+              onClick={handleBrowse}
+            />
+            <Typography>{user?.name}</Typography>
+          </Box>
+          <Stack
+            sx={{
+              width: "100%",
+              justifyContent: "center",
+              flexDirection: "row",
+            }}
+          >
+            <Stack
+              sx={{
+                flexDirection: "row",
+                justifyContent: "space-between",
+                mt: 2,
+                width: "50%",
+                flexWrap: "wrap",
+              }}
+            >
+              <Stack sx={{ flexDirection: "column" }}>
+                <Typography variant="subtitle2">Posts</Typography>
+                <Typography fontWeight={600}>{posts?.data.length}</Typography>
+              </Stack>
+              <Stack sx={{ flexDirection: "column" }}>
+                <Typography variant="subtitle2">Likes</Typography>
+                <Typography fontWeight={600}>10</Typography>
+              </Stack>
+            </Stack>
           </Stack>
-          <Stack sx={{ flexDirection: "column" }}>
-            <Typography>Likes</Typography>
-            <Typography>10</Typography>
-          </Stack>
-        </Stack>
-      </Stack>
+          <Typography>{user?.bio}</Typography>
+        </Box>
+      </Fade>
+
       {posts?.data?.map(({ postId, ...rest }: PostEntity) => {
         if (!{ ...rest }.parentPostId) {
           return (

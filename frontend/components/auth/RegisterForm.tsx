@@ -1,18 +1,17 @@
-import { Button, Typography } from "@mui/material";
-import { Box } from "@mui/system";
 import React from "react";
+import { Box } from "@mui/system";
+import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
-import { Styles } from "../../types/types";
 import TextInput from "../controls/TextInput";
+import { Button, Typography } from "@mui/material";
+import { useUser } from "../../contexts/UserContext";
 import { signUp } from "../../services/api/authAxios";
 import { convertDateForPicker } from "../../utils/helpers";
-import { useUser } from "../../contexts/UserContext";
-import { MODES as AUTH_DIALOG_MODES } from "./AuthDialog";
-import { toast } from "react-toastify";
 
 const defaultValues = {
   name: "",
   email: "",
+  username: "",
   birthday: convertDateForPicker(new Date()),
   password: "",
   confirmPassword: "",
@@ -26,7 +25,7 @@ const RegisterForm = ({ onClose }: Props) => {
   const { control, reset, handleSubmit } = useForm({ defaultValues });
   const { setUser } = useUser();
 
-  const handleSignUp = async (formData: any) => {
+  const handleSignUp = async (formData: typeof defaultValues) => {
     const { name, email, birthday, password, confirmPassword } = formData;
     const res = await signUp(name, email, password, birthday);
     if (!res) {
@@ -59,6 +58,13 @@ const RegisterForm = ({ onClose }: Props) => {
             control={control}
             placeholder="Email"
             rules={{ required: true, isEmail: true }}
+          />
+          <TextInput
+            name="username"
+            label="Username"
+            control={control}
+            placeholder="Username"
+            rules={{ required: true }}
           />
           <TextInput
             name="birthday"

@@ -76,9 +76,11 @@ const PostCardFooter = ({
           alignItems="flex-start"
         >
           <Box>
-            <Typography variant="caption" sx={{ mr: 1 }}>
-              {allReactions?.length > 0 && allReactions.length}
-            </Typography>
+            {allReactions?.length > 0 && (
+              <Typography variant="caption" sx={{ mr: 1 }}>
+                {allReactions.length}
+              </Typography>
+            )}
             <Tooltip title="Like">
               <IconButton
                 sx={{ p: 0.5 }}
@@ -93,7 +95,7 @@ const PostCardFooter = ({
             </Tooltip>
           </Box>
           <Tooltip title="Reply">
-            <IconButton sx={{ p: 0.5, mt: -0.1 }} onClick={handleReply}>
+            <IconButton sx={{ mt: -0.1, p: 0.5 }} onClick={handleReply}>
               <ReplyIcon color="action" fontSize="small" />
             </IconButton>
           </Tooltip>

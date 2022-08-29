@@ -4,9 +4,12 @@ import {
   useEffect,
   useState,
   ReactNode,
+  SetStateAction,
 } from "react";
 import jwtDecode from "jwt-decode";
 import { setDefaultHeader } from "../services/api/AxiosInstance";
+import { UserEntity } from "../../backend/src/types";
+import useSWR from "swr";
 
 type Props = {
   children: ReactNode;
@@ -14,28 +17,53 @@ type Props = {
 
 const TOKEN_KEY = "token_seent";
 
-const UserContext = createContext<any>({
+type DefaultContextType = {
+  user: UserEntity | undefined;
+  setUser: (t: string) => void;
+  loading: boolean;
+  logout: () => void;
+};
+
+const defaultContext: DefaultContextType = {
   user: undefined,
-  setUser: (t: string) => {},
+  setUser: () => {},
   loading: true,
   logout: () => {},
-});
+};
+
+const UserContext = createContext<typeof defaultContext>(defaultContext);
 
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: Props) => {
-  const [user, setUserState] = useState();
+  const [tokenData, setTokenData] = useState<UserEntity>();
+  const [user, setUserState] = useState<UserEntity>();
   const [loading, setLoading] = useState(true);
+  const { data: userRes, error } = useSWR<UserEntity>(
+    tokenData ? `users/${tokenData.userId}` : null
+  );
 
   useEffect(() => {
     let t = localStorage.getItem(TOKEN_KEY);
     if (t) {
-      setUserState(jwtDecode(t));
+      setTokenData(jwtDecode(t));
       setDefaultHeader(t);
+    } else {
+      fakeLoadToCompletion();
     }
-
-    setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (!userRes) return;
+    setUserState(userRes);
+    fakeLoadToCompletion();
+  }, [userRes]);
+
+  const fakeLoadToCompletion = () => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+  };
 
   const setUser = (t: string) => {
     if (!t) return;
@@ -53,6 +81,8 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem(TOKEN_KEY);
     window.location.reload();
   };
+
+  console.log("hit");
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, logout }}>

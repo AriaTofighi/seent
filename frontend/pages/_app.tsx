@@ -14,6 +14,7 @@ import swrConfig from "../config/swrConfig";
 import { UserProvider } from "../contexts/UserContext";
 import { NextPageWithLayout } from "../types/types";
 import { ToastContainer } from "react-toastify";
+import { RouteGuard } from "../components/auth/RouteGuard";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -34,7 +35,9 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <CssBaseline />
         <SWRConfig value={swrConfig}>
           <UserProvider>
-            <ComponentWithLayout />
+            <RouteGuard>
+              <ComponentWithLayout />
+            </RouteGuard>
             <ToastContainer />
           </UserProvider>
         </SWRConfig>

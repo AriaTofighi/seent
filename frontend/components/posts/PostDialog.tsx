@@ -23,6 +23,7 @@ import { createPost } from "../../services/api/postAxios";
 import React, { MouseEvent, useRef, useState } from "react";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
+import { CreatePostDto } from "../../../backend/src/types";
 
 type PostDialog = {
   open: boolean;

@@ -38,7 +38,8 @@ const styles: Styles = {
   },
 };
 
-const getPostsKey = (index: number) => `posts?page=${index + 1}&isChild=false`;
+const getPostsKey = (index: number) =>
+  `posts?page=${index + 1}&isChild=false&perPage=20`;
 
 const Feed: NextPageWithLayout = () => {
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =

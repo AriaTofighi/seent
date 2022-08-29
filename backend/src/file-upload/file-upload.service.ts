@@ -5,9 +5,8 @@ import { randomUUID } from "crypto";
 @Injectable()
 export class FileUploadService {
   async upload(file) {
-    const { originalname } = file;
     const bucketS3 = "seent";
-    const randomFileName = randomUUID() + "-" + originalname;
+    const randomFileName = randomUUID();
     return await this.uploadS3(file.buffer, bucketS3, randomFileName);
   }
 
