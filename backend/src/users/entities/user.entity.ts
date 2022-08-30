@@ -6,6 +6,7 @@ export class UserEntity implements User {
   userId: string;
   email: string;
   name: string;
+  username: string;
 
   @Exclude()
   password: string;

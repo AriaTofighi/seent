@@ -56,7 +56,7 @@ const SideBar = ({ open, setOpen }: Props) => {
       </MenuItem>
       {user && (
         <>
-          <MenuItem icon={<PersonIcon />} href="/profile">
+          <MenuItem icon={<PersonIcon />} href={`/profiles/${user.username}`}>
             Profile
           </MenuItem>
           <MenuItem icon={<SettingsIcon />} href="/settings">

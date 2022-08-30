@@ -87,6 +87,7 @@ export class PostsService {
           author: {
             select: {
               name: true,
+              username: true,
               images: {
                 where: {
                   type: ImageType.USER_AVATAR,

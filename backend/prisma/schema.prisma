@@ -13,6 +13,7 @@ datasource db {
 model User {
   userId    String     @id @default(uuid())
   email     String     @unique
+  username  String     @unique
   name      String
   password  String
   birthday  DateTime

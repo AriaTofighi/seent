@@ -36,13 +36,18 @@ export class AuthService {
   }
 
   async signUp(user: SignUpDto) {
-    const { email, password, name, birthday } = user;
+    const { email, password, name, birthday, username } = user;
 
-    const dbUser = await this.usersService.findOne({ email });
+    const userByEmail = await this.usersService.findOne({ email });
+    const userByUsername = await this.usersService.findOne({ email });
 
-    if (dbUser) {
+    if (userByEmail) {
       throw new UnauthorizedException(
         "An account with this email already exists"
+      );
+    } else if (userByUsername) {
+      throw new UnauthorizedException(
+        "An account with this username already exists"
       );
     }
 
@@ -53,6 +58,7 @@ export class AuthService {
       password: hash,
       name,
       birthday,
+      username,
     });
 
     const userWithoutPassword = exclude(newUser, "password");

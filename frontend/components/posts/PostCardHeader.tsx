@@ -12,6 +12,7 @@ import {
 import { deletePost } from "../../services/api/postAxios";
 import { stopPropagation } from "../../utils/helpers";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 const PostCardHeader = ({
   postId,
@@ -46,18 +47,19 @@ const PostCardHeader = ({
     <>
       <Stack direction="row" justifyContent="space-between">
         <Stack spacing={2} direction="row" alignItems="center">
-          <Avatar
-            src={avatar}
-            onClick={(event) => {
-              // TODO: make user profile routes be like: ...sent.com/userId
-              // Could add a username field to let users choose a custom, unique identifier
-              stopPropagation(event);
+          <Link href={`/profiles/${author.username}`}>
+            <a>
+              <Avatar
+                src={avatar}
+                // onClick={(event) => {
+                //   stopPropagation(event);
+                //   router.push(`/profiles/${author.username}`);
+                // }}
+              />
+            </a>
+          </Link>
 
-              router.push("/feed");
-              console.log("HIT");
-            }}
-          />
-          <Typography variant="subtitle2">{author}</Typography>
+          <Typography variant="subtitle2">{author.name}</Typography>
         </Stack>
         <Box>
           {userIsOwner && showActions && (

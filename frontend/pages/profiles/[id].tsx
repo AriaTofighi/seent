@@ -1,17 +1,18 @@
-import { Avatar, Fade, LinearProgress, Stack, Typography } from "@mui/material";
-import { Box } from "@mui/system";
+import useSWR from "swr";
 import Head from "next/head";
 import Image from "next/image";
+import { Box } from "@mui/system";
+import { useRouter } from "next/router";
+import Header from "../../components/UI/Header";
+import { fileToBase64 } from "../../utils/helpers";
+import { useUser } from "../../contexts/UserContext";
+import PostCard from "../../components/posts/PostCard";
+import { PostEntity } from "../../../backend/src/types";
 import React, { useEffect, useRef, useState } from "react";
-import useSWR from "swr";
-import { PostEntity } from "../../backend/src/types";
-import { getMainLayout } from "../components/layouts/MainLayout";
-import PostCard from "../components/posts/PostCard";
-import Header from "../components/UI/Header";
-import { useUser } from "../contexts/UserContext";
-import { createImage, updateImage } from "../services/api/imageAxios";
-import { NextPageWithLayout, Styles } from "../types/types";
-import { fileToBase64 } from "../utils/helpers";
+import { Styles, NextPageWithLayout } from "../../types/types";
+import { getMainLayout } from "../../components/layouts/MainLayout";
+import { updateImage, createImage } from "../../services/api/imageAxios";
+import { Avatar, Fade, LinearProgress, Stack, Typography } from "@mui/material";
 
 const styles: Styles = {
   images: {
@@ -24,21 +25,24 @@ const styles: Styles = {
 };
 
 const Profile: NextPageWithLayout = () => {
+  const { query } = useRouter();
   const { user, loading } = useUser();
   const fileInputRef = useRef<any>();
   const [chosenImage, setChosenImage] = useState<any>();
   const [imageFile, setImageFile] = useState<any>();
   const {
-    data: userData,
+    data: userRes,
     error: userErr,
     mutate: mutateUser,
-  } = useSWR(user ? `users/${user.userId}` : null);
+  } = useSWR(query ? `users?username=${query.id}` : null);
   const {
     data: posts,
     error: postsErr,
     mutate: mutatePosts,
-  } = useSWR(user ? `posts?authorId=${user.userId}&isChild=false` : null);
-
+  } = useSWR(
+    userRes ? `posts?authorId=${userRes.data[0].userId}&isChild=false` : null
+  );
+  const profileUser = userRes?.data[0];
   const handleBrowse = () => {
     // Reseting the file input to allow the user to pick the same file twice in a row.
     fileInputRef.current.value = null;
@@ -60,8 +64,8 @@ const Profile: NextPageWithLayout = () => {
     formData.append("image", imageFile);
     formData.append("userId", user.userId);
     formData.append("type", "USER_AVATAR");
-    if (userData.images.length > 0 && userData.images[0]) {
-      await updateImage(formData, userData.images[0].imageId);
+    if (profileUser.images.length > 0 && profileUser.images[0]) {
+      await updateImage(formData, profileUser.images[0].imageId);
     } else {
       await createImage(formData);
     }
@@ -73,10 +77,10 @@ const Profile: NextPageWithLayout = () => {
     mutateUser();
   }, [imageFile]);
 
-  if (!userData && !userErr) {
+  if (!profileUser && !userErr) {
     return <LinearProgress />;
   }
-
+  console.log(user);
   return (
     <>
       <Head>
@@ -96,7 +100,7 @@ const Profile: NextPageWithLayout = () => {
             }}
           >
             <Avatar
-              src={userData?.images[0]?.url}
+              src={profileUser.images ? profileUser?.images[0]?.url : undefined}
               sx={{
                 maxWidth: {
                   lg: 135,
@@ -104,11 +108,11 @@ const Profile: NextPageWithLayout = () => {
                 },
                 width: "100%",
                 height: "auto",
-                cursor: "pointer",
+                cursor: user ? "pointer" : "auto",
               }}
-              onClick={handleBrowse}
+              onClick={user && handleBrowse}
             />
-            <Typography>{user?.name}</Typography>
+            <Typography>{profileUser?.name}</Typography>
           </Box>
           <Stack
             sx={{
@@ -136,7 +140,7 @@ const Profile: NextPageWithLayout = () => {
               </Stack>
             </Stack>
           </Stack>
-          <Typography>{user?.bio}</Typography>
+          <Typography>{profileUser?.bio}</Typography>
         </Box>
       </Fade>
 

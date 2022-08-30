@@ -1,6 +1,7 @@
-import { TextField } from "@mui/material";
+import { TextField, Theme } from "@mui/material";
 import React from "react";
 import { Controller } from "react-hook-form";
+import { Styles } from "../../types/types";
 
 type Props = {
   control: any;
@@ -21,6 +22,9 @@ const TextInput = ({ control, name, rules, ...rest }: Props) => {
           size="medium"
           error={Boolean(fieldState.error)}
           helperText={fieldState.error ? fieldState.error.message : ""}
+          InputProps={{
+            sx: styles.input,
+          }}
           {...field}
           {...rest}
         />
@@ -33,3 +37,12 @@ const TextInput = ({ control, name, rules, ...rest }: Props) => {
 };
 
 export default TextInput;
+
+const styles: Styles = {
+  input: {
+    "& ::-webkit-calendar-picker-indicator": {
+      colorScheme: (theme: Theme) => theme.palette.mode,
+      fontSize: 18,
+    } as any,
+  },
+};

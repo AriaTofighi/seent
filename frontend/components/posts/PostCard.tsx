@@ -106,7 +106,7 @@ const PostCard = ({
         <Link href={`/posts/${postId}`}>
           <Box>
             <PostCardHeader
-              author={post?.author.name}
+              author={post?.author}
               userIsOwner={user?.userId === post?.authorId}
               showActions={showActions}
               postId={postId}

@@ -27,5 +27,6 @@ export type JwtPayload = {
   email: string;
   userId: string;
   name: string;
+  username: string;
   images: Partial<ImageEntity>[];
 };

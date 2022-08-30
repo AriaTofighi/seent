@@ -56,13 +56,14 @@ export const UserProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!userRes) return;
     setUserState(userRes);
-    fakeLoadToCompletion();
+    setLoading(false);
+    // fakeLoadToCompletion();
   }, [userRes]);
 
   const fakeLoadToCompletion = () => {
     setTimeout(() => {
       setLoading(false);
-    }, 500);
+    }, 200);
   };
 
   const setUser = (t: string) => {
@@ -81,8 +82,6 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem(TOKEN_KEY);
     window.location.reload();
   };
-
-  console.log("hit");
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, logout }}>

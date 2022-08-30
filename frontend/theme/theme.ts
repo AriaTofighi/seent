@@ -1,5 +1,6 @@
 import { createTheme } from "@mui/material/styles";
-import { PaletteMode } from "@mui/material";
+import { PaletteMode, Theme } from "@mui/material";
+import { grey } from "@mui/material/colors";
 
 const lmColours = {
   primary: { main: "#9EB0AC", light: "#889793", dark: "#848B90" },
@@ -33,18 +34,9 @@ const getTheme = (mode: PaletteMode) => {
       fontFamily: ["Ubuntu", "sans-serif"].join(","),
     },
     components: {
-      MuiInputBase: {
+      MuiPaper: {
         styleOverrides: {
           root: {
-            "& .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline": {
-              borderColor: lightMode ? "#e0e0e0" : "black",
-            },
-          },
-        },
-      },
-      MuiDialog: {
-        styleOverrides: {
-          paper: {
             backgroundColor: lightMode
               ? lmColours.background.default
               : dmColours.background.default,
@@ -71,8 +63,8 @@ const getTheme = (mode: PaletteMode) => {
             background: {
               default: lmColours.background.default,
             },
-            common: {
-              white: "rgba(0, 0, 0, 0.12)",
+            text: {
+              primary: grey[800],
             },
           }
         : {

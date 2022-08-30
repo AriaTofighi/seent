@@ -82,9 +82,8 @@ const Feed: NextPageWithLayout = () => {
 
       <Box sx={styles.root}>
         <Header>Feed</Header>
-        {loading ? (
-          <LinearProgress />
-        ) : (
+        {loading ? // <LinearProgress />
+        null : (
           <>
             <Box sx={styles.posts}>
               {sortedPosts?.map(({ postId, ...rest }) => {

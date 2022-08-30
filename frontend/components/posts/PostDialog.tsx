@@ -98,6 +98,7 @@ const PostDialog = ({
   };
 
   const handleSubmitPost = async (formValues: any) => {
+    if (!user) return;
     const { body, images } = formValues;
     const formData = new FormData();
     formData.append("images", images);

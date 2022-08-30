@@ -3,10 +3,11 @@ import { Box } from "@mui/system";
 import { toast } from "react-toastify";
 import { useForm } from "react-hook-form";
 import TextInput from "../controls/TextInput";
-import { Button, Typography } from "@mui/material";
+import { Button, Stack, Tooltip, Typography } from "@mui/material";
 import { useUser } from "../../contexts/UserContext";
 import { signUp } from "../../services/api/authAxios";
 import { convertDateForPicker } from "../../utils/helpers";
+import InfoIcon from "@mui/icons-material/Info";
 
 const defaultValues = {
   name: "",
@@ -22,12 +23,15 @@ type Props = {
 };
 
 const RegisterForm = ({ onClose }: Props) => {
-  const { control, reset, handleSubmit } = useForm({ defaultValues });
+  const { control, reset, handleSubmit, getValues } = useForm({
+    defaultValues,
+  });
   const { setUser } = useUser();
 
   const handleSignUp = async (formData: typeof defaultValues) => {
-    const { name, email, birthday, password, confirmPassword } = formData;
-    const res = await signUp(name, email, password, birthday);
+    const { name, email, username, birthday, password, confirmPassword } =
+      formData;
+    const res = await signUp(name, email, password, birthday, username);
     if (!res) {
       toast.error("Not authorized");
     } else {
@@ -35,6 +39,13 @@ const RegisterForm = ({ onClose }: Props) => {
       onClose();
       toast.success("Signed up successfully");
     }
+  };
+
+  const validateConfirmPassword = (val: string) => {
+    if (val !== getValues("password")) {
+      return "Passwords do not match";
+    }
+    return true;
   };
 
   return (
@@ -65,6 +76,14 @@ const RegisterForm = ({ onClose }: Props) => {
             control={control}
             placeholder="Username"
             rules={{ required: true }}
+            InputProps={{
+              endAdornment: (
+                <Tooltip title="Your username will be used in your profile URL">
+                  <InfoIcon fontSize="medium" />
+                </Tooltip>
+              ),
+            }}
+            fullWidth
           />
           <TextInput
             name="birthday"
@@ -88,7 +107,7 @@ const RegisterForm = ({ onClose }: Props) => {
             placeholder="Confirm Password"
             control={control}
             type="password"
-            rules={{ required: true }}
+            rules={{ required: true, validate: validateConfirmPassword }}
           />
           <Button type="submit" variant="outlined">
             <Typography variant="body2" color="secondary.light">

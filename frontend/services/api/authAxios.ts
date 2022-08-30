@@ -16,7 +16,8 @@ export const signUp = async (
   name: string,
   email: string,
   password: string,
-  birthday: string
+  birthday: string,
+  username: string
 ) => {
   try {
     const response = await axios.post(`/auth/local/signup`, {
@@ -24,6 +25,7 @@ export const signUp = async (
       email,
       password,
       birthday,
+      username,
     });
     return response.data;
   } catch (error) {
