@@ -1,53 +1,54 @@
-import { AppBar, IconButton, Toolbar, SxProps } from "@mui/material";
-import React from "react";
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import React, { ReactNode } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
-import { styled, useTheme } from "@mui/system";
+import { useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
+import { Styles } from "../../types/types";
+import { useNav } from "../../contexts/NavContext";
 
 type Props = {
-  toggleSidebar: () => void;
+  children?: ReactNode;
+  title?: string;
 };
 
-const StyledAppBar = styled(AppBar)(({ theme }) => ({
-  boxShadow: "none",
-  top: 0,
-  height: 56,
-  marginBottom: theme.spacing(-2),
-}));
-
-const dialogStyles: SxProps = {
-  paper: {
-    p: 4,
-    backgroundColor: "primary.dark",
-    color: "secondary.light",
-    width: 700,
-    height: 600,
-    boxShadow: "",
-    borderRadius: 4,
-  },
-};
-
-const TopAppBar = ({ toggleSidebar }: Props) => {
+const TopAppBar = ({ children, title }: Props) => {
   const theme = useTheme();
-  const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
+  const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
+  const { open, setOpen } = useNav();
 
   return (
-    <StyledAppBar position="relative" color="transparent" enableColorOnDark>
+    <AppBar position="sticky" sx={styles.root}>
       <Toolbar>
         {mobileMode && (
           <IconButton
-            size="large"
+            size="medium"
             edge="start"
             color="inherit"
-            sx={{ mr: 2 }}
-            onClick={toggleSidebar}
+            sx={{ mr: 1 }}
+            onClick={() => setOpen(!open)}
           >
             <MenuIcon />
           </IconButton>
         )}
+        <Typography variant="h5">{title ?? ""}</Typography>
+        {children}
       </Toolbar>
-    </StyledAppBar>
+    </AppBar>
   );
 };
 
 export default TopAppBar;
+
+const styles: Styles = {
+  root: {
+    borderBottom: "1px solid",
+    width: "100%",
+    borderColor: "divider",
+    position: "sticky",
+    top: 0,
+    zIndex: 1000,
+    bgcolor: "background.default",
+    backgroundImage: "none",
+    boxShadow: "none",
+  },
+};

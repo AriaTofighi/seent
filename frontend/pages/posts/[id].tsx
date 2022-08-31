@@ -7,6 +7,9 @@ import { NextPageWithLayout, Styles } from "../../types/types";
 import { PostEntity } from "../../../backend/src/types";
 import { Button, Stack, Typography } from "@mui/material";
 import { getMainLayout } from "../../components/layouts/MainLayout";
+import PageHead from "../../components/UI/Title";
+import Title from "../../components/UI/Title";
+import TopAppBar from "../../components/navigation/TopAppBar";
 
 const styles: Styles = {
   header: {
@@ -58,23 +61,21 @@ const PostDetails: NextPageWithLayout = () => {
 
   return (
     <>
-      <Head>
-        <title>Post - {post?.author?.name}</title>
-        <meta property="og:title" content="Feed" key="title" />
-      </Head>
-
+      <Title title={`Post - ${post?.author.name}`} />
       <Box>
-        <Stack sx={styles.header}>
-          <Typography variant="h5">Post</Typography>
-          {post?.parentPost && (
-            <Button
-              sx={{ textTransform: "none", m: 0 }}
-              onClick={() => router.push(`/posts/${post.parentPostId}`)}
-            >
-              View original post
-            </Button>
-          )}
-        </Stack>
+        <TopAppBar title="Post">
+          <Stack width="100%" direction="row" justifyContent="flex-end">
+            {post?.parentPost && (
+              <Button
+                sx={{ textTransform: "none", m: 0 }}
+                onClick={() => router.push(`/posts/${post.parentPostId}`)}
+              >
+                View original post
+              </Button>
+            )}
+          </Stack>
+        </TopAppBar>
+        {/* <Stack sx={styles.header}></Stack> */}
         <PostCard
           postId={post?.postId ?? ""}
           post={post as any}

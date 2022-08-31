@@ -15,6 +15,7 @@ import { UserProvider } from "../contexts/UserContext";
 import { NextPageWithLayout } from "../types/types";
 import { ToastContainer } from "react-toastify";
 import { RouteGuard } from "../components/auth/RouteGuard";
+import { NavProvider } from "../contexts/NavContext";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -35,10 +36,12 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <CssBaseline />
         <SWRConfig value={swrConfig}>
           <UserProvider>
-            <RouteGuard>
-              <ComponentWithLayout />
-            </RouteGuard>
-            <ToastContainer />
+            <NavProvider>
+              <RouteGuard>
+                <ComponentWithLayout />
+              </RouteGuard>
+              <ToastContainer />
+            </NavProvider>
           </UserProvider>
         </SWRConfig>
       </StyledEngineProvider>

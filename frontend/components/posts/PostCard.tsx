@@ -56,7 +56,10 @@ const PostCard = ({
 }: Props) => {
   const { user } = useUser();
   const router = useRouter();
-  const [expanded, setExpanded] = useState<boolean>(false);
+  const childPostsLength = post?._count?.childPosts;
+  // const defaultExpanded = depth === 0 && expandable && childPostsLength > 0;
+  const defaultExpanded = false;
+  const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
   const {
     data: childPostsData,
     error: childPostsErr,
@@ -64,7 +67,6 @@ const PostCard = ({
   } = useSWR(expanded ? `posts?parentPostId=${postId}` : null);
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
-  const childPostsLength = post?._count?.childPosts;
   const childPosts = childPostsData?.data ?? [];
   const formattedDate = formatDate(post?.createdAt);
   const showViewMore =

@@ -1,10 +1,11 @@
-import { Box, Card, Typography } from "@mui/material";
+import { Box, Card, Theme, Typography } from "@mui/material";
 import TopAppBar from "../navigation/TopAppBar";
 import SideBar from "../navigation/SideBar";
 import { useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import { Styles } from "../../types/types";
 import { ReactElement, useState } from "react";
+import { useNav } from "../../contexts/NavContext";
 
 const styles: Styles = {
   container: {
@@ -14,44 +15,32 @@ const styles: Styles = {
     justifyContent: "center",
   },
   mainContent: {
-    maxWidth: 600,
-    width: 600,
+    // maxWidth: 600,
+    // width: (theme: Theme) => {
+    //   console.log(theme);
+    //   console.log(theme.breakpoints.down("sm"));
+    //   return theme.breakpoints.down("sm") ? 800 : 400;
+    // },
+    width: {
+      xs: 600,
+      sm: 600,
+    },
     borderRight: "1px solid",
     borderLeft: "1px solid",
     borderColor: "divider",
     minHeight: "100vh",
-  },
+  } as any,
 };
 
 const MainLayout = ({ children }: any) => {
   const theme = useTheme();
-  const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
-  const [openSidebar, setOpenSidebar] = useState(false);
-
-  const toggleSidebar = () => {
-    setOpenSidebar(!openSidebar);
-  };
 
   return (
     <Box sx={styles.container}>
-      <SideBar open={openSidebar} setOpen={setOpenSidebar} />
+      <SideBar />
       <Box sx={styles.mainContent}>
-        {mobileMode && <TopAppBar toggleSidebar={toggleSidebar} />}
         <Box>{children}</Box>
       </Box>
-      {/* <Card
-        component="aside"
-        sx={{
-          p: 2,
-          width: 300,
-          bgcolor: "background.default",
-          borderRadius: 0,
-          borderRight: "none",
-        }}
-        variant="outlined"
-      >
-        <Typography variant="h6">People to Follow</Typography>
-      </Card> */}
     </Box>
   );
 };

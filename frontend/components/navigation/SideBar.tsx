@@ -16,13 +16,8 @@ import {
 import Link from "next/link";
 import { useUser } from "../../contexts/UserContext";
 import AuthDialog from "../auth/AuthDialog";
-import { useRouter } from "next/router";
 import LogoutIcon from "@mui/icons-material/Logout";
-
-type Props = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-};
+import { useNav } from "../../contexts/NavContext";
 
 const styles: Styles = {
   root: {
@@ -35,12 +30,12 @@ const styles: Styles = {
   },
 };
 
-const SideBar = ({ open, setOpen }: Props) => {
+const SideBar = () => {
   const theme = useTheme();
-  const mobileMode = useMediaQuery(theme.breakpoints.down("sm"));
+  const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
   const { user, logout } = useUser();
   const [showLogin, setShowLogin] = useState(false);
-  const router = useRouter();
+  const { open, setOpen } = useNav();
 
   const content = (
     <Box sx={styles.root}>
