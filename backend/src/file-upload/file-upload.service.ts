@@ -1,12 +1,14 @@
 import { S3 } from "aws-sdk";
 import { Logger, Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
-
+import { getFileExtension } from "utils/misc";
 @Injectable()
 export class FileUploadService {
   async upload(file) {
     const bucketS3 = "seent";
-    const randomFileName = randomUUID();
+    const extensionString = getFileExtension(file.originalname);
+    const extension = extensionString ? `.${extensionString}` : "";
+    const randomFileName = randomUUID() + extension;
     return await this.uploadS3(file.buffer, bucketS3, randomFileName);
   }
 

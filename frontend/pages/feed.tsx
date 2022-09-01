@@ -1,15 +1,21 @@
-import { Box, Typography } from "@mui/material";
-import _ from "lodash";
-import dynamic from "next/dynamic";
+import { Box } from "@mui/material";
 import { useState } from "react";
-import useSWRInfinite from "swr/infinite";
-import { PostEntity } from "../../backend/src/types";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import TopAppBar from "../components/navigation/TopAppBar";
-import PostsList from "../components/posts/PostsList";
+import PostsList from "../components/posts/PostList";
+import PostListSorting from "../components/posts/PostListSorting";
 import Title from "../components/UI/Title";
-import usePostDialog from "../hooks/usePostDialog";
 import { NextPageWithLayout, Styles } from "../types/types";
+
+export const POSTS_SORT_MODES = {
+  TOP_DAY: "top-day",
+  TOP_WEEK: "top-week",
+  TOP_MONTH: "top-month",
+  TOP_YEAR: "top-year",
+  TOP_ALL: "top-all",
+  NEW: "new",
+  OLD: "old",
+};
 
 const styles: Styles = {
   createPostBtn: {
@@ -24,16 +30,20 @@ const styles: Styles = {
   },
 };
 
-const getPostsKey = (index: number) =>
-  `posts?page=${index + 1}&isChild=false&perPage=20`;
-
 const Feed: NextPageWithLayout = () => {
+  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
+
+  const getPostsKey = (index: number) =>
+    `posts?page=${index + 1}&isChild=false&perPage=10&orderBy=${sortMode}`;
+
   return (
     <>
       <Title title="Feed" />
-      <TopAppBar title="Feed"></TopAppBar>
+      <TopAppBar title="Feed">
+        <PostListSorting mode={sortMode} setMode={setSortMode} />
+      </TopAppBar>
       <Box sx={styles.root}>
-        <PostsList getPostsKey={getPostsKey} />
+        <PostsList getPostsKey={getPostsKey} sortMode={sortMode} />
       </Box>
     </>
   );

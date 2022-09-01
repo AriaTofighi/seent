@@ -16,39 +16,68 @@ async function main() {
       username: "ariato",
       posts: {
         create: {
-          body: "My first post!",
+          body: "1",
           isPublic: true,
+          createdAt: new Date(new Date().getDate() - 2),
         },
       },
       role: Role.ADMIN,
     },
   });
-  await prisma.image.create({
+  const user2 = await prisma.user.upsert({
+    where: { email: "aria_game8@hotmail.com" },
+    update: {},
+    create: {
+      email: "aria_game8@hotmail.com",
+      name: "Moe B",
+      password: hash,
+      birthday: new Date(),
+      username: "ariato",
+      posts: {
+        create: {
+          body: "2",
+          isPublic: true,
+          createdAt: new Date(new Date().getDate() - 1),
+        },
+      },
+      role: Role.ADMIN,
+    },
+  });
+  // User 1
+  // await prisma.image.create({
+  //   data: {
+  //     type: ImageType.USER_AVATAR,
+  //     url: "https://seent.s3.us-west-1.amazonaws.com/e420f901-ea7e-4499-992e-44ad052feb55-tubbie.png",
+  //     userId: user.userId,
+  //   },
+  // });
+  // await prisma.image.create({
+  //   data: {
+  //     type: ImageType.USER_AVATAR,
+  //     url: "https://seent.s3.amazonaws.com/00a43e67-00b5-4b91-a75d-3fca28403a4c",
+  //     userId: user2.userId,
+  //   },
+  // });
+
+  await prisma.post.create({
     data: {
-      type: ImageType.USER_AVATAR,
-      url: "https://seent.s3.us-west-1.amazonaws.com/e420f901-ea7e-4499-992e-44ad052feb55-tubbie.png",
-      userId: user.userId,
+      body: "0",
+      isPublic: true,
+      authorId: user.userId,
+      createdAt: new Date(new Date().getDate() - 8),
     },
   });
   await prisma.post.create({
     data: {
-      body: "I think Mr. Girl is a little bit wild.",
-      isPublic: true,
-      authorId: user.userId,
-    },
-  });
-  const destinyPost = await prisma.post.create({
-    data: {
       body: "Destiny debates like a freak of nature.",
       isPublic: true,
       authorId: user.userId,
-    },
-  });
-  await prisma.image.create({
-    data: {
-      type: ImageType.USER_AVATAR,
-      url: "https://seent.s3.us-west-1.amazonaws.com/185d7b30-335f-48e8-8386-e3b5278ada54-WideIvanSerious.jpg",
-      postId: destinyPost.postId,
+      images: {
+        create: {
+          type: ImageType.USER_AVATAR,
+          url: "https://seent.s3.us-west-1.amazonaws.com/185d7b30-335f-48e8-8386-e3b5278ada54-WideIvanSerious.jpg",
+        },
+      },
     },
   });
 }

@@ -52,7 +52,8 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto) {
-    const { authorId, postId, parentPostId, isChild, page, perPage } = query;
+    const { authorId, postId, parentPostId, isChild, page, perPage, orderBy } =
+      query;
     const result = await this.postsService.findMany({
       where: {
         postId,
@@ -61,6 +62,7 @@ export class PostsController {
       },
       page,
       perPage,
+      orderBy,
     });
 
     const postsWithDepth = [];

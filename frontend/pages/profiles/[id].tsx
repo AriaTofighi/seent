@@ -1,24 +1,17 @@
-import useSWR from "swr";
+import { Avatar, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { fileToBase64 } from "../../utils/helpers";
-import { useUser } from "../../contexts/UserContext";
-import PostCard from "../../components/posts/PostCard";
-import { PostEntity } from "../../../backend/src/types";
-import React, { useEffect, useRef, useState } from "react";
-import { Styles, NextPageWithLayout } from "../../types/types";
-import { getMainLayout } from "../../components/layouts/MainLayout";
-import { updateImage, createImage } from "../../services/api/imageAxios";
-import { Avatar, Fade, LinearProgress, Stack, Typography } from "@mui/material";
-import PageHead from "../../components/UI/Title";
-import StyledCard from "../../components/UI/StyledCard";
-import Title from "../../components/UI/Title";
-import TopAppBar from "../../components/navigation/TopAppBar";
-import PostsList from "../../components/posts/PostsList";
-import FloatingButton from "../../components/UI/FloatingButton";
+import { useEffect, useRef, useState } from "react";
+import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import LoadMorePosts from "../../components/posts/LoadMorePosts";
-import { LocalConvenienceStoreOutlined } from "@mui/icons-material";
+import { getMainLayout } from "../../components/layouts/MainLayout";
+import TopAppBar from "../../components/navigation/TopAppBar";
+import PostsList from "../../components/posts/PostList";
+import Title from "../../components/UI/Title";
+import { useUser } from "../../contexts/UserContext";
+import { createImage, updateImage } from "../../services/api/imageAxios";
+import { NextPageWithLayout, Styles } from "../../types/types";
+import { fileToBase64, infiniteSWRToFlat } from "../../utils/helpers";
 
 const styles: Styles = {
   images: {
@@ -78,14 +71,19 @@ const Profile: NextPageWithLayout = () => {
     mutateUser();
   }, [imageFile]);
 
-  const loading = !userRes && !userErr;
-
-  const getPostsKey = (index: number) =>
+  const getPostsKey = (index: number): any =>
     profileUser
       ? `posts?page=${index + 1}&isChild=false&perPage=20&authorId=${
           profileUser.userId
         }`
       : null;
+
+  const { data: postsRes, error: postsErr } = useSWRInfinite(
+    getPostsKey
+  ) as any;
+  const posts = infiniteSWRToFlat(postsRes);
+
+  const loading = (!userRes && !userErr) || (!postsRes && !postsErr);
 
   return (
     <>
@@ -141,7 +139,7 @@ const Profile: NextPageWithLayout = () => {
                 >
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography variant="subtitle2">Posts</Typography>
-                    {/* <Typography fontWeight={600}>{posts?.length}</Typography> */}
+                    <Typography fontWeight={600}>{posts?.length}</Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography variant="subtitle2">Likes</Typography>

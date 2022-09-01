@@ -12,6 +12,7 @@ import {
   createReaction,
   deleteReaction,
 } from "../../services/api/reactionAxios";
+import { Styles } from "../../types/types";
 
 const REACTION_TYPES = {
   LIKE: "LIKE",
@@ -26,6 +27,12 @@ type Props = {
   postId: string;
   onReply: (postId: string) => void;
   mutate: () => void;
+  childPostsCount: number;
+};
+const styles: Styles = {
+  count: {
+    ml: 1,
+  },
 };
 
 const PostCardFooter = ({
@@ -36,6 +43,7 @@ const PostCardFooter = ({
   postId,
   onReply,
   mutate,
+  childPostsCount,
 }: Props) => {
   const { user } = useUser();
 
@@ -58,6 +66,8 @@ const PostCardFooter = ({
     mutate();
   };
 
+  const reactionCount = allReactions.length;
+
   return (
     <Stack
       direction="row"
@@ -71,16 +81,11 @@ const PostCardFooter = ({
       {showActions && (
         <Stack
           direction="row"
-          gap={1}
+          gap={4}
           onClick={stopPropagation}
           alignItems="flex-start"
         >
-          <Box>
-            {allReactions?.length > 0 && (
-              <Typography variant="caption" sx={{ mr: 1 }}>
-                {allReactions.length}
-              </Typography>
-            )}
+          <Box sx={{ minWidth: 70 }}>
             <Tooltip title="Like">
               <IconButton
                 sx={{ p: 0.5 }}
@@ -93,12 +98,33 @@ const PostCardFooter = ({
                 )}
               </IconButton>
             </Tooltip>
+
+            <Typography
+              variant="caption"
+              sx={{
+                ...styles.count,
+                visibility: reactionCount > 0 ? "initial" : "hidden",
+              }}
+            >
+              {reactionCount}
+            </Typography>
           </Box>
-          <Tooltip title="Reply">
-            <IconButton sx={{ mt: -0.1, p: 0.5 }} onClick={handleReply}>
-              <ReplyIcon color="action" fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          <Box sx={{ minWidth: 70 }}>
+            <Tooltip title="Reply">
+              <IconButton sx={{ mt: -0.1, p: 0.5 }} onClick={handleReply}>
+                <ReplyIcon color="action" fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Typography
+              variant="caption"
+              sx={{
+                ...styles.count,
+                visibility: childPostsCount > 0 ? "initial" : "hidden",
+              }}
+            >
+              {childPostsCount}
+            </Typography>
+          </Box>
         </Stack>
       )}
     </Stack>

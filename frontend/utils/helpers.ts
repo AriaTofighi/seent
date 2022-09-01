@@ -21,3 +21,12 @@ export const fileToBase64 = (file: File) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+
+export const infiniteSWRToFlat = (
+  paginatedObjArray: {
+    data: any;
+    meta: any;
+  }[]
+) => {
+  return paginatedObjArray?.map((page: any) => [...page.data]).flat() ?? [];
+};

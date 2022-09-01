@@ -7,8 +7,11 @@ import LoadMorePosts from "./LoadMorePosts";
 import PostCard from "./PostCard";
 import useSWRInfinite from "swr/infinite";
 import dynamic from "next/dynamic";
+import { infiniteSWRToFlat } from "../../utils/helpers";
+import PostListSorting from "./PostListSorting";
+import { POSTS_SORT_MODES } from "../../pages/feed";
 
-const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
+const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
 });
 
@@ -17,11 +20,11 @@ const styles: Styles = {
 };
 
 type Props = {
-  // getPostsKey: (index: number) => string;
-  getPostsKey: any;
+  getPostsKey: (index: number) => string;
+  sortMode?: any;
 };
 
-const PostsList = ({ getPostsKey }: Props) => {
+const PostList = ({ getPostsKey, sortMode }: Props) => {
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
   const {
@@ -32,8 +35,7 @@ const PostsList = ({ getPostsKey }: Props) => {
     mutate: mutatePosts,
   } = useSWRInfinite(getPostsKey) as any;
 
-  const posts: any[] =
-    postsRes?.map((page: any) => [...page.data]).flat() ?? [];
+  const posts: any[] = infiniteSWRToFlat(postsRes);
 
   const isLoading = !postsRes && !postsErr;
 
@@ -78,4 +80,4 @@ const PostsList = ({ getPostsKey }: Props) => {
   );
 };
 
-export default PostsList;
+export default PostList;

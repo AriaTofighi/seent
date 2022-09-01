@@ -104,7 +104,10 @@ const PostCard = ({
 
   return (
     <>
-      <StyledCard variant="outlined" sx={getBoxStyles()}>
+      <StyledCard
+        variant="outlined"
+        sx={{ ...getBoxStyles(), cursor: "pointer", pb: 1.5 }}
+      >
         <Link href={`/posts/${postId}`}>
           <Box>
             <PostCardHeader
@@ -128,6 +131,7 @@ const PostCard = ({
               postId={postId}
               onReply={onReply}
               mutate={mutateAll}
+              childPostsCount={post._count?.childPosts ?? 0}
             />
           </Box>
         </Link>

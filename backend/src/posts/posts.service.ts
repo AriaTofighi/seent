@@ -1,75 +1,65 @@
 import { Prisma, Post, ImageType } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { PostFindManyParams } from "./posts.types";
-import { createPaginator } from "prisma-pagination";
-import { ImagesService } from "src/images/images.service";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import { createPaginator } from "../../utils/pagination";
+import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class PostsService {
-  constructor(
-    private prisma: PrismaService,
-    @Inject(forwardRef(() => ImagesService))
-    private imagesService: ImagesService
-  ) {}
+  constructor(private prisma: PrismaService) {}
+
+  private readonly postIncludes = {
+    author: {
+      select: {
+        name: true,
+        username: true,
+        images: {
+          where: {
+            type: ImageType.USER_AVATAR,
+          },
+          select: {
+            imageId: true,
+            url: true,
+          },
+        },
+      },
+    },
+    _count: {
+      select: {
+        childPosts: true,
+      },
+    },
+    parentPost: {
+      select: {
+        author: {
+          select: {
+            name: true,
+          },
+        },
+        postId: true,
+      },
+    },
+    reactions: {
+      select: {
+        type: true,
+        userId: true,
+        postId: true,
+        reactionId: true,
+      },
+    },
+    images: {
+      select: {
+        imageId: true,
+        url: true,
+        type: true,
+      },
+    },
+  };
 
   async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
     const post = await this.prisma.post.findUnique({
       where: postWhereUniqueInput,
-      include: {
-        author: {
-          select: {
-            name: true,
-            images: {
-              where: {
-                type: ImageType.USER_AVATAR,
-              },
-              select: {
-                imageId: true,
-                url: true,
-              },
-            },
-          },
-        },
-        parentPost: {
-          select: {
-            author: {
-              select: {
-                name: true,
-              },
-            },
-            postId: true,
-          },
-        },
-        childPosts: {
-          select: {
-            body: true,
-            createdAt: true,
-            postId: true,
-            author: {
-              select: {
-                name: true,
-              },
-            },
-            authorId: true,
-          },
-        },
-        reactions: {
-          select: {
-            type: true,
-            userId: true,
-            postId: true,
-            reactionId: true,
-          },
-        },
-        images: {
-          select: {
-            imageId: true,
-            url: true,
-            type: true,
-          },
-        },
-      },
+      include: this.postIncludes,
     });
 
     return post;
@@ -77,64 +67,21 @@ export class PostsService {
 
   async findMany(params: PostFindManyParams) {
     const { where, orderBy, page, perPage } = params;
+    const { calcedWhere, calcedOrderBy } = this.transformWhereAndOrderBy(
+      where,
+      orderBy
+    );
+
     const paginate = createPaginator({ perPage: perPage });
     const result = await paginate<Post, Prisma.PostFindManyArgs>(
       this.prisma.post,
       {
-        where,
-        orderBy,
-        include: {
-          author: {
-            select: {
-              name: true,
-              username: true,
-              images: {
-                where: {
-                  type: ImageType.USER_AVATAR,
-                },
-                select: {
-                  imageId: true,
-                  url: true,
-                },
-              },
-            },
-          },
-          _count: {
-            select: {
-              childPosts: true,
-            },
-          },
-          parentPost: {
-            select: {
-              author: {
-                select: {
-                  name: true,
-                },
-              },
-              postId: true,
-            },
-          },
-          reactions: {
-            select: {
-              type: true,
-              userId: true,
-              postId: true,
-              reactionId: true,
-            },
-          },
-          images: {
-            select: {
-              imageId: true,
-              url: true,
-              type: true,
-            },
-          },
-        },
+        where: calcedWhere,
+        orderBy: calcedOrderBy,
+        include: this.postIncludes,
       },
       { page: page }
     );
-
-    result.data.sort((a, b) => Number(b.createdAt) - Number(a.createdAt));
 
     return result;
   }
@@ -172,5 +119,55 @@ export class PostsService {
       curParentPost = post.parentPost;
     }
     return depth;
+  }
+
+  transformWhereAndOrderBy(
+    where: Prisma.PostWhereInput,
+    orderBy: string
+  ): {
+    calcedOrderBy: Prisma.Enumerable<Prisma.PostOrderByWithRelationInput>;
+    calcedWhere: Prisma.PostWhereInput;
+  } {
+    const calcedOrderBy = [];
+    if (orderBy) {
+      if (orderBy === "new") {
+        calcedOrderBy.push({ createdAt: "desc" });
+      } else if (orderBy === "old") {
+        calcedOrderBy.push({ createdAt: "asc" });
+      } else if (orderBy.startsWith("top")) {
+        calcedOrderBy.push({
+          reactions: {
+            _count: "desc",
+          },
+        });
+        const startDate = new Date();
+        const now = new Date();
+        let daysAgo = 0;
+        if (orderBy !== "top-all") {
+          if (orderBy === "top-day") {
+            daysAgo = 1;
+          } else if (orderBy === "top-week") {
+            daysAgo = 6;
+          } else if (orderBy === "top-month") {
+            daysAgo = 29;
+          } else if (orderBy === "top-year") {
+            daysAgo = 364;
+          }
+
+          startDate.setDate(startDate.getDate() - daysAgo);
+          where.createdAt = {
+            gte: startDate,
+            lte: now,
+          };
+        }
+      }
+    }
+    // Needed to prevent duplicate entities in result
+    calcedOrderBy.push({ postId: "asc" });
+
+    return {
+      calcedWhere: where,
+      calcedOrderBy,
+    };
   }
 }

@@ -2,7 +2,7 @@ import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { ImageType, Prisma, User } from "@prisma/client";
 import { UserFindManyParams } from "./users.types";
-import { createPaginator } from "prisma-pagination";
+import { createPaginator } from "utils/pagination";
 
 @Injectable()
 export class UsersService {

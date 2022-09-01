@@ -6,7 +6,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   color: theme.palette.text.main,
   transition: "all 0.5s cubic-bezier(.25,.8,.25,1)",
-  cursor: "pointer",
   whiteSpace: "pre-line",
   borderTop: 0,
   borderLeft: 0,

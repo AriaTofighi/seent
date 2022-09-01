@@ -1,4 +1,4 @@
-import { IsBoolean, IsOptional, IsUUID } from "class-validator";
+import { IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
 import { FindManyQuery } from "src/types";
 
 export class FindPostsQueryDto extends FindManyQuery {
@@ -12,9 +12,13 @@ export class FindPostsQueryDto extends FindManyQuery {
 
   @IsBoolean()
   @IsOptional()
-  isChild: boolean;
+  isChild?: boolean;
 
   @IsUUID()
   @IsOptional()
-  authorId: string;
+  authorId?: string;
+
+  @IsString()
+  @IsOptional()
+  orderBy?: string;
 }
