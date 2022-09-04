@@ -10,10 +10,6 @@ type Props = {
   children: ReactNode;
 };
 
-const override: CSSProperties = {
-  margin: 0,
-};
-
 function RouteGuard({ children }: Props) {
   const router = useRouter();
   const theme = useTheme();

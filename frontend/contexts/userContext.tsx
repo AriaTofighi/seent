@@ -22,6 +22,7 @@ type DefaultContextType = {
   setUser: (t: string) => void;
   loading: boolean;
   logout: () => void;
+  mutate: () => void;
 };
 
 const defaultContext: DefaultContextType = {
@@ -29,6 +30,7 @@ const defaultContext: DefaultContextType = {
   setUser: () => {},
   loading: true,
   logout: () => {},
+  mutate: () => {},
 };
 
 const UserContext = createContext<typeof defaultContext>(defaultContext);
@@ -39,9 +41,11 @@ export const UserProvider = ({ children }: Props) => {
   const [tokenData, setTokenData] = useState<UserEntity>();
   const [user, setUserState] = useState<UserEntity>();
   const [loading, setLoading] = useState(true);
-  const { data: userRes, error } = useSWR<UserEntity>(
-    tokenData ? `users/${tokenData.userId}` : null
-  );
+  const {
+    data: userRes,
+    error,
+    mutate,
+  } = useSWR<UserEntity>(tokenData ? `users/${tokenData.userId}` : null);
 
   useEffect(() => {
     let t = localStorage.getItem(TOKEN_KEY);
@@ -84,7 +88,7 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, logout }}>
+    <UserContext.Provider value={{ user, setUser, loading, logout, mutate }}>
       {children}
     </UserContext.Provider>
   );

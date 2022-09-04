@@ -34,10 +34,12 @@ const getStyles = (depth: number): Styles => {
   return {
     textBtn: {
       textTransform: "none",
+      p: 1.5,
+      width: "100%",
+      justifyContent: "flex-start",
+      fontSize: "0.9em",
     },
     footerBtn: {
-      pb: 1,
-      pl: 1,
       borderBottom: "1px solid",
       borderLeft: depth > 0 ? "1px solid" : "none",
       width: "100%",

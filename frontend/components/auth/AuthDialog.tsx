@@ -47,7 +47,7 @@ const AuthDialog = ({ open, onClose }: Props) => {
             variant="text"
             onClick={() => setMode(signInMode ? MODES.SIGN_UP : MODES.SIGN_IN)}
           >
-            <Typography variant="body2" color="secondary.light">
+            <Typography variant="body2">
               {signInMode
                 ? "Don't have an account? Sign up"
                 : "Have an account? Sign in"}

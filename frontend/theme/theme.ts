@@ -40,6 +40,15 @@ const getTheme = (mode: PaletteMode) => {
             backgroundColor: lightMode
               ? lmColours.background.default
               : dmColours.background.default,
+            backgroundImage: "none",
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            // textTransform: "none",
+            // color: lightMode ? lmColours.primary.main : dmColours.text.primary,
           },
         },
       },

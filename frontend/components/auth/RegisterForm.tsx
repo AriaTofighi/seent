@@ -109,10 +109,8 @@ const RegisterForm = ({ onClose }: Props) => {
             type="password"
             rules={{ required: true, validate: validateConfirmPassword }}
           />
-          <Button type="submit" variant="outlined">
-            <Typography variant="body2" color="secondary.light">
-              Sign up
-            </Typography>
+          <Button type="submit" variant="contained">
+            <Typography variant="body2">Sign up</Typography>
           </Button>
         </Box>
       </form>

@@ -1,5 +1,6 @@
 import { Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -20,12 +21,14 @@ type Props = {
 const LoginForm = ({ onClose }: Props) => {
   const { setUser, user } = useUser();
   const { control, reset, handleSubmit } = useForm({ defaultValues });
+  const router = useRouter();
 
   const handleSignIn = async (formData: any) => {
     const { email, password } = formData;
     const res = await signIn(email, password);
     setUser(res.access_token);
     onClose();
+    router.push("/feed");
     toast.success("Signed in successfully");
   };
 

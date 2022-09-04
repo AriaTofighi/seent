@@ -1,10 +1,31 @@
+import { ButtonBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import React, { ReactNode } from "react";
 import Link from "next/link";
+import { ReactNode } from "react";
 import { Styles } from "../../types/types";
-import { Button, ButtonBase, Typography } from "@mui/material";
-import { Url } from "url";
-import { useRouter } from "next/router";
+
+const MenuItem = ({ children, icon, href, onClick }: Props) => {
+  const defaultContent = (
+    <Box sx={{ ...styles.root }}>
+      {icon}
+      <Typography variant="h6">{children}</Typography>
+    </Box>
+  );
+
+  return (
+    <>
+      {href ? (
+        <Link href={href}>
+          <a>{defaultContent}</a>
+        </Link>
+      ) : (
+        <ButtonBase sx={{ width: "100%" }} onClick={onClick}>
+          {defaultContent}
+        </ButtonBase>
+      )}
+    </>
+  );
+};
 
 type Props = {
   children: ReactNode;
@@ -30,29 +51,6 @@ const styles: Styles = {
     alignItems: "center",
     gap: 2,
   },
-};
-
-const MenuItem = ({ children, icon, href, onClick }: Props) => {
-  const defaultContent = (
-    <Box sx={{ ...styles.root }}>
-      {icon}
-      <Typography variant="h6">{children}</Typography>
-    </Box>
-  );
-
-  return (
-    <>
-      {href ? (
-        <Link href={href}>
-          <a>{defaultContent}</a>
-        </Link>
-      ) : (
-        <ButtonBase sx={{ width: "100%" }} onClick={onClick}>
-          {defaultContent}
-        </ButtonBase>
-      )}
-    </>
-  );
 };
 
 export default MenuItem;

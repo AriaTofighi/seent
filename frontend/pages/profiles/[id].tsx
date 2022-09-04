@@ -1,4 +1,4 @@
-import { Avatar, Fade, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
@@ -8,6 +8,7 @@ import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostsList from "../../components/posts/PostList";
 import PostListSorting from "../../components/posts/PostListSorting";
+import EditProfileDialog from "../../components/profile/EditProfileDialog";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
 import { createImage, updateImage } from "../../services/api/imageAxios";
@@ -37,8 +38,11 @@ const Profile: NextPageWithLayout = () => {
     mutate: mutateUser,
     isValidating: userLoading,
   } = useSWR(query ? `users?username=${query.id}` : null);
-  const profileUser = userRes?.data[0];
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
+
+  const profileUser = userRes?.data[0];
+  const userIsOwner = profileUser?.userId === user?.userId;
 
   const handleBrowse = () => {
     // Reseting the file input to allow the user to pick the same file twice in a row.
@@ -74,6 +78,11 @@ const Profile: NextPageWithLayout = () => {
     mutateUser();
   }, [imageFile]);
 
+  useEffect(() => {
+    if (!user) return;
+    mutateUser();
+  }, [user]);
+
   const getPostsKey = (index: number): any =>
     profileUser
       ? `posts?page=${
@@ -98,10 +107,31 @@ const Profile: NextPageWithLayout = () => {
       </TopAppBar>
       {!loading ? (
         <>
-          <Fade in timeout={500}>
+          <Fade in timeout={700}>
             <Box
-              sx={{ borderBottom: "1px solid", borderColor: "divider", p: 3 }}
+              sx={{
+                borderBottom: "1px solid",
+                borderColor: "divider",
+                p: 3,
+                position: "relative",
+              }}
             >
+              {userIsOwner && (
+                <Button
+                  sx={{
+                    position: "absolute",
+                    right: 0,
+                    top: 0,
+                    m: 2,
+                    color: "primary.main",
+                  }}
+                  variant="outlined"
+                  onClick={() => setShowEditProfileDialog(true)}
+                >
+                  Edit Profile
+                </Button>
+              )}
+
               <Box
                 sx={{
                   display: "flex",
@@ -126,8 +156,19 @@ const Profile: NextPageWithLayout = () => {
                   }}
                   onClick={user && handleBrowse}
                 />
-                <Typography>{profileUser?.name}</Typography>
+                <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
+                  <Typography variant="h5">{profileUser?.name}</Typography>
+                  <Typography variant="subtitle2" color="primary.main">
+                    {`@${profileUser.username}`}{" "}
+                    {profileUser.location && ` | ${profileUser.location}`}
+                    {profileUser.gender && ` | ${profileUser.gender}`}
+                  </Typography>
+                  <Typography sx={{ mt: 3, mb: 2 }}>
+                    {profileUser.bio}
+                  </Typography>
+                </Stack>
               </Box>
+
               <Stack
                 sx={{
                   width: "100%",
@@ -145,35 +186,20 @@ const Profile: NextPageWithLayout = () => {
                   }}
                 >
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography variant="subtitle2">Posts</Typography>
                     <Typography fontWeight={600}>{posts?.length}</Typography>
+                    <Typography variant="subtitle2">Posts</Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography variant="subtitle2">Likes</Typography>
                     <Typography fontWeight={600}>10</Typography>
+                    <Typography variant="subtitle2">Likes</Typography>
                   </Stack>
                 </Stack>
               </Stack>
-              <Typography>{profileUser?.bio}</Typography>
             </Box>
           </Fade>
 
           <PostsList getPostsKey={getPostsKey} />
 
-          {/* {chosenImage && (
-              <Box sx={styles.images}>
-                <Image
-                  src={chosenImage}
-                  width="250"
-                  height="200"
-                  alt="Post"
-                  layout="fixed"
-                />
-              </Box>
-            )} */}
-          {/* <Button onClick={handleBrowse}>Browse</Button>
-            <Button onClick={() => setChosenImage(null)}>Remove</Button>
-            <Button onClick={handleUpload}>Upload</Button> */}
           <input
             type="file"
             accept="image/*"
@@ -181,17 +207,10 @@ const Profile: NextPageWithLayout = () => {
             style={{ display: "none" }}
             ref={fileInputRef}
           />
-          {/* {userData?.image && (
-              <Box sx={styles.images}>
-                <Image
-                  src={userData?.image?.url}
-                  width="250"
-                  height="200"
-                  alt="Post"
-                  layout="fixed"
-                />
-              </Box>
-            )} */}
+          <EditProfileDialog
+            open={showEditProfileDialog}
+            setOpen={setShowEditProfileDialog}
+          />
         </>
       ) : null}
     </>

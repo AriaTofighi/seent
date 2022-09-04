@@ -14,68 +14,15 @@ import {
 import { Box } from "@mui/system";
 import EmojiPicker from "emoji-picker-react";
 import Image from "next/image";
-import { useRouter } from "next/router";
-import { MouseEvent, useRef, useState, useEffect } from "react";
+import { MouseEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useUser } from "../../contexts/UserContext";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { createPost } from "../../services/api/postAxios";
 import { Styles } from "../../types/types";
-import { fileToBase64 } from "../../utils/helpers";
 import TextInput from "../controls/TextInput";
 import PostCard from "./PostCard";
-
-type PostDialog = {
-  open: boolean;
-  parentPostId?: undefined;
-};
-
-type KeyValuePair = {
-  [property: string]: string;
-};
-
-type Props = {
-  open: boolean;
-  onClose: () => void;
-  setPostDialog: any;
-  parentPost?: any;
-  postsRes: any;
-  mutatePost?: () => void;
-  mutatePostList: () => void;
-};
-
-const styles: Styles = {
-  root: {
-    mt: -1,
-  },
-  images: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 1,
-    my: 2,
-    justifyContent: "center",
-  },
-  emojiPicker: {
-    width: "100%",
-    marginBottom: "20px",
-    boxShadow: "none",
-  },
-};
-
-type DefaultValueType = {
-  body: string;
-};
-
-const defaultValues = {
-  body: "",
-};
-
-const PRIVACY_MODES = {
-  PUBLIC: true,
-  PRIVATE: false,
-};
 
 const PostDialog = ({
   open,
@@ -86,15 +33,15 @@ const PostDialog = ({
   mutatePost,
   mutatePostList,
 }: Props) => {
+  const { user } = useUser();
+  const fileInputRef = useRef<any>();
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
+  const { image, imagePreview, handleImageChange, setImage } = useImageUpload();
   const { control, reset, handleSubmit, setValue, getValues } =
     useForm<DefaultValueType>({
       defaultValues,
     });
-  const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const { user } = useUser();
-  const fileInputRef = useRef<any>();
-  const { image, imagePreview, handleImageChange, setImage } = useImageUpload();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
     const body = getValues("body");
@@ -151,14 +98,24 @@ const PostDialog = ({
             </IconButton>
           </Stack>
           {parentPost?.body ? (
-            <PostCard
-              postId={parentPost.postId}
-              post={parentPost}
-              showActions={false}
-              postsRes={postsRes}
-              mutatePost={mutatePost}
-              mutatePostList={mutatePostList}
-            />
+            <Box
+              sx={{
+                borderLeft: "1px solid",
+                borderRight: "1px solid",
+                borderTop: "1px solid",
+                borderRadius: 1,
+                borderColor: "divider",
+              }}
+            >
+              <PostCard
+                postId={parentPost.postId}
+                post={parentPost}
+                showActions={false}
+                postsRes={postsRes}
+                mutatePost={mutatePost}
+                mutatePostList={mutatePostList}
+              />
+            </Box>
           ) : (
             <Typography variant="h5">What's on your mind?</Typography>
           )}
@@ -248,6 +205,57 @@ const PostDialog = ({
       </DialogContent>
     </Dialog>
   );
+};
+
+type PostDialog = {
+  open: boolean;
+  parentPostId?: undefined;
+};
+
+type KeyValuePair = {
+  [property: string]: string;
+};
+
+type Props = {
+  open: boolean;
+  onClose: () => void;
+  setPostDialog: any;
+  parentPost?: any;
+  postsRes: any;
+  mutatePost?: () => void;
+  mutatePostList: () => void;
+};
+
+const styles: Styles = {
+  root: {
+    mt: -1,
+  },
+  images: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 1,
+    my: 2,
+    justifyContent: "center",
+  },
+  emojiPicker: {
+    width: "100%",
+    marginBottom: "20px",
+    boxShadow: "none",
+  },
+};
+
+type DefaultValueType = {
+  body: string;
+};
+
+const defaultValues = {
+  body: "",
+};
+
+const PRIVACY_MODES = {
+  PUBLIC: true,
+  PRIVATE: false,
 };
 
 export default PostDialog;
