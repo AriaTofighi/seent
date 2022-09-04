@@ -40,10 +40,10 @@ const Feed: NextPageWithLayout = () => {
     <>
       <Title title="Feed" />
       <TopAppBar title="Feed">
-        <PostListSorting mode={sortMode} setMode={setSortMode} />
+        <PostListSorting setMode={setSortMode} />
       </TopAppBar>
       <Box sx={styles.root}>
-        <PostsList getPostsKey={getPostsKey} sortMode={sortMode} />
+        <PostsList getPostsKey={getPostsKey} />
       </Box>
     </>
   );

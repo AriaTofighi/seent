@@ -1,3 +1,7 @@
+import CloseIcon from "@mui/icons-material/Close";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import ImageIcon from "@mui/icons-material/Image";
+import ShieldIcon from "@mui/icons-material/Shield";
 import {
   Button,
   Dialog,
@@ -7,23 +11,19 @@ import {
   Tooltip,
   Typography,
 } from "@mui/material";
-import Image from "next/image";
 import { Box } from "@mui/system";
-import PostCard from "./PostCard";
-import { useForm } from "react-hook-form";
-import { Styles } from "../../types/types";
 import EmojiPicker from "emoji-picker-react";
-import TextInput from "../controls/TextInput";
-import ImageIcon from "@mui/icons-material/Image";
-import CloseIcon from "@mui/icons-material/Close";
-import { fileToBase64 } from "../../utils/helpers";
-import ShieldIcon from "@mui/icons-material/Shield";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { MouseEvent, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
 import { useUser } from "../../contexts/UserContext";
-import { createPost } from "../../services/api/postAxios";
-import React, { MouseEvent, useRef, useState } from "react";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
-import { CreatePostDto } from "../../../backend/src/types";
+import { createPost } from "../../services/api/postAxios";
+import { Styles } from "../../types/types";
+import { fileToBase64 } from "../../utils/helpers";
+import TextInput from "../controls/TextInput";
+import PostCard from "./PostCard";
 
 type PostDialog = {
   open: boolean;
@@ -39,7 +39,9 @@ type Props = {
   onClose: () => void;
   setPostDialog: any;
   parentPost?: any;
-  mutate: () => void;
+  postsRes: any;
+  mutatePosts: any;
+  mutateChildren?: () => void;
 };
 
 const styles: Styles = {
@@ -80,7 +82,9 @@ const PostDialog = ({
   setPostDialog,
   parentPost,
   onClose,
-  mutate,
+  postsRes,
+  mutatePosts,
+  mutateChildren,
 }: Props) => {
   const { control, reset, handleSubmit, setValue, getValues, watch } =
     useForm<DefaultValueType>({
@@ -91,6 +95,7 @@ const PostDialog = ({
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { user } = useUser();
   const fileInputRef = useRef<any>();
+  const router = useRouter();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
     const body = getValues("body");
@@ -110,7 +115,8 @@ const PostDialog = ({
     }
     await createPost(formData);
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
-    mutate();
+    mutatePosts();
+    mutateChildren?.();
     reset();
   };
 
@@ -158,6 +164,9 @@ const PostDialog = ({
               postId={parentPost.postId}
               post={parentPost}
               showActions={false}
+              postsRes={postsRes}
+              mutateChildren={mutateChildren}
+              mutatePosts={mutatePosts}
             />
           ) : (
             <Typography variant="h5">What's on your mind?</Typography>

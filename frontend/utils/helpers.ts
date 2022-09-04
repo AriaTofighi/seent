@@ -28,5 +28,5 @@ export const infiniteSWRToFlat = (
     meta: any;
   }[]
 ) => {
-  return paginatedObjArray?.map((page: any) => [...page.data]).flat() ?? [];
+  return paginatedObjArray?.map((res: any) => res.data).flat() ?? [];
 };

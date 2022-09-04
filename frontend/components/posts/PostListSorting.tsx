@@ -4,7 +4,11 @@ import { IconButton, Menu, MenuItem, Stack } from "@mui/material";
 import useMenu from "../../hooks/useMenu";
 import { POSTS_SORT_MODES } from "../../pages/feed";
 
-const PostListSorting = ({ mode, setMode }: any) => {
+type Props = {
+  setMode: (mdoe: string) => void;
+};
+
+const PostListSorting = ({ setMode }: Props) => {
   const { anchorEl, handleClose, open, handleClick } = useMenu();
   const {
     handleClose: handleCloseTop,

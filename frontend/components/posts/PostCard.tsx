@@ -14,6 +14,7 @@ import StyledCard from "../UI/StyledCard";
 import PostCardBody from "./PostCardBody";
 import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
+import { createVerify } from "crypto";
 
 const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
@@ -25,7 +26,9 @@ type Props = {
   depth?: number;
   showActions?: boolean;
   post: PostEntity;
-  mutate?: () => void;
+  postsRes: any;
+  mutatePosts: () => void;
+  mutateChildren?: () => void;
 };
 
 const getStyles = (depth: number): Styles => {
@@ -49,17 +52,17 @@ const MAX_POST_DEPTH_PER_PAGE = 2;
 const PostCard = ({
   postId,
   post,
+  mutatePosts,
+  mutateChildren,
+  postsRes,
   depth = 0,
-  mutate,
   expandable = false,
   showActions = true,
 }: Props) => {
   const { user } = useUser();
   const router = useRouter();
   const childPostsLength = post?._count?.childPosts;
-  // const defaultExpanded = depth === 0 && expandable && childPostsLength > 0;
-  const defaultExpanded = false;
-  const [expanded, setExpanded] = useState<boolean>(defaultExpanded);
+  const [expanded, setExpanded] = useState<boolean>(false);
   const {
     data: childPostsData,
     error: childPostsErr,
@@ -79,13 +82,6 @@ const PostCard = ({
   const userReaction = post?.reactions.find(
     (r: ReactionEntity) => r.userId === user?.userId
   );
-
-  const mutateAll = () => {
-    if (mutate) {
-      mutate();
-    }
-    mutateChildPosts();
-  };
 
   const getBoxStyles = () => {
     let styles = {};
@@ -116,7 +112,7 @@ const PostCard = ({
               showActions={showActions}
               postId={postId}
               avatar={post.author.images[0]?.url}
-              mutate={mutate}
+              mutatePosts={mutatePosts}
             />
             <PostCardBody
               body={post?.body}
@@ -130,7 +126,8 @@ const PostCard = ({
               showActions={showActions}
               postId={postId}
               onReply={onReply}
-              mutate={mutateAll}
+              mutatePosts={mutatePosts}
+              postsRes={postsRes}
               childPostsCount={post._count?.childPosts ?? 0}
             />
           </Box>
@@ -155,7 +152,9 @@ const PostCard = ({
                 post={p}
                 expandable
                 depth={depth + 1}
-                mutate={mutateChildPosts}
+                mutateChildren={mutateChildren}
+                mutatePosts={mutatePosts}
+                postsRes={postsRes}
               />
             </Box>
           ))}
@@ -189,7 +188,9 @@ const PostCard = ({
         setPostDialog={setPostDialog}
         onClose={onCloseDialog}
         parentPost={post}
-        mutate={mutateAll}
+        postsRes={postsRes}
+        mutatePosts={mutatePosts}
+        mutateChildren={mutateChildren}
       />
     </>
   );

@@ -20,7 +20,7 @@ const PostCardHeader = ({
   userIsOwner,
   showActions,
   avatar,
-  mutate,
+  mutatePosts,
 }: any) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const showMenu = Boolean(anchorEl);
@@ -39,8 +39,10 @@ const PostCardHeader = ({
   const handleDeletePost = async (event: any) => {
     stopPropagation(event);
     await deletePost(postId);
-    mutate();
-    router.push("/feed");
+    mutatePosts();
+    if (router.asPath.startsWith("feed/")) {
+      router.push("/feed");
+    }
   };
 
   return (

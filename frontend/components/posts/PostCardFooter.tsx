@@ -1,18 +1,15 @@
-import React from "react";
-import { useSWRConfig } from "swr";
-import { toast } from "react-toastify";
-import ReplyIcon from "@mui/icons-material/Reply";
-import { useUser } from "../../contexts/UserContext";
-import { stopPropagation } from "../../utils/helpers";
-import usePostDialog from "../../hooks/usePostDialog";
 import { FavoriteOutlined } from "@mui/icons-material";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ReplyIcon from "@mui/icons-material/Reply";
 import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { toast } from "react-toastify";
+import { useUser } from "../../contexts/UserContext";
 import {
   createReaction,
   deleteReaction,
 } from "../../services/api/reactionAxios";
 import { Styles } from "../../types/types";
+import { stopPropagation } from "../../utils/helpers";
 
 const REACTION_TYPES = {
   LIKE: "LIKE",
@@ -26,7 +23,8 @@ type Props = {
   showActions: boolean;
   postId: string;
   onReply: (postId: string) => void;
-  mutate: () => void;
+  mutatePosts: any;
+  postsRes: any;
   childPostsCount: number;
 };
 const styles: Styles = {
@@ -42,7 +40,8 @@ const PostCardFooter = ({
   showActions,
   postId,
   onReply,
-  mutate,
+  mutatePosts,
+  postsRes,
   childPostsCount,
 }: Props) => {
   const { user } = useUser();
@@ -58,12 +57,36 @@ const PostCardFooter = ({
     if (!user) {
       return toast.info("Sign in to interact with others");
     }
-    if (Boolean(userReaction)) {
+    const deleteMode = Boolean(userReaction);
+    let newReaction: any;
+
+    if (deleteMode) {
       await deleteReaction(userReaction.reactionId);
     } else {
-      await createReaction(postId, user.userId, type);
+      newReaction = await createReaction(postId, user.userId, type);
     }
-    mutate();
+
+    const newPostsRes = postsRes.map((r: any) => {
+      const foundPost = r.data.find((p: any) => p.postId === postId);
+      if (foundPost) {
+        const postCopy = {
+          ...foundPost,
+          reactions: deleteMode
+            ? foundPost.reactions.filter(
+                (reaction: any) =>
+                  reaction.reactionId !== userReaction.reactionId
+              )
+            : [...foundPost.reactions, { ...newReaction }],
+        };
+        const postsCopy = r.data.map((p: any) =>
+          p.postId === postCopy.postId ? postCopy : p
+        );
+        return { ...r, data: postsCopy };
+      }
+      return r;
+    });
+
+    mutatePosts(newPostsRes, false);
   };
 
   const reactionCount = allReactions.length;

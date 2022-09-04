@@ -8,8 +8,6 @@ import PostCard from "./PostCard";
 import useSWRInfinite from "swr/infinite";
 import dynamic from "next/dynamic";
 import { infiniteSWRToFlat } from "../../utils/helpers";
-import PostListSorting from "./PostListSorting";
-import { POSTS_SORT_MODES } from "../../pages/feed";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
@@ -21,10 +19,9 @@ const styles: Styles = {
 
 type Props = {
   getPostsKey: (index: number) => string;
-  sortMode?: any;
 };
 
-const PostList = ({ getPostsKey, sortMode }: Props) => {
+const PostList = ({ getPostsKey }: Props) => {
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
   const {
@@ -51,7 +48,8 @@ const PostList = ({ getPostsKey, sortMode }: Props) => {
                     postId={postId}
                     post={{ ...rest, postId }}
                     key={postId}
-                    mutate={mutatePosts}
+                    postsRes={postsRes}
+                    mutatePosts={mutatePosts}
                   />
                 );
               }
@@ -72,7 +70,8 @@ const PostList = ({ getPostsKey, sortMode }: Props) => {
             parentPost={posts?.find(
               (p: any) => p.postId === postDialog.parentPostId
             )}
-            mutate={mutatePosts}
+            postsRes={postsRes}
+            mutatePosts={mutatePosts}
           />
         </>
       )}

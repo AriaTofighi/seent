@@ -7,11 +7,13 @@ import useSWRInfinite from "swr/infinite";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostsList from "../../components/posts/PostList";
+import PostListSorting from "../../components/posts/PostListSorting";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
 import { createImage, updateImage } from "../../services/api/imageAxios";
 import { NextPageWithLayout, Styles } from "../../types/types";
 import { fileToBase64, infiniteSWRToFlat } from "../../utils/helpers";
+import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
   images: {
@@ -36,6 +38,7 @@ const Profile: NextPageWithLayout = () => {
     isValidating: userLoading,
   } = useSWR(query ? `users?username=${query.id}` : null);
   const profileUser = userRes?.data[0];
+  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
 
   const handleBrowse = () => {
     // Reseting the file input to allow the user to pick the same file twice in a row.
@@ -73,7 +76,9 @@ const Profile: NextPageWithLayout = () => {
 
   const getPostsKey = (index: number): any =>
     profileUser
-      ? `posts?page=${index + 1}&isChild=false&perPage=20&authorId=${
+      ? `posts?page=${
+          index + 1
+        }&isChild=false&orderBy=${sortMode}&perPage=10&authorId=${
           profileUser.userId
         }`
       : null;
@@ -88,7 +93,9 @@ const Profile: NextPageWithLayout = () => {
   return (
     <>
       <Title title="Profile" />
-      <TopAppBar title="Profile" />
+      <TopAppBar title="Profile">
+        <PostListSorting setMode={setSortMode} />
+      </TopAppBar>
       {!loading ? (
         <>
           <Fade in timeout={500}>
