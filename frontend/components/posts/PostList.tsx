@@ -1,13 +1,12 @@
 import { Box } from "@mui/material";
-import React from "react";
+import dynamic from "next/dynamic";
+import useSWRInfinite from "swr/infinite";
 import usePostDialog from "../../hooks/usePostDialog";
 import { Styles } from "../../types/types";
-import FloatingButton from "../UI/FloatingButton";
-import LoadMorePosts from "./LoadMorePosts";
-import PostCard from "./PostCard";
-import useSWRInfinite from "swr/infinite";
-import dynamic from "next/dynamic";
 import { infiniteSWRToFlat } from "../../utils/helpers";
+import FloatingButton from "../UI/FloatingButton";
+import PostCard from "./PostCard";
+import PostLoader from "./PostLoader";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
@@ -18,10 +17,11 @@ const styles: Styles = {
 };
 
 type Props = {
-  getPostsKey: (index: number) => string;
+  getPostsKey: (index: number) => string | null;
+  repliesMode?: boolean;
 };
 
-const PostList = ({ getPostsKey }: Props) => {
+const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
   const {
@@ -30,6 +30,7 @@ const PostList = ({ getPostsKey }: Props) => {
     size,
     setSize,
     mutate: mutatePosts,
+    isValidating,
   } = useSWRInfinite(getPostsKey) as any;
 
   const posts: any[] = infiniteSWRToFlat(postsRes);
@@ -49,30 +50,33 @@ const PostList = ({ getPostsKey }: Props) => {
                     post={{ ...rest, postId }}
                     key={postId}
                     postsRes={postsRes}
-                    mutatePosts={mutatePosts}
+                    mutatePostList={mutatePosts}
                   />
                 );
               }
             })}
           </Box>
-          <LoadMorePosts
+          <PostLoader
             postsRes={postsRes}
             size={size}
             setSize={setSize}
             loading={isLoading}
           />
-          <FloatingButton onClick={onNewPost} />
-
-          <PostDialog
-            open={postDialog.open}
-            setPostDialog={setPostDialog}
-            onClose={onCloseDialog}
-            parentPost={posts?.find(
-              (p: any) => p.postId === postDialog.parentPostId
-            )}
-            postsRes={postsRes}
-            mutatePosts={mutatePosts}
-          />
+          {!repliesMode && (
+            <>
+              <FloatingButton onClick={onNewPost} />
+              <PostDialog
+                open={postDialog.open}
+                setPostDialog={setPostDialog}
+                onClose={onCloseDialog}
+                parentPost={posts?.find(
+                  (p: any) => p.postId === postDialog.parentPostId
+                )}
+                postsRes={postsRes}
+                mutatePostList={mutatePosts}
+              />
+            </>
+          )}
         </>
       )}
     </>

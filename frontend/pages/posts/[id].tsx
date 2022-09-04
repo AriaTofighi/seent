@@ -1,19 +1,19 @@
-import useSWR from "swr";
+import { Button, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import PostCard from "../../components/posts/PostCard";
-import { NextPageWithLayout, Styles } from "../../types/types";
-import { PostEntity } from "../../../backend/src/types";
-import { Button, Stack, Typography } from "@mui/material";
-import { getMainLayout } from "../../components/layouts/MainLayout";
-import Title from "../../components/UI/Title";
-import TopAppBar from "../../components/navigation/TopAppBar";
-import useSWRInfinite from "swr/infinite";
-import { infiniteSWRToFlat } from "../../utils/helpers";
-import LoadMorePosts from "../../components/posts/LoadMorePosts";
 import { useState } from "react";
-import { POSTS_SORT_MODES } from "../feed";
+import useSWR from "swr";
+import useSWRInfinite from "swr/infinite";
+import { PostEntity } from "../../../backend/src/types";
+import { getMainLayout } from "../../components/layouts/MainLayout";
+import TopAppBar from "../../components/navigation/TopAppBar";
+import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
+import PostLoader from "../../components/posts/PostLoader";
+import Title from "../../components/UI/Title";
+import { NextPageWithLayout, Styles } from "../../types/types";
+import { infiniteSWRToFlat } from "../../utils/helpers";
+import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
   header: {
@@ -36,22 +36,22 @@ const PostDetails: NextPageWithLayout = () => {
   const {
     data: post,
     error: postErr,
-    mutate: mutatePosts,
+    mutate: mutatePost,
   } = useSWR<PostEntity>(query.id ? `posts/${query.id}` : null);
-
-  const {
-    data: postsRes,
-    error: postsErr,
-    mutate: mutateChildren,
-    size,
-    setSize,
-  } = useSWRInfinite((index: number) =>
+  const getPostsKey = (index: number) =>
     query.id
       ? `posts?parentPostId=${query.id}&page=${
           index + 1
         }&perPage=10&orderBy=${sortMode}`
-      : null
-  ) as any;
+      : null;
+  const {
+    data: postsRes,
+    error: postsErr,
+    mutate: mutateReplies,
+    size,
+    setSize,
+  } = useSWRInfinite(getPostsKey) as any;
+
   const replies = infiniteSWRToFlat(postsRes);
 
   const postLoading = !postErr && !post;
@@ -62,7 +62,7 @@ const PostDetails: NextPageWithLayout = () => {
   }
 
   if (postErr) {
-    return <div>Error fetching data</div>;
+    router.push("/feed");
   }
 
   return (
@@ -85,8 +85,11 @@ const PostDetails: NextPageWithLayout = () => {
           postId={post?.postId ?? ""}
           post={post as any}
           postsRes={postsRes}
-          mutatePosts={mutatePosts}
-          mutateChildren={mutateChildren}
+          mutatePost={mutatePost}
+          mutatePostList={async () => {
+            await mutatePost();
+            mutateReplies();
+          }}
         />
         <Box sx={styles.header}>
           <Typography variant="h5">Replies</Typography>
@@ -103,19 +106,16 @@ const PostDetails: NextPageWithLayout = () => {
                     post={r}
                     expandable
                     postsRes={postsRes}
-                    mutatePosts={() => {
-                      mutatePosts();
-                      mutateChildren();
-                    }}
-                    mutateChildren={() => {
-                      mutatePosts();
-                      mutateChildren();
+                    mutatePost={mutatePost}
+                    mutatePostList={async () => {
+                      await mutateReplies();
+                      mutatePost();
                     }}
                   />
                 </Box>
               );
             })}
-            <LoadMorePosts
+            <PostLoader
               postsRes={postsRes}
               size={size}
               setSize={setSize}

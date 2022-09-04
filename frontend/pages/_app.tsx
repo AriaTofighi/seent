@@ -40,7 +40,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
               <RouteGuard>
                 <ComponentWithLayout />
               </RouteGuard>
-              <ToastContainer />
+              <ToastContainer autoClose={2000} />
             </NavProvider>
           </UserProvider>
         </SWRConfig>

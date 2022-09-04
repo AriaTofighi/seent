@@ -6,12 +6,39 @@ export default class MyDocument extends Document {
       <Html lang="en">
         <Head>
           <meta charSet="utf-8" />
+          <link
+            rel="android-chrome"
+            sizes="180x180"
+            href="/images/android-chrome-192x192.png"
+          />
+          <link
+            rel="android-chrome"
+            sizes="180x180"
+            href="/images/android-chrome-512x512.png"
+          />
+          <link
+            rel="apple-touch-icon"
+            sizes="180x180"
+            href="/images/apple-touch-icon.png"
+          />
+          <link
+            rel="icon"
+            type="images/png"
+            sizes="32x32"
+            href="/images/favicon-32x32.png"
+          />
+          <link
+            rel="icon"
+            type="images/png"
+            sizes="16x16"
+            href="/images/favicon-16x16.png"
+          />
         </Head>
         <body>
           <Main />
           <NextScript />
           {/* Empty script tag as chrome bug fix, see https://stackoverflow.com/a/42969608/943337 */}
-          <script> </script>
+          <script></script>
         </body>
       </Html>
     );

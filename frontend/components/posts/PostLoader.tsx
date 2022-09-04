@@ -11,7 +11,7 @@ const LoadMorePosts = ({ postsRes, size, setSize, loading, disabled }: any) => {
         fullWidth
         onClick={() => setSize(size + 1)}
       >
-        {!isDisabled ? "Load more posts" : "No more posts"}
+        {!isDisabled && "Load more posts"}
       </Button>
       {loading && <LinearProgress sx={{ my: 1 }} />}
     </>

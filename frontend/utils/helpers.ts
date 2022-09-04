@@ -5,6 +5,24 @@ export const formatDate = (inputDate: Date) => {
   return moment(inputDate).format("MMM D YYYY, h:mm a");
 };
 
+export const formatDateTime = (inputDate: Date) => {
+  const today = moment().startOf("day");
+  const yesterday = moment(today).subtract(1, "day");
+  const tomorrow = moment(today).add(1, "day");
+
+  const date = moment(inputDate);
+
+  if (date.isSame(today, "d")) {
+    return `Today, ${date.format("h:mm a")}`;
+  } else if (date.isSame(yesterday, "d")) {
+    return `Yesterday, ${date.format("h:mm a")}`;
+  } else if (date.isSame(tomorrow, "d")) {
+    return `Tomorrow, ${date.format("h:mm a")}`;
+  } else {
+    return date.format("MMM D YYYY, h:mm a");
+  }
+};
+
 export const convertDateForPicker = (d: Date) => {
   return moment(d).format("yyyy-MM-DD");
 };
@@ -14,7 +32,9 @@ export const stopPropagation = (e: MouseEvent) => {
   e.nativeEvent.stopImmediatePropagation();
 };
 
-export const fileToBase64 = (file: File) =>
+export const fileToBase64 = (
+  file: File
+): Promise<string | ArrayBuffer | null> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);

@@ -40,7 +40,7 @@ const PostCardHeader = ({
     stopPropagation(event);
     await deletePost(postId);
     mutatePosts();
-    if (router.asPath.startsWith("feed/")) {
+    if (router.asPath.startsWith("posts/")) {
       router.push("/feed");
     }
   };

@@ -15,9 +15,10 @@ import { Box } from "@mui/system";
 import EmojiPicker from "emoji-picker-react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { MouseEvent, useRef, useState } from "react";
+import { MouseEvent, useRef, useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useUser } from "../../contexts/UserContext";
+import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { createPost } from "../../services/api/postAxios";
 import { Styles } from "../../types/types";
@@ -40,8 +41,8 @@ type Props = {
   setPostDialog: any;
   parentPost?: any;
   postsRes: any;
-  mutatePosts: any;
-  mutateChildren?: () => void;
+  mutatePost?: () => void;
+  mutatePostList: () => void;
 };
 
 const styles: Styles = {
@@ -54,6 +55,7 @@ const styles: Styles = {
     flexWrap: "wrap",
     gap: 1,
     my: 2,
+    justifyContent: "center",
   },
   emojiPicker: {
     width: "100%",
@@ -64,12 +66,10 @@ const styles: Styles = {
 
 type DefaultValueType = {
   body: string;
-  images: File | undefined;
 };
 
 const defaultValues = {
   body: "",
-  images: undefined,
 };
 
 const PRIVACY_MODES = {
@@ -83,30 +83,29 @@ const PostDialog = ({
   parentPost,
   onClose,
   postsRes,
-  mutatePosts,
-  mutateChildren,
+  mutatePost,
+  mutatePostList,
 }: Props) => {
-  const { control, reset, handleSubmit, setValue, getValues, watch } =
+  const { control, reset, handleSubmit, setValue, getValues } =
     useForm<DefaultValueType>({
       defaultValues,
     });
-  const [chosenImages, setChosenImages] = useState<any>();
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { user } = useUser();
   const fileInputRef = useRef<any>();
-  const router = useRouter();
+  const { image, imagePreview, handleImageChange, setImage } = useImageUpload();
 
   const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
     const body = getValues("body");
     setValue("body", body + emojiObject.emoji);
   };
 
-  const handleSubmitPost = async (formValues: any) => {
+  const handleSubmitPost = async (formValues: DefaultValueType) => {
     if (!user) return;
-    const { body, images } = formValues;
+    const { body } = formValues;
     const formData = new FormData();
-    formData.append("images", images);
+    formData.append("images", image as Blob);
     formData.append("body", body);
     formData.append("authorId", user.userId);
     formData.append("isPublic", "true");
@@ -114,25 +113,17 @@ const PostDialog = ({
       formData.append("parentPostId", parentPost.postId);
     }
     await createPost(formData);
+    mutatePost?.();
+    mutatePostList();
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
-    mutatePosts();
-    mutateChildren?.();
     reset();
+    setImage;
   };
 
   const handleBrowse = () => {
     // Reseting the file input to allow the user to pick the same file twice in a row.
     fileInputRef.current.value = null;
     fileInputRef.current.click();
-  };
-
-  const handleSelectedPic = async (e: any) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setValue("images", file);
-    const srcFile = await fileToBase64(file);
-    setChosenImages(srcFile);
   };
 
   return (
@@ -165,8 +156,8 @@ const PostDialog = ({
               post={parentPost}
               showActions={false}
               postsRes={postsRes}
-              mutateChildren={mutateChildren}
-              mutatePosts={mutatePosts}
+              mutatePost={mutatePost}
+              mutatePostList={mutatePostList}
             />
           ) : (
             <Typography variant="h5">What's on your mind?</Typography>
@@ -213,15 +204,33 @@ const PostDialog = ({
                 pickerStyle={styles.emojiPicker as KeyValuePair}
               />
             )}
-            {chosenImages && (
+            {imagePreview && (
               <Box sx={styles.images}>
-                <Image
-                  src={chosenImages}
-                  width="250"
-                  height="200"
-                  alt="Post"
-                  layout="fixed"
-                />
+                <Box>
+                  <IconButton
+                    sx={{
+                      mt: 1,
+                      ml: 1,
+                      position: "absolute",
+                      zIndex: 1,
+                      bgcolor: "background.default",
+                      borderRadius: 1,
+                      p: 0.5,
+                    }}
+                    onClick={() => {
+                      setImage(undefined);
+                    }}
+                  >
+                    <CloseIcon />
+                  </IconButton>
+                  <Image
+                    src={imagePreview as string}
+                    width="250"
+                    height="200"
+                    alt="Post"
+                    layout="fixed"
+                  />
+                </Box>
               </Box>
             )}
             <Button variant="contained" type="submit" fullWidth>
@@ -230,7 +239,7 @@ const PostDialog = ({
             <input
               type="file"
               accept="image/*"
-              onChange={handleSelectedPic}
+              onChange={handleImageChange}
               style={{ display: "none" }}
               ref={fileInputRef}
             />
