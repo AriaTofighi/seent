@@ -91,9 +91,11 @@ const PostCard = ({
   };
 
   const mutateAllPosts = async () => {
-    await mutatePostList();
+    mutatePostList();
     await mutateNestedReplies?.();
-    mutatePost?.();
+    if (router.query?.id) {
+      await mutatePost?.();
+    }
   };
 
   if (!post || !post.images) {
@@ -162,7 +164,8 @@ const PostCard = ({
                 depth={depth + 1}
                 mutatePost={mutatePost}
                 mutatePostList={() => {
-                  mutateAllPosts();
+                  mutatePostList();
+                  mutateNestedReplies?.();
                 }}
                 postsRes={postsRes}
               />

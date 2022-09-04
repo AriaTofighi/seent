@@ -86,10 +86,7 @@ const PostDetails: NextPageWithLayout = () => {
           post={post as any}
           postsRes={postsRes}
           mutatePost={mutatePost}
-          mutatePostList={async () => {
-            await mutatePost();
-            mutateReplies();
-          }}
+          mutatePostList={mutateReplies}
         />
         <Box sx={styles.header}>
           <Typography variant="h5">Replies</Typography>
@@ -108,7 +105,7 @@ const PostDetails: NextPageWithLayout = () => {
                     postsRes={postsRes}
                     mutatePost={mutatePost}
                     mutatePostList={async () => {
-                      await mutateReplies();
+                      mutateReplies();
                       mutatePost();
                     }}
                   />
