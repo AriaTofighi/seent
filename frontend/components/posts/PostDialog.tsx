@@ -22,6 +22,7 @@ import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { createPost } from "../../services/api/postAxios";
 import { Styles } from "../../types/types";
 import TextInput from "../controls/TextInput";
+import ImagePreview from "../images/ImagePreview";
 import PostCard from "./PostCard";
 
 const PostDialog = ({
@@ -34,10 +35,16 @@ const PostDialog = ({
   mutatePostList,
 }: Props) => {
   const { user } = useUser();
-  const fileInputRef = useRef<any>();
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
-  const { image, imagePreview, handleImageChange, setImage } = useImageUpload();
+  const {
+    image,
+    imagePreview,
+    handleImageChange,
+    setImage,
+    handleBrowse,
+    fileInputRef,
+  } = useImageUpload();
   const { control, reset, handleSubmit, setValue, getValues } =
     useForm<DefaultValueType>({
       defaultValues,
@@ -65,12 +72,6 @@ const PostDialog = ({
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     reset();
     setImage;
-  };
-
-  const handleBrowse = () => {
-    // Reseting the file input to allow the user to pick the same file twice in a row.
-    fileInputRef.current.value = null;
-    fileInputRef.current.click();
   };
 
   return (
@@ -163,31 +164,13 @@ const PostDialog = ({
             )}
             {imagePreview && (
               <Box sx={styles.images}>
-                <Box>
-                  <IconButton
-                    sx={{
-                      mt: 1,
-                      ml: 1,
-                      position: "absolute",
-                      zIndex: 1,
-                      bgcolor: "background.default",
-                      borderRadius: 1,
-                      p: 0.5,
-                    }}
-                    onClick={() => {
-                      setImage(undefined);
-                    }}
-                  >
-                    <CloseIcon />
-                  </IconButton>
-                  <Image
-                    src={imagePreview as string}
-                    width="250"
-                    height="200"
-                    alt="Post"
-                    layout="fixed"
-                  />
-                </Box>
+                <ImagePreview
+                  onClose={() => {
+                    setImage(undefined);
+                  }}
+                  src={imagePreview as string}
+                  alt="Image Preview"
+                />
               </Box>
             )}
             <Button variant="contained" type="submit" fullWidth>

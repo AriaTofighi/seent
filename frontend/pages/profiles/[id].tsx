@@ -1,7 +1,7 @@
 import { Avatar, Button, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { getMainLayout } from "../../components/layouts/MainLayout";
@@ -11,9 +11,8 @@ import PostListSorting from "../../components/posts/PostListSorting";
 import EditProfileDialog from "../../components/profile/EditProfileDialog";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
-import { createImage, updateImage } from "../../services/api/imageAxios";
 import { NextPageWithLayout, Styles } from "../../types/types";
-import { fileToBase64, infiniteSWRToFlat } from "../../utils/helpers";
+import { infiniteSWRToFlat } from "../../utils/helpers";
 import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
@@ -29,9 +28,6 @@ const styles: Styles = {
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
   const { user } = useUser();
-  const fileInputRef = useRef<any>();
-  const [chosenImage, setChosenImage] = useState<any>();
-  const [imageFile, setImageFile] = useState<any>();
   const {
     data: userRes,
     error: userErr,
@@ -43,40 +39,6 @@ const Profile: NextPageWithLayout = () => {
 
   const profileUser = userRes?.data[0];
   const userIsOwner = profileUser?.userId === user?.userId;
-
-  const handleBrowse = () => {
-    // Reseting the file input to allow the user to pick the same file twice in a row.
-    fileInputRef.current.value = null;
-    fileInputRef.current.click();
-  };
-
-  const handleSelectedPic = async (e: any) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setImageFile(file);
-
-    const srcFile = await fileToBase64(file);
-    setChosenImage(srcFile);
-  };
-
-  const handleUpload = async () => {
-    if (!user) return;
-    const formData = new FormData();
-    formData.append("image", imageFile);
-    formData.append("userId", user.userId);
-    formData.append("type", "USER_AVATAR");
-    if (profileUser.images.length > 0 && profileUser.images[0]) {
-      await updateImage(formData, profileUser.images[0].imageId);
-    } else {
-      await createImage(formData);
-    }
-  };
-
-  useEffect(() => {
-    if (!imageFile) return;
-    handleUpload();
-    mutateUser();
-  }, [imageFile]);
 
   useEffect(() => {
     if (!user) return;
@@ -128,7 +90,7 @@ const Profile: NextPageWithLayout = () => {
                   variant="outlined"
                   onClick={() => setShowEditProfileDialog(true)}
                 >
-                  Edit Profile
+                  Edit
                 </Button>
               )}
 
@@ -152,20 +114,22 @@ const Profile: NextPageWithLayout = () => {
                     },
                     width: "100%",
                     height: "auto",
-                    cursor: user ? "pointer" : "auto",
                   }}
-                  onClick={user && handleBrowse}
                 />
-                <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
+                <Stack
+                  sx={{ justifyContent: "center", alignItems: "center", mb: 1 }}
+                >
                   <Typography variant="h5">{profileUser?.name}</Typography>
                   <Typography variant="subtitle2" color="primary.main">
                     {`@${profileUser.username}`}{" "}
                     {profileUser.location && ` | ${profileUser.location}`}
                     {profileUser.gender && ` | ${profileUser.gender}`}
                   </Typography>
-                  <Typography sx={{ mt: 3, mb: 2 }}>
-                    {profileUser.bio}
-                  </Typography>
+                  {profileUser.bio && (
+                    <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                      {profileUser.bio}
+                    </Typography>
+                  )}
                 </Stack>
               </Box>
 
@@ -181,7 +145,7 @@ const Profile: NextPageWithLayout = () => {
                     flexDirection: "row",
                     justifyContent: "space-between",
                     mt: 2,
-                    width: "50%",
+                    width: "70%",
                     flexWrap: "wrap",
                   }}
                 >
@@ -200,13 +164,6 @@ const Profile: NextPageWithLayout = () => {
 
           <PostsList getPostsKey={getPostsKey} />
 
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleSelectedPic}
-            style={{ display: "none" }}
-            ref={fileInputRef}
-          />
           <EditProfileDialog
             open={showEditProfileDialog}
             setOpen={setShowEditProfileDialog}

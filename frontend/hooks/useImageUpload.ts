@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { fileToBase64 } from "../utils/helpers";
 
 export const useImageUpload = () => {
@@ -6,12 +6,17 @@ export const useImageUpload = () => {
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(
     null
   );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleImageChange = async (event: any) => {
     const file = event.target.files[0];
     const base64 = await fileToBase64(file);
     setImage(file);
     setImagePreview(base64);
+  };
+
+  const handleBrowse = () => {
+    fileInputRef.current?.click();
   };
 
   useEffect(() => {
@@ -25,5 +30,7 @@ export const useImageUpload = () => {
     imagePreview,
     handleImageChange,
     setImage,
+    fileInputRef,
+    handleBrowse,
   };
 };
