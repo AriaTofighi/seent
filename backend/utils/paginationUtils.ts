@@ -1,3 +1,6 @@
+/**
+ * @author @github.com/enkot/prisma-pagination
+ */
 export interface PaginatedResult<T> {
   data: T[];
   meta: {

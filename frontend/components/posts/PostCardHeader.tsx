@@ -10,7 +10,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { deletePost } from "../../services/api/postAxios";
-import { stopPropagation } from "../../utils/helpers";
+import { stopPropagation } from "../../utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
 

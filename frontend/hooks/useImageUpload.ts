@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { fileToBase64 } from "../utils/helpers";
+import { fileToBase64 } from "../utils";
 
 export const useImageUpload = () => {
   const [image, setImage] = useState<File | undefined>(undefined);

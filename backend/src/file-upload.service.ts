@@ -1,7 +1,7 @@
 import { S3 } from "aws-sdk";
 import { Logger, Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
-import { getFileExtension } from "utils/misc";
+import { getFileExtension } from "utils/fileUtils";
 @Injectable()
 export class FileUploadService {
   async upload(file) {

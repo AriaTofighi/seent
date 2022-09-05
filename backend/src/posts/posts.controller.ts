@@ -17,7 +17,7 @@ import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { FileUploadService } from "src/file-upload/file-upload.service";
+import { FileUploadService } from "src/file-upload.service";
 import { ImagesService } from "src/images/images.service";
 import { ImageType } from "@prisma/client";
 

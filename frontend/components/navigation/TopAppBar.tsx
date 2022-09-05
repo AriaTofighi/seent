@@ -1,15 +1,10 @@
-import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
-import React, { ReactNode } from "react";
-import MenuIcon from "@mui/icons-material/Menu";
 import { useTheme } from "@mui/system";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import React, { ReactNode } from "react";
 import { Styles } from "../../types/types";
+import MenuIcon from "@mui/icons-material/Menu";
 import { useNav } from "../../contexts/NavContext";
-
-type Props = {
-  children?: ReactNode;
-  title?: string;
-};
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
 
 const TopAppBar = ({ children, title }: Props) => {
   const theme = useTheme();
@@ -17,14 +12,13 @@ const TopAppBar = ({ children, title }: Props) => {
   const { open, setOpen } = useNav();
 
   return (
-    <AppBar position="sticky" sx={styles.root}>
+    <AppBar sx={styles.root}>
       <Toolbar>
         {mobileMode && (
           <IconButton
             size="medium"
             edge="start"
-            color="inherit"
-            sx={{ mr: 1 }}
+            sx={styles.menuBtn}
             onClick={() => setOpen(!open)}
           >
             <MenuIcon />
@@ -51,4 +45,12 @@ const styles: Styles = {
     backgroundImage: "none",
     boxShadow: "none",
   },
+  menuBtn: {
+    mr: 1.5,
+  },
+};
+
+type Props = {
+  children?: ReactNode;
+  title?: string;
 };

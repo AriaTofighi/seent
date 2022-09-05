@@ -9,7 +9,7 @@ import {
   deleteReaction,
 } from "../../services/api/reactionAxios";
 import { Styles } from "../../types/types";
-import { stopPropagation } from "../../utils/helpers";
+import { stopPropagation } from "../../utils";
 
 const REACTION_TYPES = {
   LIKE: "LIKE",

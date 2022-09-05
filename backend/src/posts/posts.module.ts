@@ -4,7 +4,7 @@ import { PrismaService } from "../prisma.service";
 import { PostsController } from "./posts.controller";
 import { UsersModule } from "./../users/users.module";
 import { ImagesModule } from "./../images/images.module";
-import { FileUploadService } from "src/file-upload/file-upload.service";
+import { FileUploadService } from "src/file-upload.service";
 
 @Module({
   controllers: [PostsController],

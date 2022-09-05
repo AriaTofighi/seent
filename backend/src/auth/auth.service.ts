@@ -1,12 +1,11 @@
+import * as argon2 from "argon2";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import * as argon2 from "argon2";
-import { ImagesService } from "src/images/images.service";
-import { UserEntity } from "src/types";
 import { UsersService } from "src/users/users.service";
-import { exclude } from "utils/modelHelpers";
+import { exclude } from "utils/modelUtils";
 import { SignUpDto } from "./dto/signup.dto";
 import { JwtPayload } from "./strategies/local.strategy";
+import { UserEntity } from "src/users/entities/user.entity";
 
 @Injectable()
 export class AuthService {

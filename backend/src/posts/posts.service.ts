@@ -1,7 +1,7 @@
 import { Prisma, Post, ImageType } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
 import { PostFindManyParams } from "./posts.types";
-import { createPaginator } from "../../utils/pagination";
+import { createPaginator } from "../../utils/paginationUtils";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()

@@ -2,7 +2,7 @@ import { PrismaService } from "./../prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, Reaction } from "@prisma/client";
 import { ReactionFindManyParams } from "./reactions.types";
-import { createPaginator } from "utils/pagination";
+import { createPaginator } from "utils/paginationUtils";
 
 @Injectable()
 export class ReactionsService {

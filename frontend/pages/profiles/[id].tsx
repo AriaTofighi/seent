@@ -12,7 +12,7 @@ import EditProfileDialog from "../../components/profile/EditProfileDialog";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
 import { NextPageWithLayout, Styles } from "../../types/types";
-import { infiniteSWRToFlat } from "../../utils/helpers";
+import { infiniteSWRToFlat } from "../../utils";
 import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {

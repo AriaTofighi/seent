@@ -3,8 +3,8 @@ import dynamic from "next/dynamic";
 import useSWRInfinite from "swr/infinite";
 import usePostDialog from "../../hooks/usePostDialog";
 import { Styles } from "../../types/types";
-import { infiniteSWRToFlat } from "../../utils/helpers";
-import FloatingButton from "../UI/FloatingButton";
+import { infiniteSWRToFlat } from "../../utils";
+import FloatingButton from "../UI/buttons/FloatingButton";
 import PostCard from "./PostCard";
 import PostLoader from "./PostLoader";
 

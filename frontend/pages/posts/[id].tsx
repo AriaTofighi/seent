@@ -12,7 +12,7 @@ import PostListSorting from "../../components/posts/PostListSorting";
 import PostLoader from "../../components/posts/PostLoader";
 import Title from "../../components/UI/Title";
 import { NextPageWithLayout, Styles } from "../../types/types";
-import { infiniteSWRToFlat } from "../../utils/helpers";
+import { infiniteSWRToFlat } from "../../utils";
 import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
@@ -38,12 +38,14 @@ const PostDetails: NextPageWithLayout = () => {
     error: postErr,
     mutate: mutatePost,
   } = useSWR<PostEntity>(query.id ? `posts/${query.id}` : null);
+
   const getPostsKey = (index: number) =>
     query.id
       ? `posts?parentPostId=${query.id}&page=${
           index + 1
         }&perPage=10&orderBy=${sortMode}`
       : null;
+
   const {
     data: postsRes,
     error: postsErr,
@@ -57,12 +59,12 @@ const PostDetails: NextPageWithLayout = () => {
   const postLoading = !postErr && !post;
   const repliesLoading = !postsRes && !postsErr;
 
-  if (postLoading || repliesLoading) {
-    return <div>Loading...</div>;
-  }
-
   if (postErr) {
     router.push("/feed");
+  }
+
+  if (postLoading || repliesLoading) {
+    return <div>Loading...</div>;
   }
 
   return (

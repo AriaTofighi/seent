@@ -6,8 +6,8 @@ import TextInput from "../controls/TextInput";
 import { Button, Stack, Tooltip, Typography } from "@mui/material";
 import { useUser } from "../../contexts/UserContext";
 import { signUp } from "../../services/api/authAxios";
-import { convertDateForPicker } from "../../utils/helpers";
 import InfoIcon from "@mui/icons-material/Info";
+import { convertDateForPicker } from "../../utils";
 
 const defaultValues = {
   name: "",
