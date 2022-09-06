@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import { PostEntity } from "../../../backend/src/types";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostCard from "../../components/posts/PostCard";
@@ -37,7 +36,7 @@ const PostDetails: NextPageWithLayout = () => {
     data: post,
     error: postErr,
     mutate: mutatePost,
-  } = useSWR<PostEntity>(query.id ? `posts/${query.id}` : null);
+  } = useSWR(query.id ? `posts/${query.id}` : null);
 
   const getPostsKey = (index: number) =>
     query.id
@@ -97,7 +96,7 @@ const PostDetails: NextPageWithLayout = () => {
 
         {replies.length > 0 ? (
           <>
-            {replies.map((r: PostEntity) => {
+            {replies.map((r: any) => {
               return (
                 <Box key={r.postId}>
                   <PostCard

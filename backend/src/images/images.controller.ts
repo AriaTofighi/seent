@@ -17,7 +17,7 @@ import {
 } from "@nestjs/common";
 import { CreateImageDto } from "./dto/create-image.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { FileUploadService } from "src/file-upload.service";
+import { FileUploadService } from "src/file-upload/file-upload.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ImageType, Prisma } from "@prisma/client";
 

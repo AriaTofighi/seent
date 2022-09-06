@@ -44,6 +44,7 @@ const styles: Styles = {
     bgcolor: "background.default",
     backgroundImage: "none",
     boxShadow: "none",
+    pr: "0 !important",
   },
   menuBtn: {
     mr: 1.5,

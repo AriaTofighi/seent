@@ -1,4 +1,4 @@
-import { FindManyQuery } from "src/types";
+import { FindManyQuery } from "utils/types";
 import { Prisma } from "@prisma/client";
 
 export class ReactionFindManyParams extends FindManyQuery {

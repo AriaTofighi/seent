@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { ImageType, Prisma } from "@prisma/client";
-import { PrismaService } from "./../prisma.service";
+import { PrismaService } from "../orm/prisma.service";
 import { ImageFindManyParams } from "./images.types";
 
 @Injectable()

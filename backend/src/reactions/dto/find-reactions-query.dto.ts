@@ -1,6 +1,6 @@
 import { ReactionType } from "@prisma/client";
 import { IsOptional, IsString, IsUUID } from "class-validator";
-import { FindManyQuery } from "src/types";
+import { FindManyQuery } from "utils/types";
 
 export class FindReactionsQueryDto extends FindManyQuery {
   @IsUUID()

@@ -1,8 +1,9 @@
-import { PrismaService } from "./../prisma.service";
+import { PrismaService } from "../orm/prisma.service";
 import { Injectable } from "@nestjs/common";
 import { Prisma, Reaction } from "@prisma/client";
 import { ReactionFindManyParams } from "./reactions.types";
 import { createPaginator } from "utils/paginationUtils";
+import { PaginatedResult } from "utils/types";
 
 @Injectable()
 export class ReactionsService {
@@ -17,17 +18,23 @@ export class ReactionsService {
 
   async findMany(params: ReactionFindManyParams) {
     const { page, perPage, where, orderBy } = params;
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Reaction, Prisma.PostFindManyArgs>(
-      this.prisma.post,
-      {
-        where,
-        orderBy,
-      },
-      {
-        page,
-      }
-    );
+
+    const queryArgs = {
+      where,
+      orderBy,
+    };
+
+    let result: PaginatedResult<Reaction> | Reaction[];
+    if (page) {
+      const paginate = createPaginator({ perPage: perPage });
+      result = await paginate<Reaction, Prisma.ReactionFindManyArgs>(
+        this.prisma.post,
+        queryArgs,
+        { page: page }
+      );
+    } else {
+      result = await this.prisma.reaction.findMany(queryArgs);
+    }
 
     return result;
   }

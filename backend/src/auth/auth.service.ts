@@ -20,9 +20,7 @@ export class AuthService {
     if (user) {
       const validPassword = await argon2.verify(user.password, password);
       if (validPassword) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { password: userPass, ...result } = user;
-        return result;
+        return user;
       }
     }
     return null;
@@ -44,7 +42,8 @@ export class AuthService {
       throw new UnauthorizedException(
         "An account with this email already exists"
       );
-    } else if (userByUsername) {
+    }
+    if (userByUsername) {
       throw new UnauthorizedException(
         "An account with this username already exists"
       );

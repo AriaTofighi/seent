@@ -3,22 +3,16 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Delete,
-  forwardRef,
   Get,
-  Inject,
   Param,
   Patch,
-  Post,
   Query,
   Req,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
-import { ImageType } from "@prisma/client";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { ImagesService } from "./../images/images.service";
-import { CreateUserDto } from "./dto/create-user.dto";
 import { FindUsersQueryDto } from "./dto/find-users-query.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
@@ -27,16 +21,7 @@ import { UsersService } from "./users.service";
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller("/api/users")
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-    @Inject(forwardRef(() => ImagesService))
-    private readonly imagesService: ImagesService
-  ) {}
-
-  @Post()
-  async create(@Body() user: CreateUserDto) {
-    return this.usersService.create(user);
-  }
+  constructor(private readonly usersService: UsersService) {}
 
   @Get()
   async findMany(@Query() query: FindUsersQueryDto) {

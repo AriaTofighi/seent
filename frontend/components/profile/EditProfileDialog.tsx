@@ -22,14 +22,8 @@ import FileUploadIcon from "@mui/icons-material/FileUpload";
 
 const EditProfileDialog = ({ open, setOpen }: Props) => {
   const { control, reset, handleSubmit } = useForm({ defaultValues });
-  const {
-    image,
-    handleImageChange,
-    imagePreview,
-    setImage,
-    fileInputRef,
-    handleBrowse,
-  } = useImageUpload();
+  const { image, handleImageChange, fileInputRef, handleBrowse } =
+    useImageUpload();
   const { user, mutate } = useUser();
 
   const handleSave = async (data: any) => {

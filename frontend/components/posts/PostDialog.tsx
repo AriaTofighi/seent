@@ -21,6 +21,7 @@ import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { createPost } from "../../services/api/postAxios";
 import { Styles } from "../../types/types";
+import FileUpload from "../controls/FileUpload";
 import TextInput from "../controls/TextInput";
 import ImagePreview from "../images/ImagePreview";
 import PostCard from "./PostCard";
@@ -176,13 +177,7 @@ const PostDialog = ({
             <Button variant="contained" type="submit" fullWidth>
               Post
             </Button>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              style={{ display: "none" }}
-              ref={fileInputRef}
-            />
+            <FileUpload innerRef={fileInputRef} onChange={handleImageChange} />
           </form>
         </Box>
       </DialogContent>

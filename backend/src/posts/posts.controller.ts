@@ -1,25 +1,26 @@
-import { UpdatePostDto } from "./dto/update-post.dto";
-import { PostsService } from "./posts.service";
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  Req,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
-  UploadedFiles,
 } from "@nestjs/common";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { ImageType } from "@prisma/client";
+import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { FileUploadService } from "src/file-upload/file-upload.service";
+import { ImagesService } from "src/images/images.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { FilesInterceptor } from "@nestjs/platform-express";
-import { FileUploadService } from "src/file-upload.service";
-import { ImagesService } from "src/images/images.service";
-import { ImageType } from "@prisma/client";
+import { UpdatePostDto } from "./dto/update-post.dto";
+import { PostsService } from "./posts.service";
 
 @Controller("api/posts")
 export class PostsController {
@@ -55,30 +56,19 @@ export class PostsController {
     const { authorId, postId, parentPostId, isChild, page, perPage, orderBy } =
       query;
     const result = await this.postsService.findMany({
-      where: {
-        postId,
-        parentPostId: isChild ? null : parentPostId,
-        authorId: authorId,
-      },
+      where: { authorId, postId, parentPostId: isChild ? null : parentPostId },
+      orderBy,
       page,
       perPage,
-      orderBy,
     });
 
-    const postsWithDepth = [];
-    for (const p of result.data) {
-      const depth = await this.postsService.getDepth(p.postId);
-      postsWithDepth.push({ ...p, depth });
-    }
-
-    return { ...result, data: postsWithDepth };
+    return result;
   }
 
   @Get(":id")
   async findOne(@Param("id") postId: string) {
     const post = await this.postsService.findOne({ postId });
-    const depth = await this.postsService.getDepth(postId);
-    return { ...post, depth };
+    return post;
   }
 
   @UseGuards(JwtAuthGuard)
@@ -96,7 +86,7 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") postId: string) {
+  async remove(@Param("id") postId: string, @Req() req) {
     const images = await this.imagesService.findMany({
       where: { postId: postId },
     });

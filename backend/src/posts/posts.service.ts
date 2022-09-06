@@ -1,14 +1,15 @@
 import { Prisma, Post, ImageType } from "@prisma/client";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../orm/prisma.service";
 import { PostFindManyParams } from "./posts.types";
-import { createPaginator } from "../../utils/paginationUtils";
 import { Injectable } from "@nestjs/common";
+import { createPaginator } from "utils/paginationUtils";
+import { PaginatedResult } from "utils/types";
 
 @Injectable()
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  private readonly postIncludes = {
+  private readonly POST_INCLUDES = {
     author: {
       select: {
         name: true,
@@ -59,7 +60,7 @@ export class PostsService {
   async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
     const post = await this.prisma.post.findUnique({
       where: postWhereUniqueInput,
-      include: this.postIncludes,
+      include: this.POST_INCLUDES,
     });
 
     return post;
@@ -67,22 +68,24 @@ export class PostsService {
 
   async findMany(params: PostFindManyParams) {
     const { where, orderBy, page, perPage } = params;
-    const { calcedWhere, calcedOrderBy } = this.transformWhereAndOrderBy(
-      where,
-      orderBy
-    );
+    const { calcedWhere, calcedOrderBy } = this.getFilters(where, orderBy);
+    const queryArgs = {
+      where: calcedWhere,
+      orderBy: calcedOrderBy,
+      include: this.POST_INCLUDES,
+    };
 
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<Post, Prisma.PostFindManyArgs>(
-      this.prisma.post,
-      {
-        where: calcedWhere,
-        orderBy: calcedOrderBy,
-        include: this.postIncludes,
-      },
-      { page: page }
-    );
-
+    let result: PaginatedResult<Post> | Post[];
+    if (page) {
+      const paginate = createPaginator({ perPage: perPage });
+      result = await paginate<Post, Prisma.PostFindManyArgs>(
+        this.prisma.post,
+        queryArgs,
+        { page: page }
+      );
+    } else {
+      result = await this.prisma.post.findMany(queryArgs);
+    }
     return result;
   }
 
@@ -121,7 +124,7 @@ export class PostsService {
     return depth;
   }
 
-  transformWhereAndOrderBy(
+  getFilters(
     where: Prisma.PostWhereInput,
     orderBy: string
   ): {

@@ -1,5 +1,5 @@
 import { IsEmail, IsOptional, IsString, IsUUID } from "class-validator";
-import { FindManyQuery } from "src/types";
+import { FindManyQuery } from "utils/types";
 
 export class FindUsersQueryDto extends FindManyQuery {
   @IsEmail()

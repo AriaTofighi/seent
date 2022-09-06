@@ -14,8 +14,8 @@ export class PostEntity implements Post {
 
   reactions: ReactionEntity[];
   author: UserEntity;
-  images?: ImageEntity[];
-  parentPost?: PostEntity;
+  images: ImageEntity[];
+  parentPost: PostEntity;
   _count: Count;
 
   constructor(partial: Partial<PostEntity>) {

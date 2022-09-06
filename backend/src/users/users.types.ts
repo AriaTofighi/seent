@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { FindManyQuery } from "src/types";
+import { FindManyQuery } from "utils/types";
 
 export class UserFindManyParams extends FindManyQuery {
   cursor?: Prisma.UserWhereUniqueInput;

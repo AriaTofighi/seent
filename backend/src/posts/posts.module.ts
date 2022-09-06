@@ -1,10 +1,10 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { PostsService } from "./posts.service";
-import { PrismaService } from "../prisma.service";
+import { PrismaService } from "../orm/prisma.service";
 import { PostsController } from "./posts.controller";
 import { UsersModule } from "./../users/users.module";
 import { ImagesModule } from "./../images/images.module";
-import { FileUploadService } from "src/file-upload.service";
+import { FileUploadService } from "src/file-upload/file-upload.service";
 
 @Module({
   controllers: [PostsController],
