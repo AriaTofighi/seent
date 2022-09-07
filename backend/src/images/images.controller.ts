@@ -31,9 +31,12 @@ export class ImagesController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor("image"))
   @Post()
-  async create(@UploadedFile() imageFile, @Body() image: CreateImageDto) {
+  async create(
+    @UploadedFile() imageFile: Express.Multer.File,
+    @Body() image: CreateImageDto
+  ) {
     if (image.type === ImageType.USER_AVATAR) {
-      if (!image.userId) {
+      if (!image.userId || image.postId) {
         throw new BadRequestException();
       }
 

@@ -4,7 +4,7 @@ import { randomUUID } from "crypto";
 import { getFileExtension } from "utils/fileUtils";
 @Injectable()
 export class FileUploadService {
-  async upload(file) {
+  async upload(file: Express.Multer.File) {
     const bucketS3 = "seent";
     const extensionString = getFileExtension(file.originalname);
     const extension = extensionString ? `.${extensionString}` : "";
@@ -12,9 +12,9 @@ export class FileUploadService {
     return await this.uploadS3(file.buffer, bucketS3, randomFileName);
   }
 
-  async uploadS3(file, bucket, name) {
+  async uploadS3(file: Buffer, bucket: string, name: string) {
     const s3 = this.getS3();
-    const params = {
+    const params: S3.PutObjectRequest = {
       Bucket: bucket,
       Key: String(name),
       Body: file,

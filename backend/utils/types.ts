@@ -32,3 +32,14 @@ export type PaginateFunction = <T, K>(
   args?: K,
   options?: PaginateOptions
 ) => Promise<PaginatedResult<T>>;
+
+export type JwtPayload = {
+  email: string;
+  userId: string;
+  name: string;
+  username: string;
+};
+
+export interface AuthenticatedRequest extends Request {
+  user: JwtPayload;
+}

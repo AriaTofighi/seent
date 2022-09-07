@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { User } from "./decorators/user.decorator";
 import { FindUsersQueryDto } from "./dto/find-users-query.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 import { UserEntity } from "./entities/user.entity";
@@ -64,11 +65,15 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") userId: string, @Req() req) {
-    if (req.user.userId !== userId) {
-      throw new UnauthorizedException();
-    }
+  async remove(@Param("id") userId: string, @User() user: UserEntity) {
+    console.log(user);
+    // Return an 400 status code on the next line to test the controller
+    return "";
 
-    return this.usersService.delete({ userId });
+    // if (user.userId !== userId) {
+    //   throw new UnauthorizedException();
+    // }
+
+    // return this.usersService.delete({ userId });
   }
 }

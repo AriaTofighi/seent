@@ -1,8 +1,8 @@
-import { ImageEntity } from "./../../images/entities/image.entity";
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-local";
 import { AuthService } from "src/auth/auth.service";
+import { JwtPayload } from "utils/types";
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -18,15 +18,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     if (!user) {
       throw new UnauthorizedException();
     }
+    const { userId, username, name } = user;
 
-    return user;
+    return {
+      userId,
+      email,
+      username,
+      name,
+    };
   }
 }
-
-export type JwtPayload = {
-  email: string;
-  userId: string;
-  name: string;
-  username: string;
-  images: Partial<ImageEntity>[];
-};

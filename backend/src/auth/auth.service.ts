@@ -4,8 +4,8 @@ import { JwtService } from "@nestjs/jwt";
 import { UsersService } from "src/users/users.service";
 import { exclude } from "utils/modelUtils";
 import { SignUpDto } from "./dto/signup.dto";
-import { JwtPayload } from "./strategies/local.strategy";
 import { UserEntity } from "src/users/entities/user.entity";
+import { JwtPayload } from "utils/types";
 
 @Injectable()
 export class AuthService {
@@ -36,7 +36,7 @@ export class AuthService {
     const { email, password, name, birthday, username } = user;
 
     const userByEmail = await this.usersService.findOne({ email });
-    const userByUsername = await this.usersService.findOne({ email });
+    const userByUsername = await this.usersService.findOne({ username });
 
     if (userByEmail) {
       throw new UnauthorizedException(
