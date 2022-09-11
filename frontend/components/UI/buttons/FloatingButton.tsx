@@ -1,6 +1,6 @@
 import { Stack, Fab } from "@mui/material";
 import React from "react";
-import { Styles } from "../../../types/types";
+import { Styles } from "../../../types";
 import AddIcon from "@mui/icons-material/Add";
 
 type Props = {

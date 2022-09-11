@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Box, SxProps } from "@mui/system";
 import MenuItem from "./MenuItem";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";

@@ -8,7 +8,7 @@ import {
   createReaction,
   deleteReaction,
 } from "../../services/api/reactionAxios";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import { stopPropagation } from "../../utils";
 
 const REACTION_TYPES = {

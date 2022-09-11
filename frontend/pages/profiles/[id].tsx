@@ -11,7 +11,7 @@ import PostListSorting from "../../components/posts/PostListSorting";
 import EditProfileDialog from "../../components/profile/EditProfileDialog";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
-import { NextPageWithLayout, Styles } from "../../types/types";
+import { NextPageWithLayout, Styles } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
 import { POSTS_SORT_MODES } from "../feed";
 

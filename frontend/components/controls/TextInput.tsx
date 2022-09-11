@@ -1,7 +1,7 @@
 import { TextField, Theme } from "@mui/material";
 import React from "react";
 import { Controller } from "react-hook-form";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 
 type Props = {
   control: any;

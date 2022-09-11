@@ -1,6 +1,6 @@
 import { useTheme } from "@mui/system";
 import React, { ReactNode } from "react";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import MenuIcon from "@mui/icons-material/Menu";
 import { useNav } from "../../contexts/NavContext";
 import useMediaQuery from "@mui/material/useMediaQuery";

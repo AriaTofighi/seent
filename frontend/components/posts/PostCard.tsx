@@ -5,10 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
-import { PostEntity, ReactionEntity } from "../../../backend/src/types";
 import { useUser } from "../../contexts/UserContext";
 import usePostDialog from "../../hooks/usePostDialog";
-import { Styles } from "../../types/types";
+import { PostEntity, ReactionEntity, Styles } from "../../types";
 import { formatDateTime } from "../../utils";
 import StyledCard from "../UI/cards/StyledCard";
 import PostCardBody from "./PostCardBody";
@@ -69,7 +68,7 @@ const PostCard = ({
   );
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
-  const childPosts = childPostsData?.data ?? [];
+  const childPosts = childPostsData;
   const formattedDate = formatDateTime(post?.createdAt);
   const showViewMore =
     childPostsLength > 0 &&

@@ -8,8 +8,8 @@ import {
 } from "react";
 import jwtDecode from "jwt-decode";
 import { setDefaultHeader } from "../services/api/AxiosInstance";
-import { UserEntity } from "../../backend/src/types";
 import useSWR from "swr";
+import { UserEntity } from "../types";
 
 type Props = {
   children: ReactNode;

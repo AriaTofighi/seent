@@ -1,4 +1,4 @@
-import React, { MouseEvent, useState } from "react";
+import React, { MouseEvent, MouseEventHandler, useState } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Stack,
@@ -13,6 +13,7 @@ import { deletePost } from "../../services/api/postAxios";
 import { stopPropagation } from "../../utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
+import useMenu from "../../hooks/useMenu";
 
 const PostCardHeader = ({
   postId,
@@ -22,22 +23,21 @@ const PostCardHeader = ({
   avatar,
   mutatePosts,
 }: any) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const showMenu = Boolean(anchorEl);
+  const { anchorEl, handleClick, handleClose, open } = useMenu();
   const router = useRouter();
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
     stopPropagation(event);
-    setAnchorEl(event.currentTarget);
+    handleClick(event);
   };
 
   const handleCloseMenu = (event: MouseEvent<HTMLButtonElement>) => {
     stopPropagation(event);
-    setAnchorEl(null);
+    handleClose();
   };
 
-  const handleDeletePost = async (event: any) => {
-    stopPropagation(event);
+  const handleDeletePost = async (event: React.SyntheticEvent) => {
+    stopPropagation(event as MouseEvent);
     await deletePost(postId);
     mutatePosts();
     if (router.asPath.startsWith("posts/")) {
@@ -51,13 +51,7 @@ const PostCardHeader = ({
         <Stack spacing={2} direction="row" alignItems="center">
           <Link href={`/profiles/${author.username}`}>
             <a>
-              <Avatar
-                src={avatar}
-                // onClick={(event) => {
-                //   stopPropagation(event);
-                //   router.push(`/profiles/${author.username}`);
-                // }}
-              />
+              <Avatar src={avatar} />
             </a>
           </Link>
 
@@ -71,7 +65,7 @@ const PostCardHeader = ({
           )}
         </Box>
       </Stack>
-      <Menu anchorEl={anchorEl} open={showMenu} onClose={handleCloseMenu}>
+      <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
         <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
       </Menu>
     </>

@@ -2,7 +2,7 @@ import { ButtonBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Link from "next/link";
 import { ReactNode } from "react";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 
 const MenuItem = ({ children, icon, href, onClick }: Props) => {
   const defaultContent = (

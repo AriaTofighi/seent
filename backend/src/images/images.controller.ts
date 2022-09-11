@@ -1,4 +1,3 @@
-import { UpdateImageDto } from "./dto/update-image.dto";
 import { ImagesService } from "./images.service";
 import {
   Controller,

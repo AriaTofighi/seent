@@ -1,5 +1,6 @@
 import moment from "moment";
 import { MouseEvent } from "react";
+import { PaginatedResult } from "../types";
 
 export const formatDate = (inputDate: Date) => {
   return moment(inputDate).format("MMM D YYYY, h:mm a");
@@ -43,10 +44,7 @@ export const fileToBase64 = (
   });
 
 export const infiniteSWRToFlat = (
-  paginatedObjArray: {
-    data: any;
-    meta: any;
-  }[]
+  paginatedObjArray: PaginatedResult<any>[] | undefined
 ) => {
   return paginatedObjArray?.map((res: any) => res.data).flat() ?? [];
 };

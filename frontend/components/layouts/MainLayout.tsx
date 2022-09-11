@@ -3,7 +3,7 @@ import TopAppBar from "../navigation/TopAppBar";
 import SideBar from "../navigation/SideBar";
 import { useTheme } from "@mui/system";
 import useMediaQuery from "@mui/material/useMediaQuery";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import { ReactElement, useState } from "react";
 import { useNav } from "../../contexts/NavContext";
 

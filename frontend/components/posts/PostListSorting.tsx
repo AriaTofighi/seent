@@ -40,6 +40,44 @@ const PostListSorting = ({ setMode }: Props) => {
     setMode(mode);
   };
 
+  const baseMenuItems = [
+    {
+      label: "Top",
+      onClick: handleClickTopLocal,
+    },
+    {
+      label: "New",
+      onClick: handleNew,
+    },
+    {
+      label: "Old",
+      onClick: handleOld,
+    },
+  ];
+
+  const topMenuItems = [
+    {
+      label: "Day",
+      onClick: () => handleTopSpecify(POSTS_SORT_MODES.TOP_DAY),
+    },
+    {
+      label: "Week",
+      onClick: () => handleTopSpecify(POSTS_SORT_MODES.TOP_WEEK),
+    },
+    {
+      label: "Month",
+      onClick: () => handleTopSpecify(POSTS_SORT_MODES.TOP_MONTH),
+    },
+    {
+      label: "Year",
+      onClick: () => handleTopSpecify(POSTS_SORT_MODES.TOP_YEAR),
+    },
+    {
+      label: "All Time",
+      onClick: () => handleTopSpecify(POSTS_SORT_MODES.TOP_ALL),
+    },
+  ];
+
   return (
     <>
       <Stack direction="row" justifyContent="flex-end" width="100%">
@@ -48,26 +86,18 @@ const PostListSorting = ({ setMode }: Props) => {
         </IconButton>
       </Stack>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <MenuItem onClick={handleClickTopLocal as any}>Top</MenuItem>
-        <MenuItem onClick={handleNew}>New</MenuItem>
-        <MenuItem onClick={handleOld}>Old</MenuItem>
+        {baseMenuItems.map((item) => (
+          <MenuItem key={item.label} onClick={item.onClick}>
+            {item.label}
+          </MenuItem>
+        ))}
       </Menu>
       <Menu anchorEl={anchorEl} open={openTop} onClose={handleCloseTopLocal}>
-        <MenuItem onClick={() => handleTopSpecify(POSTS_SORT_MODES.TOP_DAY)}>
-          Day
-        </MenuItem>
-        <MenuItem onClick={() => handleTopSpecify(POSTS_SORT_MODES.TOP_WEEK)}>
-          Week
-        </MenuItem>
-        <MenuItem onClick={() => handleTopSpecify(POSTS_SORT_MODES.TOP_MONTH)}>
-          Month
-        </MenuItem>
-        <MenuItem onClick={() => handleTopSpecify(POSTS_SORT_MODES.TOP_YEAR)}>
-          Year
-        </MenuItem>
-        <MenuItem onClick={() => handleTopSpecify(POSTS_SORT_MODES.TOP_ALL)}>
-          All
-        </MenuItem>
+        {topMenuItems.map((item) => (
+          <MenuItem key={item.label} onClick={item.onClick}>
+            {item.label}
+          </MenuItem>
+        ))}
       </Menu>
     </>
   );

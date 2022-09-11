@@ -5,7 +5,7 @@ import TopAppBar from "../components/navigation/TopAppBar";
 import PostsList from "../components/posts/PostList";
 import PostListSorting from "../components/posts/PostListSorting";
 import Title from "../components/UI/Title";
-import { NextPageWithLayout, Styles } from "../types/types";
+import { NextPageWithLayout, Styles } from "../types";
 
 export const POSTS_SORT_MODES = {
   TOP_DAY: "top-day",

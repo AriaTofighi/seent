@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogContent, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 

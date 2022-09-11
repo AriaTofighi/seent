@@ -3,7 +3,7 @@ import { ReactElement, useEffect, useState } from "react";
 import AuthDialog from "../components/auth/AuthDialog";
 import LoadAppSpinner from "../components/UI/loading/LoadAppSpinner";
 import { useUser } from "../contexts/UserContext";
-import { NextPageWithLayout } from "../types/types";
+import { NextPageWithLayout } from "../types";
 
 const SignIn: NextPageWithLayout = () => {
   const [open, setOpen] = useState(true);

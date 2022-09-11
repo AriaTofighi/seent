@@ -10,7 +10,7 @@ import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
 import PostLoader from "../../components/posts/PostLoader";
 import Title from "../../components/UI/Title";
-import { NextPageWithLayout, Styles } from "../../types/types";
+import { NextPageWithLayout, Styles } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
 import { POSTS_SORT_MODES } from "../feed";
 
@@ -114,7 +114,7 @@ const PostDetails: NextPageWithLayout = () => {
               );
             })}
             <PostLoader
-              postsRes={postsRes}
+              disabled={!(postsRes && postsRes[size - 1].meta?.next)}
               size={size}
               setSize={setSize}
               loading={repliesLoading}

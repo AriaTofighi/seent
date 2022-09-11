@@ -1,8 +1,9 @@
 import { Box } from "@mui/material";
 import dynamic from "next/dynamic";
 import useSWRInfinite from "swr/infinite";
+import useInfiniteAPI from "../../hooks/useInfiniteAPI";
 import usePostDialog from "../../hooks/usePostDialog";
-import { Styles } from "../../types/types";
+import { PaginatedResult, PostEntity, Styles } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
 import FloatingButton from "../UI/buttons/FloatingButton";
 import PostCard from "./PostCard";
@@ -30,10 +31,9 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
     size,
     setSize,
     mutate: mutatePosts,
-    isValidating,
-  } = useSWRInfinite(getPostsKey) as any;
+  } = useSWRInfinite<PaginatedResult<PostEntity>>(getPostsKey);
 
-  const posts: any[] = infiniteSWRToFlat(postsRes);
+  const posts = infiniteSWRToFlat(postsRes);
 
   const isLoading = !postsRes && !postsErr;
 
@@ -57,7 +57,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
             })}
           </Box>
           <PostLoader
-            postsRes={postsRes}
+            disabled={!(postsRes && postsRes[size - 1].meta?.next)}
             size={size}
             setSize={setSize}
             loading={isLoading}

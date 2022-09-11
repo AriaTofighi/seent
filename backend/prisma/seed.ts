@@ -4,80 +4,63 @@ import * as argon2 from "argon2";
 const prisma = new PrismaClient();
 
 async function main() {
-  const hash = await argon2.hash("123");
-  const user = await prisma.user.upsert({
+  const DEFAULT_PASSWORD = "123";
+  const hash = await argon2.hash(DEFAULT_PASSWORD);
+
+  await prisma.user.upsert({
     where: { email: "aria.tofighi1@gmail.com" },
     update: {},
     create: {
       email: "aria.tofighi1@gmail.com",
       name: "Aria",
       password: hash,
-      birthday: new Date(),
+      birthday: new Date("1999-01-01"),
       username: "ariato",
+      bio: "i'm a miracle lyrical individual",
+      gender: "m",
+      location: "canada",
       posts: {
         create: {
-          body: "1",
+          body: "Hello world, this is my first post. Ariato out.",
           isPublic: true,
           createdAt: new Date(new Date().getDate() - 2),
         },
       },
+      images: {
+        create: {
+          type: ImageType.USER_AVATAR,
+          url: "https://seent.s3.us-west-1.amazonaws.com/0210fa87-ff26-43eb-884c-671e2b3e50b4.jpg",
+        },
+      },
       role: Role.ADMIN,
     },
   });
-  const user2 = await prisma.user.upsert({
-    where: { email: "aria_game8@hotmail.com" },
+  await prisma.user.upsert({
+    where: { email: "aria.tofighi2@gmail.com" },
     update: {},
     create: {
-      email: "aria_game8@hotmail.com",
+      email: "aria.tofighi2@gmail.com",
       name: "Moe B",
       password: hash,
-      birthday: new Date(),
-      username: "ariato",
+      birthday: new Date("1999-10-10"),
+      username: "moeb",
+      bio: "moe b the g",
+      gender: "m",
+      location: "usa",
       posts: {
         create: {
-          body: "2",
+          body: "It's big Moe, what it do?",
           isPublic: true,
           createdAt: new Date(new Date().getDate() - 1),
         },
       },
-      role: Role.ADMIN,
-    },
-  });
-  // User 1
-  // await prisma.image.create({
-  //   data: {
-  //     type: ImageType.USER_AVATAR,
-  //     url: "https://seent.s3.us-west-1.amazonaws.com/e420f901-ea7e-4499-992e-44ad052feb55-tubbie.png",
-  //     userId: user.userId,
-  //   },
-  // });
-  // await prisma.image.create({
-  //   data: {
-  //     type: ImageType.USER_AVATAR,
-  //     url: "https://seent.s3.amazonaws.com/00a43e67-00b5-4b91-a75d-3fca28403a4c",
-  //     userId: user2.userId,
-  //   },
-  // });
-
-  await prisma.post.create({
-    data: {
-      body: "0",
-      isPublic: true,
-      authorId: user.userId,
-      createdAt: new Date(new Date().getDate() - 8),
-    },
-  });
-  await prisma.post.create({
-    data: {
-      body: "Destiny debates like a freak of nature.",
-      isPublic: true,
-      authorId: user.userId,
       images: {
         create: {
           type: ImageType.USER_AVATAR,
-          url: "https://seent.s3.us-west-1.amazonaws.com/185d7b30-335f-48e8-8386-e3b5278ada54-WideIvanSerious.jpg",
+          url: "https://seent.s3.us-west-1.amazonaws.com/0aa5302c-ee0f-45a4-b83e-a7fbb557818b.png",
         },
       },
+      role: Role.USER,
     },
   });
 }

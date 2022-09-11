@@ -39,7 +39,3 @@ export type JwtPayload = {
   name: string;
   username: string;
 };
-
-export interface AuthenticatedRequest extends Request {
-  user: JwtPayload;
-}

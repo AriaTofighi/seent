@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import TextInput from "../controls/TextInput";
 import CloseIcon from "@mui/icons-material/Close";
 import { useUser } from "../../contexts/UserContext";

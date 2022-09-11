@@ -12,7 +12,7 @@ import getTheme from "../styles/theme";
 import { SWRConfig } from "swr";
 import swrConfig from "../config/swrConfig";
 import { UserProvider } from "../contexts/UserContext";
-import { NextPageWithLayout } from "../types/types";
+import { NextPageWithLayout } from "../types";
 import { ToastContainer } from "react-toastify";
 import { RouteGuard } from "../components/auth/RouteGuard";
 import { NavProvider } from "../contexts/NavContext";

@@ -1,4 +1,4 @@
-import { NextPageWithLayout } from "../types/types";
+import { NextPageWithLayout } from "../types";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import Title from "../components/UI/Title";
 

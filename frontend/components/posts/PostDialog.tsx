@@ -20,7 +20,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
 import { createPost } from "../../services/api/postAxios";
-import { Styles } from "../../types/types";
+import { Styles } from "../../types";
 import FileUpload from "../controls/FileUpload";
 import TextInput from "../controls/TextInput";
 import ImagePreview from "../images/ImagePreview";
