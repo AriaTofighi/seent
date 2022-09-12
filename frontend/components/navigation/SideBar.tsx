@@ -28,6 +28,7 @@ const styles: Styles = {
     height: "100vh",
     p: 2,
   },
+  signUpBtn: { textTransform: "initial", mt: 2 },
 };
 
 const SideBar = () => {
@@ -67,7 +68,7 @@ const SideBar = () => {
         <Button
           color="inherit"
           onClick={user ? logout : () => setShowLogin(!showLogin)}
-          sx={{ textTransform: "initial", mt: 2 }}
+          sx={styles.signUpBtn}
           variant={user ? "text" : "outlined"}
           fullWidth={Boolean(!user)}
         >

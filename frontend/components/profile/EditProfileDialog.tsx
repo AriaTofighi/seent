@@ -56,6 +56,7 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
     } else {
       await createImage(formData);
     }
+    onSave();
   };
 
   useEffect(() => {
@@ -111,7 +112,13 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
             }}
           >
             <Box
-              sx={{ position: "relative", cursor: "pointer" }}
+              sx={{
+                position: "relative",
+                cursor: "pointer",
+                "&:hover": {
+                  opacity: 0.8,
+                },
+              }}
               onClick={handleBrowse}
             >
               <FileUploadIcon

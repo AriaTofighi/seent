@@ -22,16 +22,7 @@ import {
   UserEntity,
 } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-
-const styles: Styles = {
-  images: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 1,
-    my: 2,
-  },
-};
+import styles from "./[id].styles";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -49,11 +40,6 @@ const Profile: NextPageWithLayout = () => {
 
   const profileUser = userRes?.data[0];
   const userIsOwner = profileUser?.userId === user?.userId;
-
-  const onSaveProfile = () => {
-    mutateUser();
-    setShowEditProfileDialog(false);
-  };
 
   const getPostsKey = (index: number) =>
     profileUser
@@ -74,6 +60,11 @@ const Profile: NextPageWithLayout = () => {
 
   const loading = userLoading || postsLoading;
 
+  const onSaveProfile = () => {
+    mutateUser();
+    setShowEditProfileDialog(false);
+  };
+
   if (!profileUser || userErr || postsErr) {
     return <Box>Error loading data</Box>;
   }
@@ -87,23 +78,10 @@ const Profile: NextPageWithLayout = () => {
       {!loading ? (
         <>
           <Fade in timeout={700}>
-            <Box
-              sx={{
-                borderBottom: "1px solid",
-                borderColor: "divider",
-                p: 3,
-                position: "relative",
-              }}
-            >
+            <Box sx={styles.profileHeaderContainer}>
               {userIsOwner && (
                 <Button
-                  sx={{
-                    position: "absolute",
-                    right: 0,
-                    top: 0,
-                    m: 2,
-                    color: "primary.main",
-                  }}
+                  sx={styles.editBtn}
                   variant="outlined"
                   onClick={() => setShowEditProfileDialog(true)}
                 >
@@ -111,27 +89,12 @@ const Profile: NextPageWithLayout = () => {
                 </Button>
               )}
 
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  gap: 2,
-                }}
-              >
+              <Box sx={styles.profileHeader}>
                 <Avatar
                   src={
                     profileUser.images ? profileUser?.images[0]?.url : undefined
                   }
-                  sx={{
-                    maxWidth: {
-                      lg: 135,
-                      xs: 75,
-                    },
-                    width: "100%",
-                    height: "auto",
-                  }}
+                  sx={styles.avatar}
                 />
                 <Stack
                   sx={{ justifyContent: "center", alignItems: "center", mb: 1 }}
@@ -150,22 +113,8 @@ const Profile: NextPageWithLayout = () => {
                 </Stack>
               </Box>
 
-              <Stack
-                sx={{
-                  width: "100%",
-                  justifyContent: "center",
-                  flexDirection: "row",
-                }}
-              >
-                <Stack
-                  sx={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    mt: 2,
-                    width: "70%",
-                    flexWrap: "wrap",
-                  }}
-                >
+              <Stack sx={styles.profileStatsContainer}>
+                <Stack sx={styles.profileStats}>
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography fontWeight={600}>{posts?.length}</Typography>
                     <Typography variant="subtitle2">Posts</Typography>

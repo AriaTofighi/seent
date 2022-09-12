@@ -1,11 +1,7 @@
-import { Box, Card, Theme, Typography } from "@mui/material";
-import TopAppBar from "../navigation/TopAppBar";
-import SideBar from "../navigation/SideBar";
-import { useTheme } from "@mui/system";
-import useMediaQuery from "@mui/material/useMediaQuery";
+import { Box } from "@mui/material";
+import { ReactElement } from "react";
 import { Styles } from "../../types";
-import { ReactElement, useState } from "react";
-import { useNav } from "../../contexts/NavContext";
+import SideBar from "../navigation/SideBar";
 
 const styles: Styles = {
   container: {
@@ -29,12 +25,10 @@ const styles: Styles = {
     borderLeft: "1px solid",
     borderColor: "divider",
     minHeight: "100vh",
-  } as any,
+  },
 };
 
 const MainLayout = ({ children }: any) => {
-  const theme = useTheme();
-
   return (
     <Box sx={styles.container}>
       <SideBar />
