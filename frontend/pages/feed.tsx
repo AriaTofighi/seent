@@ -5,24 +5,9 @@ import TopAppBar from "../components/navigation/TopAppBar";
 import PostsList from "../components/posts/PostList";
 import PostListSorting from "../components/posts/PostListSorting";
 import Title from "../components/UI/Title";
-import { NextPageWithLayout, Styles } from "../types";
-
-export const POSTS_SORT_MODES = {
-  TOP_DAY: "top-day",
-  TOP_WEEK: "top-week",
-  TOP_MONTH: "top-month",
-  TOP_YEAR: "top-year",
-  TOP_ALL: "top-all",
-  NEW: "new",
-  OLD: "old",
-};
+import { NextPageWithLayout, POSTS_SORT_MODES, Styles } from "../types";
 
 const styles: Styles = {
-  createPostBtn: {
-    position: "sticky",
-    bottom: 0,
-    mr: 2,
-  },
   root: {
     minHeight: "110vh",
     position: "sticky",

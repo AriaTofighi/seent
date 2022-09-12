@@ -9,7 +9,7 @@ import {
 import jwtDecode from "jwt-decode";
 import { setDefaultHeader } from "../services/api/AxiosInstance";
 import useSWR from "swr";
-import { UserEntity } from "../types";
+import { JwtPayload, UserEntity } from "../types";
 
 type Props = {
   children: ReactNode;
@@ -38,31 +38,12 @@ const UserContext = createContext<typeof defaultContext>(defaultContext);
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: Props) => {
-  const [tokenData, setTokenData] = useState<UserEntity>();
+  const [tokenData, setTokenData] = useState<JwtPayload>();
   const [user, setUserState] = useState<UserEntity>();
   const [loading, setLoading] = useState(true);
-  const {
-    data: userRes,
-    error,
-    mutate,
-  } = useSWR<UserEntity>(tokenData ? `users/${tokenData.userId}` : null);
-
-  useEffect(() => {
-    let t = localStorage.getItem(TOKEN_KEY);
-    if (t) {
-      setTokenData(jwtDecode(t));
-      setDefaultHeader(t);
-    } else {
-      fakeLoadToCompletion();
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!userRes) return;
-    setUserState(userRes);
-    setLoading(false);
-    // fakeLoadToCompletion();
-  }, [userRes]);
+  const { data: userRes, mutate } = useSWR<UserEntity>(
+    tokenData ? `users/${tokenData.userId}` : null
+  );
 
   const fakeLoadToCompletion = () => {
     setTimeout(() => {
@@ -86,6 +67,22 @@ export const UserProvider = ({ children }: Props) => {
     localStorage.removeItem(TOKEN_KEY);
     window.location.reload();
   };
+
+  useEffect(() => {
+    const t = localStorage.getItem(TOKEN_KEY);
+    if (t) {
+      setTokenData(jwtDecode(t));
+      setDefaultHeader(t);
+    } else {
+      fakeLoadToCompletion();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!userRes) return;
+    setUserState(userRes);
+    setLoading(false);
+  }, [userRes]);
 
   return (
     <UserContext.Provider value={{ user, setUser, loading, logout, mutate }}>

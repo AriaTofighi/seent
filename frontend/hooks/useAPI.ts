@@ -1,12 +1,13 @@
-import useSWR from "swr";
+import useSWR, { Key } from "swr";
 
-export const useAPI = (url: string) => {
-  const { data, error, isValidating } = useSWR(url);
+export const useAPI = <T>(url: Key) => {
+  const { data, error, isValidating, mutate } = useSWR<T>(url);
 
   return {
     data,
     error,
     loading: !data && !error,
     isValidating,
+    mutate,
   };
 };

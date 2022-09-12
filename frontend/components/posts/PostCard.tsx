@@ -6,6 +6,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import useSWR from "swr";
 import { useUser } from "../../contexts/UserContext";
+import { useAPI } from "../../hooks/useAPI";
 import usePostDialog from "../../hooks/usePostDialog";
 import { PostEntity, ReactionEntity, Styles } from "../../types";
 import { formatDateTime } from "../../utils";
@@ -20,13 +21,13 @@ const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
 
 type Props = {
   postId: string;
+  post: PostEntity;
   expandable?: boolean;
   depth?: number;
   showActions?: boolean;
-  post: PostEntity;
-  postsRes: any;
+  postsRes?: any;
   mutatePost?: () => void;
-  mutatePostList: () => void;
+  mutatePostList?: () => void;
 };
 
 const getStyles = (depth: number): Styles => {
@@ -63,12 +64,15 @@ const PostCard = ({
   const router = useRouter();
   const childPostsLength = post?._count?.childPosts;
   const [expanded, setExpanded] = useState<boolean>(false);
-  const { data: childPostsData, mutate: mutateNestedReplies } = useSWR(
-    expanded ? `posts?parentPostId=${postId}` : null
-  );
+  const {
+    data: nestedRepliesRes,
+    mutate: mutateNestedReplies,
+    error: nestedRepliesErr,
+    loading: nestedRepliesLoading,
+  } = useAPI<PostEntity[]>(expanded ? `posts?parentPostId=${postId}` : null);
   const { onReply, postDialog, setPostDialog, onCloseDialog } = usePostDialog();
 
-  const childPosts = childPostsData;
+  const nestedReplies = nestedRepliesRes ?? [];
   const formattedDate = formatDateTime(post?.createdAt);
   const showViewMore =
     childPostsLength > 0 &&
@@ -80,6 +84,7 @@ const PostCard = ({
   const userReaction = post?.reactions.find(
     (r: ReactionEntity) => r.userId === user?.userId
   );
+
   const getBoxStyles = () => {
     let styles = {};
     if (childPostsLength > 0 && expandable) {
@@ -92,22 +97,22 @@ const PostCard = ({
   };
 
   const mutateAllPosts = async () => {
-    mutatePostList();
-    await mutateNestedReplies?.();
+    mutatePostList?.();
+    mutateNestedReplies?.();
     if (router.query?.id) {
-      await mutatePost?.();
+      mutatePost?.();
     }
   };
-
-  if (!post || !post.images) {
-    return <Box>Loading...</Box>;
-  }
 
   useEffect(() => {
     if (childPostsLength < 1) {
       setExpanded(false);
     }
   }, [childPostsLength]);
+
+  if (!post || !post.images) {
+    return <Box>Loading...</Box>;
+  }
 
   return (
     <>
@@ -138,7 +143,6 @@ const PostCard = ({
               postId={postId}
               onReply={onReply}
               mutatePosts={mutateAllPosts}
-              postsRes={postsRes}
               childPostsCount={post._count?.childPosts ?? 0}
             />
           </Box>
@@ -155,23 +159,30 @@ const PostCard = ({
               Hide replies
             </Button>
           </Box>
+          {nestedRepliesErr ? (
+            <Box>Error loading replies</Box>
+          ) : (
+            <>
+              {nestedRepliesLoading && <Box>Loading replies...</Box>}
 
-          {childPosts.map((p: PostEntity) => (
-            <Box sx={{ ml: 3 }} key={p.postId}>
-              <PostCard
-                postId={p.postId}
-                post={p}
-                expandable
-                depth={depth + 1}
-                mutatePost={mutatePost}
-                mutatePostList={() => {
-                  mutatePostList();
-                  mutateNestedReplies?.();
-                }}
-                postsRes={postsRes}
-              />
-            </Box>
-          ))}
+              {nestedReplies.map((p: PostEntity) => (
+                <Box sx={{ ml: 3 }} key={p.postId}>
+                  <PostCard
+                    postId={p.postId}
+                    post={p}
+                    expandable
+                    depth={depth + 1}
+                    mutatePost={mutatePost}
+                    mutatePostList={() => {
+                      mutatePostList?.();
+                      mutateNestedReplies?.();
+                    }}
+                    postsRes={postsRes}
+                  />
+                </Box>
+              ))}
+            </>
+          )}
         </>
       )}
 
@@ -202,8 +213,6 @@ const PostCard = ({
         setPostDialog={setPostDialog}
         onClose={onCloseDialog}
         parentPost={post}
-        postsRes={postsRes}
-        mutatePost={mutatePost}
         mutatePostList={mutateAllPosts}
       />
     </>

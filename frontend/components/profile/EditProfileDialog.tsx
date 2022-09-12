@@ -20,16 +20,29 @@ import FileUpload from "../controls/FileUpload";
 import { createImage, updateImage } from "../../services/api/imageAxios";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 
-const EditProfileDialog = ({ open, setOpen }: Props) => {
+const defaultValues = {
+  name: "",
+  bio: "",
+  location: "",
+  gender: "",
+};
+
+type Props = {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSave: () => void;
+};
+
+const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
   const { control, reset, handleSubmit } = useForm({ defaultValues });
   const { image, handleImageChange, fileInputRef, handleBrowse } =
     useImageUpload();
   const { user, mutate } = useUser();
 
-  const handleSave = async (data: any) => {
-    await updateUser(user?.userId ?? "", data);
+  const handleSave = async (data: typeof defaultValues) => {
+    await updateUser(user?.userId as string, data);
     mutate();
-    setOpen(false);
+    onSave();
   };
 
   const handleUpload = async () => {
@@ -154,18 +167,6 @@ const EditProfileDialog = ({ open, setOpen }: Props) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-const defaultValues = {
-  name: "",
-  bio: "",
-  location: "",
-  gender: "",
-};
-
-type Props = {
-  open: boolean;
-  setOpen: (open: boolean) => void;
 };
 
 const styles: Styles = {

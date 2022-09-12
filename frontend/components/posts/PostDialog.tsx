@@ -31,8 +31,6 @@ const PostDialog = ({
   setPostDialog,
   parentPost,
   onClose,
-  postsRes,
-  mutatePost,
   mutatePostList,
 }: Props) => {
   const { user } = useUser();
@@ -51,7 +49,7 @@ const PostDialog = ({
       defaultValues,
     });
 
-  const onEmojiClick = (event: MouseEvent, emojiObject: any) => {
+  const onEmojiClick = (_event: MouseEvent, emojiObject: any) => {
     const body = getValues("body");
     setValue("body", body + emojiObject.emoji);
   };
@@ -68,11 +66,10 @@ const PostDialog = ({
       formData.append("parentPostId", parentPost.postId);
     }
     await createPost(formData);
-    mutatePost?.();
     mutatePostList();
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
+    setImage(undefined);
     reset();
-    setImage;
   };
 
   return (
@@ -113,9 +110,6 @@ const PostDialog = ({
                 postId={parentPost.postId}
                 post={parentPost}
                 showActions={false}
-                postsRes={postsRes}
-                mutatePost={mutatePost}
-                mutatePostList={mutatePostList}
               />
             </Box>
           ) : (
@@ -199,8 +193,6 @@ type Props = {
   onClose: () => void;
   setPostDialog: any;
   parentPost?: any;
-  postsRes: any;
-  mutatePost?: () => void;
   mutatePostList: () => void;
 };
 

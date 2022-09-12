@@ -10,9 +10,16 @@ import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
 import PostLoader from "../../components/posts/PostLoader";
 import Title from "../../components/UI/Title";
-import { NextPageWithLayout, Styles } from "../../types";
+import { useAPI } from "../../hooks/useAPI";
+import useInfiniteAPI from "../../hooks/useInfiniteAPI";
+import {
+  NextPageWithLayout,
+  PaginatedResult,
+  PostEntity,
+  POSTS_SORT_MODES,
+  Styles,
+} from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
   header: {
@@ -36,7 +43,8 @@ const PostDetails: NextPageWithLayout = () => {
     data: post,
     error: postErr,
     mutate: mutatePost,
-  } = useSWR(query.id ? `posts/${query.id}` : null);
+    loading: postLoading,
+  } = useAPI<PostEntity>(query.id ? `posts/${query.id}` : null);
 
   const getPostsKey = (index: number) =>
     query.id
@@ -46,24 +54,22 @@ const PostDetails: NextPageWithLayout = () => {
       : null;
 
   const {
-    data: postsRes,
-    error: postsErr,
+    data: repliesRes,
+    error: repliesErr,
     mutate: mutateReplies,
     size,
     setSize,
-  } = useSWRInfinite(getPostsKey) as any;
+    loading: repliesLoading,
+  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
-  const replies = infiniteSWRToFlat(postsRes);
-
-  const postLoading = !postErr && !post;
-  const repliesLoading = !postsRes && !postsErr;
+  const replies = infiniteSWRToFlat(repliesRes);
 
   if (postErr) {
     router.push("/feed");
   }
 
   if (postLoading || repliesLoading) {
-    return <div>Loading...</div>;
+    return <Box>Loading...</Box>;
   }
 
   return (
@@ -84,8 +90,8 @@ const PostDetails: NextPageWithLayout = () => {
         </TopAppBar>
         <PostCard
           postId={post?.postId ?? ""}
-          post={post as any}
-          postsRes={postsRes}
+          post={post as PostEntity}
+          postsRes={repliesRes}
           mutatePost={mutatePost}
           mutatePostList={mutateReplies}
         />
@@ -96,27 +102,23 @@ const PostDetails: NextPageWithLayout = () => {
 
         {replies.length > 0 ? (
           <>
-            {replies.map((r: any) => {
+            {replies.map((r) => {
               return (
                 <Box key={r.postId}>
                   <PostCard
                     postId={r.postId}
                     post={r}
                     expandable
-                    postsRes={postsRes}
+                    postsRes={repliesRes}
                     mutatePost={mutatePost}
-                    mutatePostList={async () => {
-                      mutateReplies();
-                      mutatePost();
-                    }}
+                    mutatePostList={mutateReplies}
                   />
                 </Box>
               );
             })}
             <PostLoader
-              disabled={!(postsRes && postsRes[size - 1].meta?.next)}
-              size={size}
-              setSize={setSize}
+              disabled={!(repliesRes && repliesRes[size - 1].meta?.next)}
+              onClick={() => setSize(size + 1)}
               loading={repliesLoading}
             />
           </>

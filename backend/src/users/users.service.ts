@@ -3,6 +3,7 @@ import { Injectable } from "@nestjs/common";
 import { ImageType, Prisma, User } from "@prisma/client";
 import { UserFindManyParams } from "./users.types";
 import { createPaginator } from "utils/paginationUtils";
+import { UserEntity } from "./entities/user.entity";
 
 @Injectable()
 export class UsersService {
@@ -56,10 +57,12 @@ export class UsersService {
     data: Prisma.UserUpdateInput;
   }) {
     const { where, data } = params;
-    return this.prisma.user.update({
-      data,
-      where,
-    });
+    return new UserEntity(
+      await this.prisma.user.update({
+        data,
+        where,
+      })
+    );
   }
 
   async delete(where: Prisma.UserWhereUniqueInput) {

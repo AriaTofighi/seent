@@ -2,7 +2,7 @@ import React from "react";
 import SortIcon from "@mui/icons-material/Sort";
 import { IconButton, Menu, MenuItem, Stack } from "@mui/material";
 import useMenu from "../../hooks/useMenu";
-import { POSTS_SORT_MODES } from "../../pages/feed";
+import { POSTS_SORT_MODES } from "../../types";
 
 type Props = {
   setMode: (mdoe: string) => void;

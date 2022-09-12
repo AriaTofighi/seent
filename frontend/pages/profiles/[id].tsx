@@ -11,9 +11,17 @@ import PostListSorting from "../../components/posts/PostListSorting";
 import EditProfileDialog from "../../components/profile/EditProfileDialog";
 import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
-import { NextPageWithLayout, Styles } from "../../types";
+import { useAPI } from "../../hooks/useAPI";
+import useInfiniteAPI from "../../hooks/useInfiniteAPI";
+import {
+  NextPageWithLayout,
+  PaginatedResult,
+  PostEntity,
+  POSTS_SORT_MODES,
+  Styles,
+  UserEntity,
+} from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-import { POSTS_SORT_MODES } from "../feed";
 
 const styles: Styles = {
   images: {
@@ -32,20 +40,22 @@ const Profile: NextPageWithLayout = () => {
     data: userRes,
     error: userErr,
     mutate: mutateUser,
-    isValidating: userLoading,
-  } = useSWR(query ? `users?username=${query.id}` : null);
+    loading: userLoading,
+  } = useAPI<PaginatedResult<UserEntity>>(
+    query ? `users?username=${query.id}` : null
+  );
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
 
   const profileUser = userRes?.data[0];
   const userIsOwner = profileUser?.userId === user?.userId;
 
-  useEffect(() => {
-    if (!user) return;
+  const onSaveProfile = () => {
     mutateUser();
-  }, [user]);
+    setShowEditProfileDialog(false);
+  };
 
-  const getPostsKey = (index: number): any =>
+  const getPostsKey = (index: number) =>
     profileUser
       ? `posts?page=${
           index + 1
@@ -54,12 +64,19 @@ const Profile: NextPageWithLayout = () => {
         }`
       : null;
 
-  const { data: postsRes, error: postsErr } = useSWRInfinite(
-    getPostsKey
-  ) as any;
+  const {
+    data: postsRes,
+    error: postsErr,
+    loading: postsLoading,
+  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
+
   const posts = infiniteSWRToFlat(postsRes);
 
-  const loading = (!userRes && !userErr) || (!postsRes && !postsErr);
+  const loading = userLoading || postsLoading;
+
+  if (!profileUser || userErr || postsErr) {
+    return <Box>Error loading data</Box>;
+  }
 
   return (
     <>
@@ -167,6 +184,7 @@ const Profile: NextPageWithLayout = () => {
           <EditProfileDialog
             open={showEditProfileDialog}
             setOpen={setShowEditProfileDialog}
+            onSave={onSaveProfile}
           />
         </>
       ) : null}

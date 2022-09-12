@@ -23,6 +23,13 @@ export interface PaginatedResult<T> {
   };
 }
 
+export type JwtPayload = {
+  email: string;
+  userId: string;
+  name: string;
+  username: string;
+};
+
 export const Role = {
   USER: "USER",
   ADMIN: "ADMIN",
@@ -39,7 +46,7 @@ export const ImageType = {
   POST: "POST",
 };
 
-type Count = {
+type PostCounts = {
   childPosts: number;
 };
 
@@ -82,7 +89,7 @@ export type PostEntity = {
   author: UserEntity;
   images: ImageEntity[];
   parentPost: PostEntity;
-  _count: Count;
+  _count: PostCounts;
 };
 
 export type ImageEntity = {
@@ -93,4 +100,14 @@ export type ImageEntity = {
   postId: string;
   createdAt: Date;
   updatedAt: Date;
+};
+
+export const POSTS_SORT_MODES = {
+  TOP_DAY: "top-day",
+  TOP_WEEK: "top-week",
+  TOP_MONTH: "top-month",
+  TOP_YEAR: "top-year",
+  TOP_ALL: "top-all",
+  NEW: "new",
+  OLD: "old",
 };

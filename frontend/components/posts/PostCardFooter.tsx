@@ -24,7 +24,6 @@ type Props = {
   postId: string;
   onReply: (postId: string) => void;
   mutatePosts: any;
-  postsRes: any;
   childPostsCount: number;
 };
 const styles: Styles = {
@@ -41,7 +40,6 @@ const PostCardFooter = ({
   postId,
   onReply,
   mutatePosts,
-  postsRes,
   childPostsCount,
 }: Props) => {
   const { user } = useUser();
@@ -66,27 +64,6 @@ const PostCardFooter = ({
       newReaction = await createReaction(postId, user.userId, type);
     }
 
-    // const newPostsRes = postsRes.map((r: any) => {
-    //   const foundPost = r.data.find((p: any) => p.postId === postId);
-    //   if (foundPost) {
-    //     const postCopy = {
-    //       ...foundPost,
-    //       reactions: deleteMode
-    //         ? foundPost.reactions.filter(
-    //             (reaction: any) =>
-    //               reaction.reactionId !== userReaction.reactionId
-    //           )
-    //         : [...foundPost.reactions, { ...newReaction }],
-    //     };
-    //     const postsCopy = r.data.map((p: any) =>
-    //       p.postId === postCopy.postId ? postCopy : p
-    //     );
-    //     return { ...r, data: postsCopy };
-    //   }
-    //   return r;
-    // });
-
-    // mutatePosts(newPostsRes, false);
     mutatePosts();
   };
 

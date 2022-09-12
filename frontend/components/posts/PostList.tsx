@@ -13,10 +13,6 @@ const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
 });
 
-const styles: Styles = {
-  posts: { display: "flex", flexDirection: "column", gap: 0 },
-};
-
 type Props = {
   getPostsKey: (index: number) => string | null;
   repliesMode?: boolean;
@@ -30,16 +26,15 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
     error: postsErr,
     size,
     setSize,
+    loading,
     mutate: mutatePosts,
-  } = useSWRInfinite<PaginatedResult<PostEntity>>(getPostsKey);
+  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
   const posts = infiniteSWRToFlat(postsRes);
 
-  const isLoading = !postsRes && !postsErr;
-
   return (
     <>
-      {!isLoading && (
+      {!loading && (
         <>
           <Box sx={styles.posts}>
             {posts?.map(({ postId, ...rest }) => {
@@ -58,9 +53,8 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
           </Box>
           <PostLoader
             disabled={!(postsRes && postsRes[size - 1].meta?.next)}
-            size={size}
-            setSize={setSize}
-            loading={isLoading}
+            onClick={() => setSize(size + 1)}
+            loading={loading}
           />
           {!repliesMode && (
             <>
@@ -70,9 +64,8 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
                 setPostDialog={setPostDialog}
                 onClose={onCloseDialog}
                 parentPost={posts?.find(
-                  (p: any) => p.postId === postDialog.parentPostId
+                  (p) => p.postId === postDialog.parentPostId
                 )}
-                postsRes={postsRes}
                 mutatePostList={mutatePosts}
               />
             </>
@@ -81,6 +74,10 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
       )}
     </>
   );
+};
+
+const styles: Styles = {
+  posts: { display: "flex", flexDirection: "column", gap: 0 },
 };
 
 export default PostList;

@@ -1,8 +1,9 @@
 // Create a data fetching hook that uses useSWRInfinite to fetch data
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 
-const useInfiniteAPI = (getUrl: SWRInfiniteKeyLoader) => {
-  const { data, error, isValidating, size, setSize } = useSWRInfinite(getUrl);
+const useInfiniteAPI = <T>(getUrl: SWRInfiniteKeyLoader) => {
+  const { data, error, isValidating, size, setSize, mutate } =
+    useSWRInfinite<T>(getUrl);
 
   return {
     data,
@@ -11,6 +12,7 @@ const useInfiniteAPI = (getUrl: SWRInfiniteKeyLoader) => {
     isValidating,
     size,
     setSize,
+    mutate,
   };
 };
 
