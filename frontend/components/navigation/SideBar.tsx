@@ -1,8 +1,5 @@
-import React, { useState } from "react";
-import { Box, SxProps } from "@mui/system";
-import MenuItem from "./MenuItem";
-import { Styles } from "../../types";
 import HomeIcon from "@mui/icons-material/Home";
+import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
@@ -13,23 +10,14 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { Box } from "@mui/system";
 import Link from "next/link";
+import { useState } from "react";
+import { useNav } from "../../contexts/NavContext";
 import { useUser } from "../../contexts/UserContext";
 import AuthDialog from "../auth/AuthDialog";
-import LogoutIcon from "@mui/icons-material/Logout";
-import { useNav } from "../../contexts/NavContext";
-
-const styles: Styles = {
-  root: {
-    color: "text.primary",
-    position: "sticky",
-    top: 0,
-    minWidth: 240,
-    height: "100vh",
-    p: 2,
-  },
-  signUpBtn: { textTransform: "initial", mt: 2 },
-};
+import MenuItem from "./MenuItem";
+import styles from "./SideBar.styles";
 
 const SideBar = () => {
   const theme = useTheme();
@@ -82,10 +70,7 @@ const SideBar = () => {
   return mobileMode ? (
     <SwipeableDrawer
       PaperProps={{
-        sx: {
-          backgroundColor: "background.default",
-          backgroundImage: "none",
-        },
+        sx: styles.drawerPaper,
       }}
       anchor="left"
       open={open}

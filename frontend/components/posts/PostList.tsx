@@ -23,7 +23,6 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
     usePostDialog();
   const {
     data: postsRes,
-    error: postsErr,
     size,
     setSize,
     loading,
@@ -31,6 +30,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
   const posts = infiniteSWRToFlat(postsRes);
+  const hasMore = postsRes?.[postsRes.length - 1].meta?.next;
 
   return (
     <>
@@ -52,7 +52,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
             })}
           </Box>
           <PostLoader
-            disabled={!(postsRes && postsRes[size - 1].meta?.next)}
+            disabled={!hasMore}
             onClick={() => setSize(size + 1)}
             loading={loading}
           />

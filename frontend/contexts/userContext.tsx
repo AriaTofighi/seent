@@ -53,14 +53,9 @@ export const UserProvider = ({ children }: Props) => {
 
   const setUser = (t: string) => {
     if (!t) return;
-
-    try {
-      localStorage.setItem(TOKEN_KEY, t);
-      setDefaultHeader(t);
-      setUserState(jwtDecode(t));
-    } catch {
-      // no user
-    }
+    localStorage.setItem(TOKEN_KEY, t);
+    setDefaultHeader(t);
+    setUserState(jwtDecode(t));
   };
 
   const logout = () => {

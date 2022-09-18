@@ -19,17 +19,6 @@ const PostDialog = dynamic(() => import("../../components/posts/PostDialog"), {
   ssr: false,
 });
 
-type Props = {
-  postId: string;
-  post: PostEntity;
-  expandable?: boolean;
-  depth?: number;
-  showActions?: boolean;
-  postsRes?: any;
-  mutatePost?: () => void;
-  mutatePostList?: () => void;
-};
-
 const getStyles = (depth: number): Styles => {
   return {
     textBtn: {
@@ -49,6 +38,17 @@ const getStyles = (depth: number): Styles => {
 };
 
 const MAX_POST_DEPTH_PER_PAGE = 2;
+
+type Props = {
+  postId: string;
+  post: PostEntity;
+  expandable?: boolean;
+  depth?: number;
+  showActions?: boolean;
+  postsRes?: any;
+  mutatePost?: () => void;
+  mutatePostList?: () => void;
+};
 
 const PostCard = ({
   postId,

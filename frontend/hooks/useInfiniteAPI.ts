@@ -1,4 +1,3 @@
-// Create a data fetching hook that uses useSWRInfinite to fetch data
 import useSWRInfinite, { SWRInfiniteKeyLoader } from "swr/infinite";
 
 const useInfiniteAPI = <T>(getUrl: SWRInfiniteKeyLoader) => {

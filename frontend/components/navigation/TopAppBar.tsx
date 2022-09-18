@@ -1,10 +1,15 @@
-import { useTheme } from "@mui/system";
-import React, { ReactNode } from "react";
-import { Styles } from "../../types";
 import MenuIcon from "@mui/icons-material/Menu";
-import { useNav } from "../../contexts/NavContext";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import { AppBar, IconButton, Toolbar, Typography } from "@mui/material";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import { useTheme } from "@mui/system";
+import { ReactNode } from "react";
+import { useNav } from "../../contexts/NavContext";
+import styles from "./TopAppBar.styles";
+
+type Props = {
+  children?: ReactNode;
+  title?: string;
+};
 
 const TopAppBar = ({ children, title }: Props) => {
   const theme = useTheme();
@@ -32,26 +37,3 @@ const TopAppBar = ({ children, title }: Props) => {
 };
 
 export default TopAppBar;
-
-const styles: Styles = {
-  root: {
-    borderBottom: "1px solid",
-    width: "100%",
-    borderColor: "divider",
-    position: "sticky",
-    top: 0,
-    zIndex: 1000,
-    bgcolor: "background.default",
-    backgroundImage: "none",
-    boxShadow: "none",
-    pr: "0 !important",
-  },
-  menuBtn: {
-    mr: 1.5,
-  },
-};
-
-type Props = {
-  children?: ReactNode;
-  title?: string;
-};
