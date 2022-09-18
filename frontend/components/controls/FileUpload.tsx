@@ -1,5 +1,11 @@
 import React, { RefObject } from "react";
 
+type Props = {
+  onChange: (event: any) => Promise<void>;
+  innerRef: RefObject<HTMLInputElement>;
+  accept?: string;
+};
+
 const FileUpload = ({ onChange, innerRef, accept = "image/*" }: Props) => {
   return (
     <input
@@ -10,12 +16,6 @@ const FileUpload = ({ onChange, innerRef, accept = "image/*" }: Props) => {
       ref={innerRef}
     />
   );
-};
-
-type Props = {
-  onChange: (event: any) => Promise<void>;
-  innerRef: RefObject<HTMLInputElement>;
-  accept?: string;
 };
 
 export default FileUpload;

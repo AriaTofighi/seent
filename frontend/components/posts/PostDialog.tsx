@@ -1,7 +1,5 @@
 import CloseIcon from "@mui/icons-material/Close";
-import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
-import ImageIcon from "@mui/icons-material/Image";
-import ShieldIcon from "@mui/icons-material/Shield";
+
 import {
   Button,
   Dialog,
@@ -12,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { IEmojiData } from "emoji-picker-react";
 import Image from "next/image";
 import { MouseEvent, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,6 +23,7 @@ import FileUpload from "../controls/FileUpload";
 import TextInput from "../controls/TextInput";
 import ImagePreview from "../images/ImagePreview";
 import PostCard from "./PostCard";
+import PostDialogActions from "./PostDialogActions";
 
 const PostDialog = ({
   open,
@@ -34,7 +33,6 @@ const PostDialog = ({
   mutatePostList,
 }: Props) => {
   const { user } = useUser();
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const {
     image,
@@ -48,11 +46,6 @@ const PostDialog = ({
     useForm<DefaultValueType>({
       defaultValues,
     });
-
-  const onEmojiClick = (_event: MouseEvent, emojiObject: any) => {
-    const body = getValues("body");
-    setValue("body", body + emojiObject.emoji);
-  };
 
   const handleSubmitPost = async (formValues: DefaultValueType) => {
     if (!user) return;
@@ -129,34 +122,11 @@ const PostDialog = ({
               rows={4}
               InputLabelProps={{ required: false }}
             />
-            {/* Emojis and Options */}
-            <Box sx={{ mb: 1 }}>
-              <Stack direction="row">
-                <Tooltip title="Emoji">
-                  <IconButton
-                    onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-                  >
-                    <EmojiEmotionsIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Media">
-                  <IconButton onClick={handleBrowse}>
-                    <ImageIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Privacy">
-                  <IconButton>
-                    <ShieldIcon />
-                  </IconButton>
-                </Tooltip>
-              </Stack>
-            </Box>
-            {showEmojiPicker && (
-              <EmojiPicker
-                onEmojiClick={onEmojiClick}
-                pickerStyle={styles.emojiPicker as KeyValuePair}
-              />
-            )}
+            <PostDialogActions
+              setValue={setValue}
+              getValues={getValues}
+              handleBrowse={handleBrowse}
+            />
             {imagePreview && (
               <Box sx={styles.images}>
                 <ImagePreview
@@ -182,10 +152,6 @@ const PostDialog = ({
 type PostDialog = {
   open: boolean;
   parentPostId?: undefined;
-};
-
-type KeyValuePair = {
-  [property: string]: string;
 };
 
 type Props = {
@@ -215,7 +181,7 @@ const styles: Styles = {
   },
 };
 
-type DefaultValueType = {
+export type DefaultValueType = {
   body: string;
 };
 
