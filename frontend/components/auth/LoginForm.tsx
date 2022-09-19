@@ -7,7 +7,6 @@ import { toast } from "react-toastify";
 import { useUser } from "../../contexts/UserContext";
 import { signIn } from "../../services/api/authAxios";
 import TextInput from "../controls/TextInput";
-import { MODES as AUTH_DIALOG_MODES } from "./AuthDialog";
 
 const defaultValues = {
   email: "",
