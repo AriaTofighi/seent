@@ -58,10 +58,12 @@ export class PostsService {
   };
 
   async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {
+    console.log(postWhereUniqueInput);
     const post = await this.prisma.post.findUnique({
       where: postWhereUniqueInput,
       include: this.POST_INCLUDES,
     });
+    console.log(post);
 
     return post;
   }

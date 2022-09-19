@@ -1,9 +1,7 @@
 import { Avatar, Button, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import useSWR from "swr";
-import useSWRInfinite from "swr/infinite";
+import { useState } from "react";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostsList from "../../components/posts/PostList";
@@ -18,11 +16,10 @@ import {
   PaginatedResult,
   PostEntity,
   POSTS_SORT_MODES,
-  Styles,
   UserEntity,
 } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-import styles from "./[id].styles";
+import styles from "../../styles/profiles/[id].styles";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -58,14 +55,14 @@ const Profile: NextPageWithLayout = () => {
 
   const posts = infiniteSWRToFlat(postsRes);
 
-  const loading = userLoading || postsLoading;
+  const loading = userLoading || postsLoading || !profileUser;
 
   const onSaveProfile = () => {
     mutateUser();
     setShowEditProfileDialog(false);
   };
 
-  if (!profileUser || userErr || postsErr) {
+  if (userErr || postsErr) {
     return <Box>Error loading data</Box>;
   }
 

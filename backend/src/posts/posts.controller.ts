@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -68,6 +69,9 @@ export class PostsController {
   @Get(":id")
   async findOne(@Param("id") postId: string) {
     const post = await this.postsService.findOne({ postId });
+    if (!post) {
+      throw new NotFoundException("Post not found");
+    }
     return post;
   }
 

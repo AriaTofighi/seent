@@ -66,9 +66,10 @@ const PostDetails: NextPageWithLayout = () => {
 
   if (postErr) {
     router.push("/feed");
+    return null;
   }
 
-  if (postLoading || repliesLoading) {
+  if (postLoading || repliesLoading || !post) {
     return <Box>Loading...</Box>;
   }
 
@@ -90,7 +91,7 @@ const PostDetails: NextPageWithLayout = () => {
         </TopAppBar>
         <PostCard
           postId={post?.postId ?? ""}
-          post={post as PostEntity}
+          post={post}
           postsRes={repliesRes}
           mutatePost={mutatePost}
           mutatePostList={mutateReplies}

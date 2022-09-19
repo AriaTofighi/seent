@@ -51,7 +51,7 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
     formData.append("image", image as Blob);
     formData.append("userId", user.userId);
     formData.append("type", "USER_AVATAR");
-    if (user.images.length > 0 && user.images[0]) {
+    if (user.images?.[0]) {
       await updateImage(formData, user.images[0].imageId as string);
     } else {
       await createImage(formData);
