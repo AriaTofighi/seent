@@ -1,6 +1,7 @@
 import { Box } from "@mui/material";
 import { ReactElement } from "react";
 import { Styles } from "../../types";
+import SearchSideBar from "../navigation/SearchSideBar";
 import SideBar from "../navigation/SideBar";
 
 const styles: Styles = {
@@ -11,12 +12,6 @@ const styles: Styles = {
     justifyContent: "center",
   },
   mainContent: {
-    // maxWidth: 600,
-    // width: (theme: Theme) => {
-    //   console.log(theme);
-    //   console.log(theme.breakpoints.down("sm"));
-    //   return theme.breakpoints.down("sm") ? 800 : 400;
-    // },
     width: {
       xs: 600,
       sm: 600,
@@ -32,9 +27,8 @@ const MainLayout = ({ children }: any) => {
   return (
     <Box sx={styles.container}>
       <SideBar />
-      <Box sx={styles.mainContent}>
-        <Box>{children}</Box>
-      </Box>
+      <Box sx={styles.mainContent}>{children}</Box>
+      <SearchSideBar />
     </Box>
   );
 };
