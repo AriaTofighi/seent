@@ -18,11 +18,13 @@ const Search: NextPageWithLayout = () => {
     setValue(newValue);
   };
 
+  const getPostsKey = (index: number) =>
+    `posts?page=${index + 1}&isChild=false&perPage=10&search=${val}`;
+
   const renderTab = (tab: number) => {
     switch (tab) {
       case 0:
-        return <Box>Posts</Box>;
-        return <PostList getPostsKey={(index: number) => "posts"} />;
+        return <PostList getPostsKey={getPostsKey} />;
       case 1:
         return <div>Users</div>;
       default:

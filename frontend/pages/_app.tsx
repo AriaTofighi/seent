@@ -26,9 +26,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
 
   const getLayout = Component.getLayout ?? ((page) => page);
 
-  const ComponentWithLayout = () => (
-    <> {getLayout(<Component {...pageProps} />)}</>
-  );
+  const componentWithLayout = getLayout(<Component {...pageProps} />);
 
   return (
     <ThemeProvider theme={getTheme(mode)}>
@@ -37,9 +35,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <SWRConfig value={swrConfig}>
           <UserProvider>
             <NavProvider>
-              <RouteGuard>
-                <ComponentWithLayout />
-              </RouteGuard>
+              <RouteGuard>{componentWithLayout}</RouteGuard>
               <ToastContainer autoClose={2000} />
             </NavProvider>
           </UserProvider>
