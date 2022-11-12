@@ -17,11 +17,13 @@ import { useNav } from "../../contexts/NavContext";
 import { useUser } from "../../contexts/UserContext";
 import AuthDialog from "../auth/AuthDialog";
 import MenuItem from "./MenuItem";
+import SearchBar from "./SearchBar";
 import styles from "./SideBar.styles";
 
 const SideBar = () => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
+  const tabletMode = useMediaQuery(theme.breakpoints.down("lg"));
   const { user, logout } = useUser();
   const [showLogin, setShowLogin] = useState(false);
   const { open, setOpen } = useNav();
@@ -35,6 +37,7 @@ const SideBar = () => {
           </Typography>
         </a>
       </Link>
+      {tabletMode && <SearchBar />}
       <MenuItem icon={<HomeIcon width="16" />} href="/feed">
         Feed
       </MenuItem>

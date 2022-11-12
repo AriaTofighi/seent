@@ -69,8 +69,18 @@ export class PostsService {
   }
 
   async findMany(params: PostFindManyParams) {
-    const { where, orderBy, page, perPage } = params;
+    const { where, orderBy, page, perPage, isChild } = params;
     const { calcedWhere, calcedOrderBy } = this.getFilters(where, orderBy);
+    if (isChild !== undefined) {
+      if (isChild) {
+        calcedWhere.parentPostId = {
+          not: null,
+        };
+      } else {
+        calcedWhere.parentPostId = null;
+      }
+    }
+
     const queryArgs = {
       where: calcedWhere,
       orderBy: calcedOrderBy,

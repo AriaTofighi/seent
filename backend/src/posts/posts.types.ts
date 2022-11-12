@@ -5,4 +5,5 @@ export type PostFindManyParams = {
   perPage?: number;
   where?: Prisma.PostWhereInput;
   orderBy?: string;
+  isChild?: boolean;
 };

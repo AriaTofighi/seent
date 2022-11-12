@@ -19,7 +19,7 @@ const Feed: NextPageWithLayout = () => {
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
 
   const getPostsKey = (index: number) =>
-    `posts?page=${index + 1}&isChild=false&perPage=10&orderBy=${sortMode}`;
+    `posts?isChild=false&page=${index + 1}&perPage=10&orderBy=${sortMode}`;
 
   return (
     <>

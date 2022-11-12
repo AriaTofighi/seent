@@ -42,6 +42,7 @@ const MAX_POST_DEPTH_PER_PAGE = 2;
 type Props = {
   postId: string;
   post: PostEntity;
+  isLast?: boolean;
   expandable?: boolean;
   depth?: number;
   showActions?: boolean;
@@ -56,6 +57,7 @@ const PostCard = ({
   mutatePost,
   mutatePostList,
   postsRes,
+  isLast = true,
   depth = 0,
   expandable = false,
   showActions = true,
@@ -115,7 +117,7 @@ const PostCard = ({
   }
 
   return (
-    <>
+    <Box sx={{ width: "100%" }}>
       <StyledCard
         variant="outlined"
         sx={{ ...getBoxStyles(), cursor: "pointer", pb: 1.5 }}
@@ -163,10 +165,17 @@ const PostCard = ({
             <Box>Error loading replies</Box>
           ) : (
             <>
-              {nestedRepliesLoading && <Box>Loading replies...</Box>}
-
-              {nestedReplies.map((p: PostEntity) => (
-                <Box sx={{ ml: 3 }} key={p.postId}>
+              {nestedReplies.map((p: PostEntity, index) => (
+                <Box sx={{ display: "flex", width: "100%" }} key={index}>
+                  <Box
+                    sx={{
+                      width: 24,
+                      borderBottom: isLast ? "none" : "1px solid",
+                      borderColor: "divider",
+                      alignSelf: "stretch",
+                    }}
+                    key={p.postId}
+                  />
                   <PostCard
                     postId={p.postId}
                     post={p}
@@ -178,6 +187,7 @@ const PostCard = ({
                       mutateNestedReplies?.();
                     }}
                     postsRes={postsRes}
+                    isLast={index === nestedReplies.length - 1}
                   />
                 </Box>
               ))}
@@ -215,7 +225,7 @@ const PostCard = ({
         parentPost={post}
         mutatePostList={mutateAllPosts}
       />
-    </>
+    </Box>
   );
 };
 

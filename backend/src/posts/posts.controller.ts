@@ -57,10 +57,11 @@ export class PostsController {
     const { authorId, postId, parentPostId, isChild, page, perPage, orderBy } =
       query;
     const result = await this.postsService.findMany({
-      where: { authorId, postId, parentPostId: isChild ? null : parentPostId },
+      where: { authorId, postId, parentPostId },
       orderBy,
       page,
       perPage,
+      isChild,
     });
 
     return result;
