@@ -158,13 +158,6 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
               required={false}
               fullWidth
             />
-            <TextInput
-              name="gender"
-              label="Gender"
-              control={control}
-              required={false}
-              fullWidth
-            />
             <Button fullWidth type="submit" variant="contained">
               Save
             </Button>
