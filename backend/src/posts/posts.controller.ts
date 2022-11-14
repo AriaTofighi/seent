@@ -54,10 +54,23 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto) {
-    const { authorId, postId, parentPostId, isChild, page, perPage, orderBy } =
-      query;
+    const {
+      authorId,
+      postId,
+      parentPostId,
+      isChild,
+      page,
+      perPage,
+      orderBy,
+      search,
+    } = query;
     const result = await this.postsService.findMany({
-      where: { authorId, postId, parentPostId },
+      where: {
+        authorId,
+        postId,
+        parentPostId,
+        body: { contains: search, mode: "insensitive" },
+      },
       orderBy,
       page,
       perPage,

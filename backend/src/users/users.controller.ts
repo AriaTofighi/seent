@@ -26,10 +26,23 @@ export class UsersController {
 
   @Get()
   async findMany(@Query() query: FindUsersQueryDto) {
-    const { userId, username, email, name, page, perPage } = query;
+    const { userId, username, email, name, page, perPage, search } = query;
 
     const result = await this.usersService.findMany({
-      where: { userId, email, name, username },
+      where: {
+        userId,
+        email,
+        name: {
+          contains: search,
+          equals: name,
+          mode: "insensitive",
+        },
+        username: {
+          contains: search,
+          equals: username,
+          mode: "insensitive",
+        },
+      },
       page,
       perPage,
     });

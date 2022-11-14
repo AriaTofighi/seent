@@ -4,29 +4,38 @@ import React from "react";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostList from "../../components/posts/PostList";
+import UserList from "../../components/search/UserList";
 import Title from "../../components/UI/Title";
 import { NextPageWithLayout } from "../../types";
 
-const TABS = ["Posts", "Users"];
+const TABS = ["posts", "users"];
 
 const Search: NextPageWithLayout = () => {
   const router = useRouter();
-  const { val } = router.query;
-  const [value, setValue] = React.useState(0);
+  const { val, t = TABS[0] } = router.query;
+  const value = TABS.indexOf(t as string);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    const tab = TABS[newValue];
+    if (tab === TABS[0]) {
+      router.push(`/search/${val}`);
+    } else {
+      router.push(`/search/${val}?t=${tab}`);
+    }
   };
 
   const getPostsKey = (index: number) =>
-    `posts?page=${index + 1}&isChild=false&perPage=10&search=${val}`;
+    `posts?page=${index + 1}&perPage=10&search=${val}`;
+
+  const getUsersKey = (index: number) =>
+    `users?page=${index + 1}&perPage=10&search=${val}`;
 
   const renderTab = (tab: number) => {
     switch (tab) {
       case 0:
-        return <PostList getPostsKey={getPostsKey} />;
+        return <PostList getPostsKey={getPostsKey} repliesMode />;
       case 1:
-        return <div>Users</div>;
+        return <UserList getUsersKey={getUsersKey} />;
       default:
         return <div>Posts</div>;
     }
@@ -43,7 +52,7 @@ const Search: NextPageWithLayout = () => {
           ))}
         </Tabs>
       </Box>
-      <Box sx={{ p: 2 }}>{renderTab(value)}</Box>
+      <Box>{renderTab(value)}</Box>
     </>
   );
 };

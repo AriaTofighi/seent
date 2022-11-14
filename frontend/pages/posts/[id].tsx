@@ -8,7 +8,7 @@ import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
-import PostLoader from "../../components/posts/PostLoader";
+import PostLoader from "../../components/posts/Loader";
 import Title from "../../components/UI/Title";
 import { useAPI } from "../../hooks/useAPI";
 import useInfiniteAPI from "../../hooks/useInfiniteAPI";
@@ -84,7 +84,7 @@ const PostDetails: NextPageWithLayout = () => {
                 sx={{ textTransform: "none", m: 0 }}
                 onClick={() => router.push(`/posts/${post.parentPostId}`)}
               >
-                View original post
+                View parent post
               </Button>
             )}
           </Stack>

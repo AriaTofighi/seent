@@ -17,4 +17,8 @@ export class FindUsersQueryDto extends FindManyQuery {
   @IsString()
   @IsOptional()
   username?: string;
+
+  @IsString()
+  @IsOptional()
+  search?: string;
 }

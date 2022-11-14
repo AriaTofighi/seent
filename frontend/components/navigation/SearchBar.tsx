@@ -11,9 +11,14 @@ const defaultValues = {
 const SearchBar = () => {
   const { control, handleSubmit } = useForm({ defaultValues });
   const router = useRouter();
+  const tab = router.query?.t;
 
   const onSubmit = (data: typeof defaultValues) => {
-    router.push(`/search/${data.search}`);
+    if (tab) {
+      router.push(`/search/${data.search}?t=${tab}`);
+    } else {
+      router.push(`/search/${data.search}`);
+    }
   };
 
   return (

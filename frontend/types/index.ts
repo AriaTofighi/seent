@@ -45,6 +45,8 @@ export const ImageType = {
   USER_BANNER: "USER_BANNER",
   POST: "POST",
 };
+type ImageTypeKeys = keyof typeof ImageType;
+type ImageTypeValues = typeof ImageType[ImageTypeKeys];
 
 type PostCounts = {
   childPosts: number;
@@ -95,7 +97,7 @@ export type PostEntity = {
 export type ImageEntity = {
   imageId: string;
   url: string;
-  type: typeof ImageType;
+  type: ImageTypeValues;
   userId: string;
   postId: string;
   createdAt: Date;
