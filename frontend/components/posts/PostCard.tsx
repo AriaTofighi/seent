@@ -31,7 +31,6 @@ const getStyles = (depth: number): Styles => {
     footerBtn: {
       borderBottom: "1px solid",
       borderLeft: depth > 0 ? "1px solid" : "none",
-      width: "100%",
       borderColor: "divider",
     },
   };
@@ -195,7 +194,7 @@ const PostCard = ({
             sx={getStyles(depth).textBtn}
             onClick={() => setExpanded(true)}
           >
-            View {childPostsLength} {childPostsLength > 1 ? "replies" : "reply"}
+            See {childPostsLength} {childPostsLength > 1 ? "replies" : "reply"}
           </Button>
         </Box>
       )}

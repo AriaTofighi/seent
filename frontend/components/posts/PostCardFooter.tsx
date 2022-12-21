@@ -152,7 +152,7 @@ const PostCardFooter = ({
               }}
               variant="text"
             >
-              Likes
+              See likes
             </Button>
           </Stack>
           <ReactionsModal
