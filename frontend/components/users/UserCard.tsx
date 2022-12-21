@@ -1,7 +1,7 @@
 import { Avatar, Box, Stack, Typography } from "@mui/material";
 import Link from "next/link";
 import { UserEntity } from "../../types";
-import StyledCard from "../UI/cards/StyledCard";
+import StyledCard from "../UI/StyledCard";
 
 type Props = {
   user: UserEntity;

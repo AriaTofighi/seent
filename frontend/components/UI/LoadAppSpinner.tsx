@@ -2,7 +2,7 @@ import { Box } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties } from "react";
 import { GridLoader } from "react-spinners";
-import theme from "../../../styles/theme";
+import theme from "../../styles/theme";
 
 const LoadAppSpinner = ({ loading = true }: Props) => {
   const theme = useTheme();

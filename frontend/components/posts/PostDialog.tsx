@@ -1,18 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
-
-import {
-  Button,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Stack,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Button, Dialog, IconButton, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
-import EmojiPicker, { IEmojiData } from "emoji-picker-react";
-import Image from "next/image";
-import { MouseEvent, useRef, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useUser } from "../../contexts/UserContext";
 import { useImageUpload } from "../../hooks/useImageUpload";
@@ -22,6 +11,7 @@ import { Styles } from "../../types";
 import FileUpload from "../controls/FileUpload";
 import TextInput from "../controls/TextInput";
 import ImagePreview from "../images/ImagePreview";
+import Modal from "../UI/Modal";
 import PostCard from "./PostCard";
 import PostDialogActions from "./PostDialogActions";
 
@@ -66,86 +56,78 @@ const PostDialog = ({
   };
 
   return (
-    <Dialog
-      open={open}
-      onClose={onClose}
-      fullWidth
-      maxWidth={"sm"}
-      sx={{ m: -2 }}
-    >
-      <DialogContent sx={{ p: 2 }}>
-        <Box sx={styles.root}>
-          <Stack
-            direction="row"
-            justifyContent="flex-end"
-            alignItems="flex-start"
+    <Modal open={open} onClose={onClose} fullWidth>
+      <Box>
+        {/* <Stack
+          direction="row"
+          justifyContent="flex-end"
+          alignItems="flex-start"
+        >
+          <IconButton
+            onClick={onClose}
+            size="small"
+            edge="start"
+            sx={{ p: 0.5 }}
           >
-            <IconButton
-              onClick={onClose}
-              size="small"
-              edge="start"
-              sx={{ p: 0.5 }}
-            >
-              <CloseIcon />
-            </IconButton>
-          </Stack>
-          {parentPost?.body ? (
-            <Box
-              sx={{
-                borderLeft: "1px solid",
-                borderRight: "1px solid",
-                borderTop: "1px solid",
-                borderRadius: 1,
-                borderColor: "divider",
-              }}
-            >
-              <PostCard
-                postId={parentPost.postId}
-                post={parentPost}
-                showActions={false}
+            <CloseIcon />
+          </IconButton>
+        </Stack> */}
+        {parentPost?.body ? (
+          <Box
+            sx={{
+              borderLeft: "1px solid",
+              borderRight: "1px solid",
+              borderTop: "1px solid",
+              borderRadius: 1,
+              borderColor: "divider",
+            }}
+          >
+            <PostCard
+              postId={parentPost.postId}
+              post={parentPost}
+              showActions={false}
+            />
+          </Box>
+        ) : (
+          <Typography variant="h5">What's on your mind?</Typography>
+        )}
+
+        <form onSubmit={handleSubmit(handleSubmitPost)}>
+          <TextInput
+            name="body"
+            label=""
+            placeholder={parentPost ? "Write your reply here" : "Write here"}
+            control={control}
+            type="text"
+            sx={{ mb: 1, mt: 2 }}
+            fullWidth
+            multiline
+            rows={4}
+            InputLabelProps={{ required: false }}
+          />
+          <PostDialogActions
+            setValue={setValue}
+            getValues={getValues}
+            handleBrowse={handleBrowse}
+          />
+          {imagePreview && (
+            <Box sx={styles.images}>
+              <ImagePreview
+                onClose={() => {
+                  setImage(undefined);
+                }}
+                src={imagePreview as string}
+                alt="Image Preview"
               />
             </Box>
-          ) : (
-            <Typography variant="h5">What's on your mind?</Typography>
           )}
-
-          <form onSubmit={handleSubmit(handleSubmitPost)}>
-            <TextInput
-              name="body"
-              label=""
-              placeholder={parentPost ? "Write your reply here" : "Write here"}
-              control={control}
-              type="text"
-              sx={{ mb: 1, mt: 2 }}
-              fullWidth
-              multiline
-              rows={4}
-              InputLabelProps={{ required: false }}
-            />
-            <PostDialogActions
-              setValue={setValue}
-              getValues={getValues}
-              handleBrowse={handleBrowse}
-            />
-            {imagePreview && (
-              <Box sx={styles.images}>
-                <ImagePreview
-                  onClose={() => {
-                    setImage(undefined);
-                  }}
-                  src={imagePreview as string}
-                  alt="Image Preview"
-                />
-              </Box>
-            )}
-            <Button variant="contained" type="submit" fullWidth>
-              Post
-            </Button>
-            <FileUpload innerRef={fileInputRef} onChange={handleImageChange} />
-          </form>
-        </Box>
-      </DialogContent>
-    </Dialog>
+          <Button variant="contained" type="submit" fullWidth>
+            Post
+          </Button>
+          <FileUpload innerRef={fileInputRef} onChange={handleImageChange} />
+        </form>
+      </Box>
+    </Modal>
   );
 };
 
@@ -163,9 +145,7 @@ type Props = {
 };
 
 const styles: Styles = {
-  root: {
-    mt: -1,
-  },
+  root: {},
   images: {
     display: "flex",
     flexDirection: "row",
@@ -173,11 +153,6 @@ const styles: Styles = {
     gap: 1,
     my: 2,
     justifyContent: "center",
-  },
-  emojiPicker: {
-    width: "100%",
-    marginBottom: "20px",
-    boxShadow: "none",
   },
 };
 

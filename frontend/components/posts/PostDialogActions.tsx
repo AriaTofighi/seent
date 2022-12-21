@@ -1,12 +1,12 @@
 import { Box, Stack, Tooltip, IconButton } from "@mui/material";
 import EmojiPicker, { IEmojiData } from "emoji-picker-react";
-import styles from "../navigation/MenuItem.styles";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ImageIcon from "@mui/icons-material/Image";
 import ShieldIcon from "@mui/icons-material/Shield";
 import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { DefaultValueType } from "./PostDialog";
 import { useState } from "react";
+import { Styles } from "../../types";
 
 type Props = {
   setValue: UseFormSetValue<DefaultValueType>;
@@ -55,6 +55,25 @@ const PostDialogActions = ({ setValue, getValues, handleBrowse }: Props) => {
       )}
     </>
   );
+};
+
+const styles: Styles = {
+  root: {
+    mt: -1,
+  },
+  images: {
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 1,
+    my: 2,
+    justifyContent: "center",
+  },
+  emojiPicker: {
+    width: "100%",
+    marginBottom: "20px",
+    boxShadow: "none",
+  },
 };
 
 type KeyValuePair = {

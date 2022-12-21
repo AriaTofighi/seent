@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useState } from "react";
 import AuthDialog from "../components/auth/AuthDialog";
-import LoadAppSpinner from "../components/UI/loading/LoadAppSpinner";
+import LoadAppSpinner from "../components/UI/LoadAppSpinner";
 import { useUser } from "../contexts/UserContext";
 import { NextPageWithLayout } from "../types";
 

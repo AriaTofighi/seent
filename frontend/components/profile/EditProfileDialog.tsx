@@ -1,24 +1,15 @@
-import {
-  Avatar,
-  Box,
-  Button,
-  Dialog,
-  DialogContent,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Avatar, Box, Button, Stack, Typography } from "@mui/material";
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Styles } from "../../types";
 import TextInput from "../controls/TextInput";
-import CloseIcon from "@mui/icons-material/Close";
 import { useUser } from "../../contexts/UserContext";
 import { updateUser } from "../../services/api/userAxios";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import FileUpload from "../controls/FileUpload";
 import { createImage, updateImage } from "../../services/api/imageAxios";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
+import Modal from "../UI/Modal";
 
 const defaultValues = {
   name: "",
@@ -82,90 +73,79 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
   }, [image]);
 
   return (
-    <Dialog
-      open={open}
-      onClose={() => setOpen(false)}
-      maxWidth="xs"
-      fullWidth
-      sx={{ m: -2 }}
-    >
-      <DialogContent>
+    <Modal open={open} onClose={() => setOpen(false)} maxWidth="xs">
+      <Stack
+        sx={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
+          mb: 3,
+        }}
+      >
+        <Typography variant="h5">Edit Profile</Typography>
+      </Stack>
+
+      <form onSubmit={handleSubmit(handleSave)}>
         <Stack
           sx={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            alignItems: "flex-start",
-            mb: 3,
+            gap: 2,
+            alignItems: "center",
           }}
         >
-          <Typography variant="h5">Edit Profile</Typography>
-          <IconButton onClick={() => setOpen(false)} sx={{ m: 0 }}>
-            <CloseIcon />
-          </IconButton>
-        </Stack>
-
-        <form onSubmit={handleSubmit(handleSave)}>
-          <Stack
+          <Box
             sx={{
-              gap: 2,
-              alignItems: "center",
+              position: "relative",
+              cursor: "pointer",
+              "&:hover": {
+                opacity: 0.8,
+              },
             }}
+            onClick={handleBrowse}
           >
-            <Box
+            <FileUploadIcon
               sx={{
-                position: "relative",
-                cursor: "pointer",
-                "&:hover": {
-                  opacity: 0.8,
-                },
+                position: "absolute",
+                top: "50%",
+                left: "50%",
+                zIndex: 1,
+                transform: "translate(-50%, -50%)",
               }}
-              onClick={handleBrowse}
-            >
-              <FileUploadIcon
-                sx={{
-                  position: "absolute",
-                  top: "50%",
-                  left: "50%",
-                  zIndex: 1,
-                  transform: "translate(-50%, -50%)",
-                }}
-              />
-              <Avatar
-                src={user?.images ? user.images[0]?.url : undefined}
-                sx={{
-                  maxWidth: {
-                    lg: 135,
-                    xs: 75,
-                  },
-                  width: "100%",
-                  height: "auto",
-                }}
-              />
-            </Box>
-            <TextInput name="name" label="Name" control={control} fullWidth />
-            <TextInput
-              name="bio"
-              label="Bio"
-              control={control}
-              required={false}
-              placeholder="Tell us about yourself"
-              fullWidth
             />
-            <TextInput
-              name="location"
-              label="Location"
-              control={control}
-              required={false}
-              fullWidth
+            <Avatar
+              src={user?.images ? user.images[0]?.url : undefined}
+              sx={{
+                maxWidth: {
+                  lg: 135,
+                  xs: 75,
+                },
+                width: "100%",
+                height: "auto",
+              }}
             />
-            <Button fullWidth type="submit" variant="contained">
-              Save
-            </Button>
-          </Stack>
-          <FileUpload onChange={handleImageChange} innerRef={fileInputRef} />
-        </form>
-      </DialogContent>
-    </Dialog>
+          </Box>
+          <TextInput name="name" label="Name" control={control} fullWidth />
+          <TextInput
+            name="bio"
+            label="Bio"
+            control={control}
+            required={false}
+            placeholder="Tell us about yourself"
+            fullWidth
+          />
+          <TextInput
+            name="location"
+            label="Location"
+            control={control}
+            required={false}
+            fullWidth
+          />
+          <Button fullWidth type="submit" variant="contained">
+            Save
+          </Button>
+        </Stack>
+        <FileUpload onChange={handleImageChange} innerRef={fileInputRef} />
+      </form>
+    </Modal>
   );
 };
 

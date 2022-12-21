@@ -10,7 +10,7 @@ import { useAPI } from "../../hooks/useAPI";
 import usePostDialog from "../../hooks/usePostDialog";
 import { PostEntity, ReactionEntity, Styles } from "../../types";
 import { formatDateTime } from "../../utils";
-import StyledCard from "../UI/cards/StyledCard";
+import StyledCard from "../UI/StyledCard";
 import PostCardBody from "./PostCardBody";
 import PostCardFooter from "./PostCardFooter";
 import PostCardHeader from "./PostCardHeader";
