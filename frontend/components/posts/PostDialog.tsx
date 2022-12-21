@@ -82,11 +82,7 @@ const PostDialog = ({
               borderColor: "divider",
             }}
           >
-            <PostCard
-              postId={parentPost.postId}
-              post={parentPost}
-              showActions={false}
-            />
+            <PostCard post={parentPost} showActions={false} />
           </Box>
         ) : (
           <Typography variant="h5">What's on your mind?</Typography>

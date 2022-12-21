@@ -45,7 +45,8 @@ const Modal = ({
 
 const styles: ThemedStyles = {
   root: {
-    px: 2.5,
+    px: 2,
+    py: 1.5,
     color: (theme) => theme.palette.text.primary,
   },
 };

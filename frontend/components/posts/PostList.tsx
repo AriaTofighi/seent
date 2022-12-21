@@ -44,10 +44,8 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
               if (repliesMode || !hasParent) {
                 return (
                   <PostCard
-                    postId={postId}
                     post={{ ...rest, postId }}
                     key={postId}
-                    postsRes={postsRes}
                     mutatePostList={mutatePosts}
                   />
                 );

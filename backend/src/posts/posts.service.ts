@@ -42,8 +42,19 @@ export class PostsService {
     },
     reactions: {
       select: {
-        type: true,
         userId: true,
+        type: true,
+        user: {
+          select: {
+            name: true,
+            username: true,
+            images: {
+              where: {
+                type: ImageType.USER_AVATAR,
+              },
+            },
+          },
+        },
         postId: true,
         reactionId: true,
       },

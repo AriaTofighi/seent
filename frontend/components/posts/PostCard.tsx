@@ -40,30 +40,26 @@ const getStyles = (depth: number): Styles => {
 const MAX_POST_DEPTH_PER_PAGE = 2;
 
 type Props = {
-  postId: string;
   post: PostEntity;
-  isLast?: boolean;
   expandable?: boolean;
   depth?: number;
   showActions?: boolean;
-  postsRes?: any;
   mutatePost?: () => void;
   mutatePostList?: () => void;
 };
 
 const PostCard = ({
-  postId,
   post,
   mutatePost,
   mutatePostList,
-  postsRes,
-  isLast = true,
   depth = 0,
   expandable = false,
   showActions = true,
 }: Props) => {
+  const postId = post?.postId;
   const { user } = useUser();
   const router = useRouter();
+  const isMainPost = router.query?.id === postId;
   const childPostsLength = post?._count?.childPosts;
   const [expanded, setExpanded] = useState<boolean>(false);
   const {
@@ -146,6 +142,7 @@ const PostCard = ({
               onReply={onReply}
               mutatePosts={mutateAllPosts}
               childPostsCount={post._count?.childPosts ?? 0}
+              isMainPost={isMainPost}
             />
           </Box>
         </Link>
@@ -170,14 +167,12 @@ const PostCard = ({
                   <Box
                     sx={{
                       width: 24,
-                      borderBottom: isLast ? "none" : "1px solid",
                       borderColor: "divider",
                       alignSelf: "stretch",
                     }}
                     key={p.postId}
                   />
                   <PostCard
-                    postId={p.postId}
                     post={p}
                     expandable
                     depth={depth + 1}
@@ -186,8 +181,6 @@ const PostCard = ({
                       mutatePostList?.();
                       mutateNestedReplies?.();
                     }}
-                    postsRes={postsRes}
-                    isLast={index === nestedReplies.length - 1}
                   />
                 </Box>
               ))}

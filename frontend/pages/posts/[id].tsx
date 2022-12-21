@@ -90,7 +90,6 @@ const PostDetails: NextPageWithLayout = () => {
           </Stack>
         </TopAppBar>
         <PostCard
-          postId={post?.postId ?? ""}
           post={post}
           postsRes={repliesRes}
           mutatePost={mutatePost}
@@ -107,7 +106,6 @@ const PostDetails: NextPageWithLayout = () => {
               return (
                 <Box key={r.postId}>
                   <PostCard
-                    postId={r.postId}
                     post={r}
                     expandable
                     postsRes={repliesRes}
