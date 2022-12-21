@@ -5,32 +5,21 @@ import { Styles } from "../../types";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
-const styles: Styles = {
-  root: {
-    boxShadow: "",
-    borderRadius: 4,
-    color: "secondary.light",
-  },
-  modeBtn: {
-    width: "fit-content",
-    textTransform: "initial",
-    mt: 1,
-  },
-};
-
 export const MODES = {
   SIGN_IN: "signin",
   SIGN_UP: "signup",
 };
 
+type Mode = typeof MODES[keyof typeof MODES];
+
 type Props = {
   open: boolean;
   onClose: () => void;
+  mode: Mode;
+  setMode: (mode: Mode) => void;
 };
 
-const AuthDialog = ({ open, onClose }: Props) => {
-  const [mode, setMode] = useState(MODES.SIGN_UP);
-
+const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
   const signInMode = mode === MODES.SIGN_IN;
 
   return (
@@ -57,6 +46,19 @@ const AuthDialog = ({ open, onClose }: Props) => {
       </DialogContent>
     </Dialog>
   );
+};
+
+const styles: Styles = {
+  root: {
+    boxShadow: "",
+    borderRadius: 4,
+    color: "secondary.light",
+  },
+  modeBtn: {
+    width: "fit-content",
+    textTransform: "initial",
+    mt: 1,
+  },
 };
 
 export default AuthDialog;

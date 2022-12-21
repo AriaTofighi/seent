@@ -54,10 +54,8 @@ const LoginForm = ({ onClose }: Props) => {
             type="password"
             rules={{ required: true }}
           />
-          <Button type="submit" variant="outlined">
-            <Typography variant="body2" color="secondary.light">
-              Sign in
-            </Typography>
+          <Button type="submit" variant="contained">
+            <Typography variant="body2">Sign in</Typography>
           </Button>
         </Box>
       </form>

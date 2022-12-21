@@ -15,7 +15,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useNav } from "../../contexts/NavContext";
 import { useUser } from "../../contexts/UserContext";
-import AuthDialog from "../auth/AuthDialog";
+import AuthDialog, { MODES } from "../auth/AuthDialog";
 import MenuItem from "./MenuItem";
 import SearchBar from "./SearchBar";
 import styles from "./SideBar.styles";
@@ -25,8 +25,19 @@ const SideBar = () => {
   const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
   const tabletMode = useMediaQuery(theme.breakpoints.down("lg"));
   const { user, logout } = useUser();
-  const [showLogin, setShowLogin] = useState(false);
   const { open, setOpen } = useNav();
+  const [mode, setMode] = useState(MODES.SIGN_IN);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+
+  const onSignUp = () => {
+    setMode(MODES.SIGN_UP);
+    setAuthDialogOpen(true);
+  };
+
+  const onSignIn = () => {
+    setMode(MODES.SIGN_IN);
+    setAuthDialogOpen(true);
+  };
 
   const content = (
     <Box sx={styles.root}>
@@ -56,17 +67,33 @@ const SideBar = () => {
         </>
       )}
       {!user && (
-        <Button
-          color="inherit"
-          onClick={user ? logout : () => setShowLogin(!showLogin)}
-          sx={styles.signUpBtn}
-          variant={user ? "text" : "outlined"}
-          fullWidth={Boolean(!user)}
-        >
-          <Typography variant="h6">{user ? "Sign out" : "Sign up"}</Typography>
-        </Button>
+        <>
+          <Button
+            color="inherit"
+            onClick={onSignIn}
+            sx={styles.signUpBtn}
+            variant="outlined"
+            fullWidth
+          >
+            <Typography variant="h6">{"Sign in"}</Typography>
+          </Button>
+          <Button
+            color="inherit"
+            onClick={onSignUp}
+            sx={styles.signUpBtn}
+            variant="outlined"
+            fullWidth
+          >
+            <Typography variant="h6">{"Sign up"}</Typography>
+          </Button>
+        </>
       )}
-      <AuthDialog open={showLogin} onClose={() => setShowLogin(false)} />
+      <AuthDialog
+        open={authDialogOpen}
+        onClose={() => setAuthDialogOpen(false)}
+        mode={mode}
+        setMode={setMode}
+      />
     </Box>
   );
 
