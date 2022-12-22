@@ -30,6 +30,7 @@ const SearchBar = () => {
           position: "sticky",
           width: 240,
           border: "none",
+          bgcolor: "background.default",
         }}
       >
         <Toolbar disableGutters sx={{ width: "100%" }}>

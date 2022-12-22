@@ -53,25 +53,27 @@ function RouteGuard({ children }: Props) {
 
   return (
     <>
-      {authorized
-        ? children
-        : // <Box
-          //   sx={{
-          //     width: "100vw",
-          //     height: "100vh",
-          //     display: "flex",
-          //     alignItems: "center",
-          //     justifyContent: "center",
-          //   }}
-          // >
-          //   <GridLoader
-          //     color={theme.palette.primary.main}
-          //     loading={loading}
-          //     size={50}
-          //     cssOverride={override}
-          //   />
-          // </Box>
-          null}
+      {authorized ? (
+        children
+      ) : (
+        <div
+          style={{
+            width: "100vw",
+            height: "100vh",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <GridLoader
+            color={theme.palette.primary.main}
+            loading={loading}
+            size={50}
+            // cssOverride={override}
+          />
+        </div>
+      )}
+      {/* null} */}
     </>
   );
 }
