@@ -5,7 +5,7 @@ import useMenu from "../../hooks/useMenu";
 import { POSTS_SORT_MODES } from "../../types";
 
 type Props = {
-  setMode: (mdoe: string) => void;
+  setMode: (mode: string) => void;
 };
 
 const PostListSorting = ({ setMode }: Props) => {

@@ -9,7 +9,7 @@ import { UserEntity } from "./entities/user.entity";
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  private readonly _include = {
+  private readonly _include: Prisma.UserInclude = {
     images: {
       select: {
         imageId: true,
@@ -17,6 +17,11 @@ export class UsersService {
       },
       where: {
         type: ImageType.USER_AVATAR,
+      },
+    },
+    _count: {
+      select: {
+        reactions: true,
       },
     },
   };

@@ -6,8 +6,8 @@ import { PaginatedResult, PostEntity, Styles } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
 import FloatingButton from "../UI/FloatingButton";
 import PostCard from "./PostCard";
-import PostLoader from "./Loader";
-import Loader from "./Loader";
+import PostLoader from "../UI/Loader";
+import Loader from "../UI/Loader";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,

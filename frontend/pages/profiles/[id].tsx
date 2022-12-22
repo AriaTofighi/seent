@@ -113,12 +113,18 @@ const Profile: NextPageWithLayout = () => {
               <Stack sx={styles.profileStatsContainer}>
                 <Stack sx={styles.profileStats}>
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>{posts?.length}</Typography>
-                    <Typography variant="subtitle2">Posts</Typography>
+                    <Typography fontWeight={600}>{posts.length}</Typography>
+                    <Typography variant="subtitle2">
+                      {posts.length === 1 ? "Post" : "Posts"}
+                    </Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>10</Typography>
-                    <Typography variant="subtitle2">Likes</Typography>
+                    <Typography fontWeight={600}>
+                      {profileUser._count?.reactions}
+                    </Typography>
+                    <Typography variant="subtitle2">
+                      {profileUser._count?.reactions === 1 ? "Like" : "Likes"}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Stack>

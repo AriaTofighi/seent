@@ -8,7 +8,7 @@ import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
-import PostLoader from "../../components/posts/Loader";
+import PostLoader from "../../components/UI/Loader";
 import Title from "../../components/UI/Title";
 import { useAPI } from "../../hooks/useAPI";
 import useInfiniteAPI from "../../hooks/useInfiniteAPI";
@@ -75,7 +75,7 @@ const PostDetails: NextPageWithLayout = () => {
 
   return (
     <>
-      <Title title={`Post - ${post?.author.name}`} />
+      <Title title={`Post - ${post?.author?.name}`} />
       <Box>
         <TopAppBar title="Post">
           <Stack width="100%" direction="row" justifyContent="flex-end">
@@ -91,7 +91,6 @@ const PostDetails: NextPageWithLayout = () => {
         </TopAppBar>
         <PostCard
           post={post}
-          postsRes={repliesRes}
           mutatePost={mutatePost}
           mutatePostList={mutateReplies}
         />
@@ -108,7 +107,6 @@ const PostDetails: NextPageWithLayout = () => {
                   <PostCard
                     post={r}
                     expandable
-                    postsRes={repliesRes}
                     mutatePost={mutatePost}
                     mutatePostList={mutateReplies}
                   />
