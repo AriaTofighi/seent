@@ -56,7 +56,7 @@ type ReactionCount = {
   reactions: number;
 };
 
-export type UserEntity = Partial<{
+export type UserEntity = {
   userId: string;
   email: string;
   name: string;
@@ -72,18 +72,18 @@ export type UserEntity = Partial<{
   _count: ReactionCount;
 
   images: ImageEntity[];
-}>;
+};
 
-export type ReactionEntity = Partial<{
+export type ReactionEntity = {
   reactionId: string;
   postId: string;
   userId: string;
   type: typeof ReactionType;
   createdAt: Date;
   updatedAt: Date;
-}>;
+};
 
-export type PostEntity = Partial<{
+export type PostEntity = {
   postId: string;
   authorId: string;
   body: string;
@@ -97,9 +97,9 @@ export type PostEntity = Partial<{
   images: ImageEntity[];
   parentPost: PostEntity;
   _count: PostCounts;
-}>;
+};
 
-export type ImageEntity = Partial<{
+export type ImageEntity = {
   imageId: string;
   url: string;
   type: ImageTypeValues;
@@ -107,7 +107,7 @@ export type ImageEntity = Partial<{
   postId: string;
   createdAt: Date;
   updatedAt: Date;
-}>;
+};
 
 export const POSTS_SORT_MODES = {
   TOP_DAY: "top-day",

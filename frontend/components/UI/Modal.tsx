@@ -6,17 +6,20 @@ import {
   Stack,
   SxProps,
   Theme,
+  Typography,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import { ThemedStyles } from "../../types";
 
 type Props = {
   onClose: () => void;
+  title?: string;
 };
 
 const Modal = ({
   children,
   onClose,
+  title,
   maxWidth = "sm",
   ...props
 }: Props & DialogProps) => {
@@ -37,6 +40,11 @@ const Modal = ({
             <CloseIcon />
           </IconButton>
         </Stack>
+        {title && (
+          <Typography variant="h6" mb={2}>
+            {title}
+          </Typography>
+        )}
         {children}
       </DialogContent>
     </Dialog>

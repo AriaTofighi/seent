@@ -18,7 +18,7 @@ import {
 } from "../../services/api/reactionAxios";
 import { Styles, ThemedStyles } from "../../types";
 import { stopPropagation } from "../../utils";
-import ReactionsModal from "./ReactionsModal";
+import ReactionsModal from "../reactions/ReactionsModal";
 
 const REACTION_TYPES = {
   LIKE: "LIKE",
@@ -63,12 +63,11 @@ const PostCardFooter = ({
       return toast.info("Sign in to interact with others");
     }
     const deleteMode = Boolean(userReaction);
-    let newReaction: any;
 
     if (deleteMode) {
       await deleteReaction(userReaction.reactionId);
     } else {
-      newReaction = await createReaction(postId, user.userId, type);
+      await createReaction(postId, user.userId, type);
     }
 
     mutatePosts();

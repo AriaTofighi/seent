@@ -15,13 +15,8 @@ const ReactionsModal = ({ open, setOpen, reactions }: Props) => {
     setOpen(false);
   };
 
-  console.log(reactions);
-
   return (
-    <Modal open={open} onClose={onClose}>
-      <Typography variant="h6" mb={2}>
-        Likes
-      </Typography>
+    <Modal open={open} onClose={onClose} title="Likes">
       {reactions.map((reaction) => (
         <UserCard key={reaction.reactionId} user={reaction.user} />
       ))}

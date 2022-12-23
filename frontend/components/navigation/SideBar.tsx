@@ -19,6 +19,7 @@ import AuthDialog, { MODES } from "../auth/AuthDialog";
 import MenuItem from "./MenuItem";
 import SearchBar from "./SearchBar";
 import styles from "./SideBar.styles";
+import ChatIcon from "@mui/icons-material/Chat";
 
 const SideBar = () => {
   const theme = useTheme();
@@ -56,6 +57,9 @@ const SideBar = () => {
         <>
           <MenuItem icon={<PersonIcon />} href={`/profiles/${user.username}`}>
             Profile
+          </MenuItem>
+          <MenuItem icon={<ChatIcon />} href="/rooms">
+            Rooms
           </MenuItem>
           <MenuItem icon={<SettingsIcon />} href="/settings">
             Settings
