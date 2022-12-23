@@ -18,9 +18,10 @@ const defaultValues = {
 type Props = {
   open: boolean;
   setOpen: (open: boolean) => void;
+  mutateRooms: () => void;
 };
 
-const CreateRoomModal = ({ open, setOpen }: Props) => {
+const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
   const { user } = useUser();
   const { control, handleSubmit, getValues, setValue } = useForm({
     defaultValues,
@@ -33,6 +34,7 @@ const CreateRoomModal = ({ open, setOpen }: Props) => {
     userIds.push(user?.userId as string);
     await createRoom({ title, userIds, ownerId: user?.userId as string });
     setOpen(false);
+    mutateRooms();
   };
 
   return (

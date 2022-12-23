@@ -15,7 +15,6 @@ type Props = {
   label: string;
   getOptionLabel: (option: any) => string;
   TextFieldProps?: TextFieldProps;
-  rest?: AutocompleteProps<any, true, true, true>;
 };
 
 const AutoComplete = ({
@@ -27,7 +26,7 @@ const AutoComplete = ({
   getOptionLabel,
   TextFieldProps,
   ...rest
-}: Props) => {
+}: Props & AutocompleteProps<any, true, true, true>) => {
   return (
     <Controller
       render={({

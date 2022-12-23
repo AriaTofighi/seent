@@ -15,7 +15,9 @@ import MenuItem from "../../components/navigation/MenuItem";
 const Rooms: NextPageWithLayout = () => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
   const { user } = useUser();
-  const { data: rooms } = useAPI<any[]>(`rooms?userId=${user?.userId}`);
+  const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
+    `rooms?userId=${user?.userId}`
+  );
 
   return (
     <>
@@ -30,12 +32,22 @@ const Rooms: NextPageWithLayout = () => {
       <Box sx={styles.root}>
         <Box sx={styles.roomList}>
           {rooms?.map((room) => (
-            <MenuItem key={room.roomId}>{room.title}</MenuItem>
+            <MenuItem
+              sx={{ borderBottom: "1px solid", borderColor: "divider" }}
+              key={room.roomId}
+              href={`/rooms/${room.roomId}`}
+            >
+              {room.title}
+            </MenuItem>
           ))}
         </Box>
       </Box>
 
-      <CreateRoomModal open={createRoomOpen} setOpen={setCreateRoomOpen} />
+      <CreateRoomModal
+        open={createRoomOpen}
+        setOpen={setCreateRoomOpen}
+        mutateRooms={mutateRooms}
+      />
     </>
   );
 };

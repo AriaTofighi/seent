@@ -1,4 +1,4 @@
-import { ButtonBase, Typography } from "@mui/material";
+import { BoxProps, ButtonBase, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -11,7 +11,13 @@ type Props = {
   onClick?: () => void;
 };
 
-const MenuItem = ({ children, icon, href, onClick }: Props) => {
+const MenuItem = ({
+  children,
+  icon,
+  href,
+  onClick,
+  ...props
+}: Props & BoxProps) => {
   const defaultContent = (
     <Box sx={styles.root}>
       {icon}
@@ -20,7 +26,7 @@ const MenuItem = ({ children, icon, href, onClick }: Props) => {
   );
 
   return (
-    <>
+    <Box {...props}>
       {href ? (
         <Link href={href}>
           <a>{defaultContent}</a>
@@ -30,7 +36,7 @@ const MenuItem = ({ children, icon, href, onClick }: Props) => {
           {defaultContent}
         </ButtonBase>
       )}
-    </>
+    </Box>
   );
 };
 

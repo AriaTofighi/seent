@@ -40,7 +40,8 @@ const getTheme = (mode: PaletteMode) => {
       },
     },
     typography: {
-      fontFamily: ["Ubuntu", "sans-serif"].join(","),
+      fontFamily: "Rajdhani",
+      fontSize: 16,
     },
     components: {
       MuiPaper: {
