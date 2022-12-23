@@ -4,6 +4,7 @@ import { ImageType, Prisma, User } from "@prisma/client";
 import { UserFindManyParams } from "./users.types";
 import { createPaginator } from "utils/paginationUtils";
 import { UserEntity } from "./entities/user.entity";
+import { PaginatedResult } from "utils/types";
 
 @Injectable()
 export class UsersService {
@@ -37,16 +38,34 @@ export class UsersService {
   async findMany(params: UserFindManyParams) {
     const { where, orderBy, page, perPage } = params;
 
-    const paginate = createPaginator({ perPage: perPage });
-    const result = await paginate<User, Prisma.UserFindManyArgs>(
-      this.prisma.user,
-      {
-        where,
-        orderBy,
-        include: this._include,
-      },
-      { page: page }
-    );
+    const queryArgs = {
+      where,
+      orderBy,
+      include: this._include,
+    };
+
+    let result: PaginatedResult<User> | User[];
+    if (page) {
+      const paginate = createPaginator({ perPage: perPage });
+      result = await paginate<User, Prisma.UserFindManyArgs>(
+        this.prisma.user,
+        queryArgs,
+        { page: page }
+      );
+    } else {
+      result = await this.prisma.user.findMany(queryArgs);
+    }
+
+    // const paginate = createPaginator({ perPage: perPage });
+    // const result = await paginate<User, Prisma.UserFindManyArgs>(
+    //   this.prisma.user,
+    //   {
+    //     where,
+    //     orderBy,
+    //     include: this._include,
+    //   },
+    //   { page: page }
+    // );
 
     return result;
   }

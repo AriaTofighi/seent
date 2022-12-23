@@ -4,6 +4,7 @@ import { PostsModule } from "./posts/posts.module";
 import { AuthModule } from "./auth/auth.module";
 import { ReactionsModule } from "./reactions/reactions.module";
 import { ImagesModule } from "./images/images.module";
+import { RoomsModule } from "./rooms/rooms.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ImagesModule } from "./images/images.module";
     AuthModule,
     ReactionsModule,
     ImagesModule,
+    RoomsModule,
   ],
 })
 export class AppModule {}

@@ -1,12 +1,13 @@
 import { useRouter } from "next/router";
 import { ReactElement, useEffect, useState } from "react";
-import AuthDialog from "../components/auth/AuthDialog";
+import AuthDialog, { MODES } from "../components/auth/AuthDialog";
 import LoadAppSpinner from "../components/UI/LoadAppSpinner";
 import { useUser } from "../contexts/UserContext";
 import { NextPageWithLayout } from "../types";
 
 const SignIn: NextPageWithLayout = () => {
   const [open, setOpen] = useState(true);
+  const [mode, setMode] = useState(MODES.SIGN_IN);
   const { user } = useUser();
   const router = useRouter();
 
@@ -22,7 +23,12 @@ const SignIn: NextPageWithLayout = () => {
 
   return (
     <>
-      <AuthDialog open={open} onClose={() => setOpen(false)} />
+      <AuthDialog
+        open={open}
+        onClose={() => setOpen(false)}
+        mode={mode}
+        setMode={setMode}
+      />
     </>
   );
 };

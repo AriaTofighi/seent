@@ -25,7 +25,6 @@ model User {
   posts     Post[]
   reactions Reaction[]
   rooms     RoomUser[]
-  messages  Message[]
   images    Image[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
@@ -73,33 +72,33 @@ model Image {
 
 model Room {
   roomId    String     @id @default(uuid())
-  messages  Message[]
+  title     String
   users     RoomUser[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
 
 model RoomUser {
-  roomUserId String   @id @default(uuid())
+  roomUserId String    @id @default(uuid())
   roomId     String
   userId     String
-  room       Room?    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
-  user       User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  isOwner    Boolean
+  room       Room?     @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
+  user       User?     @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  messages   Message[]
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@unique([roomId, userId])
 }
 
 model Message {
-  messageId String   @id @default(uuid())
-  content   String   @db.VarChar(360)
-  roomId    String
-  userId    String
-  room      Room?    @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
-  user      User?    @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  messageId  String    @id @default(uuid())
+  body       String    @db.VarChar(360)
+  roomUserId String?
+  roomUser   RoomUser? @relation(fields: [roomUserId], references: [roomUserId], onDelete: SetNull)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 enum Role {

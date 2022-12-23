@@ -29,13 +29,11 @@ const Profile: NextPageWithLayout = () => {
     error: userErr,
     mutate: mutateUser,
     loading: userLoading,
-  } = useAPI<PaginatedResult<UserEntity>>(
-    query ? `users?username=${query.id}` : null
-  );
+  } = useAPI<UserEntity[]>(query ? `users?username=${query.id}` : null);
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
 
-  const profileUser = userRes?.data[0];
+  const profileUser = userRes?.[0];
   const userIsOwner = profileUser?.userId === user?.userId;
 
   const getPostsKey = (index: number) =>

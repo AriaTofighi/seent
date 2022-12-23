@@ -47,9 +47,15 @@ export class UsersController {
       perPage,
     });
 
-    const userEntities = result.data.map((u) => new UserEntity(u));
+    let userEntities: UserEntity[];
 
-    return { ...result, data: userEntities };
+    if (!Array.isArray(result)) {
+      userEntities = result.data.map((u) => new UserEntity(u));
+      return { ...result, data: userEntities };
+    } else {
+      userEntities = result.map((u) => new UserEntity(u));
+      return userEntities;
+    }
   }
 
   @Get(":id")

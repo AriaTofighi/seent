@@ -31,6 +31,7 @@ const SearchBar = () => {
           width: 240,
           border: "none",
           bgcolor: "background.default",
+          maxWidth: "100%",
         }}
       >
         <Toolbar disableGutters sx={{ width: "100%" }}>

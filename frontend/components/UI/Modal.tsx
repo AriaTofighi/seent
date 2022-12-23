@@ -41,7 +41,7 @@ const Modal = ({
           </IconButton>
         </Stack>
         {title && (
-          <Typography variant="h6" mb={2}>
+          <Typography variant="h5" mb={2}>
             {title}
           </Typography>
         )}
