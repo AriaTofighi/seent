@@ -8,6 +8,7 @@ import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostCard from "../../components/posts/PostCard";
 import PostListSorting from "../../components/posts/PostListSorting";
+import Header from "../../components/UI/Header";
 import PostLoader from "../../components/UI/Loader";
 import Title from "../../components/UI/Title";
 import { useAPI } from "../../hooks/useAPI";
@@ -20,19 +21,6 @@ import {
   Styles,
 } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-
-const styles: Styles = {
-  header: {
-    p: 2,
-    borderBottom: "1px solid",
-    width: "100%",
-    borderColor: "divider",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    display: "flex",
-  },
-};
 
 const PostDetails: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -94,10 +82,10 @@ const PostDetails: NextPageWithLayout = () => {
           mutatePost={mutatePost}
           mutatePostList={mutateReplies}
         />
-        <Box sx={styles.header}>
+        <Header>
           <Typography variant="h5">Replies</Typography>
           <PostListSorting setMode={setSortMode} />
-        </Box>
+        </Header>
 
         {replies.length > 0 ? (
           <>

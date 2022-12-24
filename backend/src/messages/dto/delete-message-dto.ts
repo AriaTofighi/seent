@@ -1,6 +1,6 @@
 import { IsUUID } from "class-validator";
 
-export class DeleteRoomDto {
+export class DeleteMessageDto {
   @IsUUID()
-  roomId: string;
+  messageId: string;
 }

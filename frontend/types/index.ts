@@ -109,6 +109,18 @@ export type ImageEntity = {
   updatedAt: Date;
 };
 
+export type RoomEntity = {
+  roomId: string;
+  title: string;
+};
+
+export type MessageEntity = {
+  messageId: string;
+  roomUserId: string;
+  body: string;
+  createdAt: Date;
+};
+
 export const POSTS_SORT_MODES = {
   TOP_DAY: "top-day",
   TOP_WEEK: "top-week",

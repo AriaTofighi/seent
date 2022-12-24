@@ -13,8 +13,9 @@ import {
 } from "@nestjs/common";
 import { RoomsService } from "./rooms.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
-import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindRoomsQueryDto } from "./dto/find-rooms-query.dto";
+import { RoomEntity } from "./entities/room.entity";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
 
 @Controller("/api/rooms")
 export class RoomsController {
@@ -26,11 +27,18 @@ export class RoomsController {
     await this.roomsService.create(room);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(":id")
+  async findOne(@Param("id") roomId: string) {
+    const room = await this.roomsService.findOne({ roomId });
+    const roomEntity = new RoomEntity(room);
+    return roomEntity;
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query() query: FindRoomsQueryDto) {
     const { roomId, userId, title, page, perPage } = query;
-    // Find many query for rooms that have exactly one user with the userId in the line above
-    console.log(roomId, userId, title);
     const rooms = this.roomsService.findMany({
       page,
       perPage,

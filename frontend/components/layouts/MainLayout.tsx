@@ -13,26 +13,28 @@ const styles: Styles = {
     justifyContent: "center",
   },
   mainContent: {
-    width: 600,
     borderRight: "1px solid",
     borderLeft: "1px solid",
     borderColor: "divider",
     minHeight: "100vh",
   },
-  small: {
-    width: 600,
+  general: {
+    width: {
+      xs: "100%",
+      md: 600,
+    },
   },
-  medium: {
-    width: 840,
+  rooms: {
+    width: 843,
   },
 };
 
 const MainLayout = ({ children }: any) => {
   const getSize = () => {
     if (window.location.pathname.startsWith("/rooms")) {
-      return styles.medium;
+      return styles.rooms;
     } else {
-      return styles.small;
+      return styles.general;
     }
   };
 

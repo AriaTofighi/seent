@@ -1,4 +1,4 @@
-import axios from "axios";
+import { DEFAULT_API as axios } from "../services/api/AxiosInstance";
 
 const swrConfig = {
   fetcher: async (url: string, init: any) => {

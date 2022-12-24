@@ -7,17 +7,9 @@ type CreateRoomDto = {
   ownerId: string;
 };
 
-export const createRoom = async ({
-  title,
-  userIds,
-  ownerId,
-}: CreateRoomDto) => {
+export const createRoom = async (room: CreateRoomDto) => {
   try {
-    const response = await axios.post("rooms", {
-      title,
-      userIds,
-      ownerId,
-    });
+    const response = await axios.post("rooms", room);
     toast.success("Created room successfully");
     return response.data;
   } catch (error) {

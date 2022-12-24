@@ -18,6 +18,12 @@ const styles: Styles = {
     display: "flex",
     alignItems: "center",
     gap: 2,
+    "& > *": {
+      maxWidth: "100%",
+      whiteSpace: "nowrap",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    },
   },
 };
 

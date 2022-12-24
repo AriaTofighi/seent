@@ -1,12 +1,16 @@
 import { IsOptional, IsString, IsUUID } from "class-validator";
 import { FindManyQuery } from "utils/types";
 
-export class FindRoomsQueryDto extends FindManyQuery {
+export class FindMessagesQueryDto extends FindManyQuery {
   @IsUUID()
   @IsOptional()
-  roomId?: string;
+  messageId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  roomUserId?: string;
 
   @IsString()
   @IsOptional()
-  title?: string;
+  body?: string;
 }

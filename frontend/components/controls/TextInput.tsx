@@ -7,7 +7,7 @@ type Props = {
   control: any;
   name: string;
   rules?: any;
-  label: string;
+  label?: string;
   [rest: string]: any;
 };
 

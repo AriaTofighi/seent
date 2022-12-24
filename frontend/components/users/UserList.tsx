@@ -4,7 +4,7 @@ import React from "react";
 import useInfiniteAPI from "../../hooks/useInfiniteAPI";
 import { PaginatedResult, UserEntity } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
-import UserCard from "../users/UserCard";
+import UserCard from "./UserCard";
 
 type Props = {
   getUsersKey: (index: number) => string | null;

@@ -8,10 +8,15 @@ type Props = {
 };
 
 const styles: Styles = {
-  root: {
+  fab: {
     position: "sticky",
     top: 0,
     mr: 2.5,
+  },
+  root: {
+    position: "sticky",
+    bottom: 16,
+    mt: 1,
   },
 };
 
@@ -22,7 +27,7 @@ const FloatingButton = ({ onClick }: Props) => {
       height={50}
       justifyContent="flex-end"
       flexDirection="row"
-      sx={{ position: "sticky", bottom: 16, mt: 1 }}
+      sx={styles.root}
     >
       <Fab size="medium" color="secondary" sx={styles.root} onClick={onClick}>
         <AddIcon />

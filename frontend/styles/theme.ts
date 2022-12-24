@@ -34,14 +34,14 @@ const getTheme = (mode: PaletteMode) => {
       values: {
         xs: 0,
         sm: 600,
-        md: 860,
+        md: 850,
         lg: 1100,
         xl: 1536,
       },
     },
     typography: {
       fontFamily: "Rajdhani",
-      fontSize: 16,
+      fontSize: 15,
     },
     components: {
       MuiPaper: {

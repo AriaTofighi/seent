@@ -58,7 +58,7 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
             fullWidth
           />
           <AutoComplete
-            label="Add users"
+            label="Add user(s)"
             name="users"
             control={control}
             disablePortal={false}

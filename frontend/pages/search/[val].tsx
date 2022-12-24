@@ -4,7 +4,7 @@ import React from "react";
 import { getMainLayout } from "../../components/layouts/MainLayout";
 import TopAppBar from "../../components/navigation/TopAppBar";
 import PostList from "../../components/posts/PostList";
-import UserList from "../../components/search/UserList";
+import UserList from "../../components/users/UserList";
 import Title from "../../components/UI/Title";
 import { NextPageWithLayout } from "../../types";
 
