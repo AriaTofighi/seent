@@ -23,16 +23,31 @@ export class MessagesController {
   @UseGuards(JwtAuthGuard)
   @Post()
   create(@Body() message: CreateMessageDto) {
-    return this.messagesService.create(message);
+    const { roomUserId, body } = message;
+
+    return this.messagesService.create({
+      roomUser: { connect: { roomUserId } },
+      body,
+    });
   }
 
   @Get()
   findAll(@Query() query: FindMessagesQueryDto) {
-    const { messageId, body, roomUserId, page, perPage } = query;
+    const { messageId, body, roomUserId, roomId, page, perPage } = query;
     return this.messagesService.findMany({
       page,
       perPage,
-      where: { messageId, body, roomUserId },
+      where: {
+        messageId,
+        body,
+        roomUserId,
+        roomUser: {
+          roomId,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
   }
 

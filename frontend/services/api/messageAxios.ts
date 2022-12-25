@@ -3,10 +3,10 @@ import { toast } from "react-toastify";
 
 type CreateMessageDto = {
   body: string;
-  messageUserId: string;
+  roomUserId: string;
 };
 
-export const createRoom = async (message: CreateMessageDto) => {
+export const createMessage = async (message: CreateMessageDto) => {
   try {
     const response = await axios.post("messages", message);
     return response.data;
@@ -15,7 +15,7 @@ export const createRoom = async (message: CreateMessageDto) => {
   }
 };
 
-export const deleteRoom = async (messageId: string) => {
+export const deleteMessage = async (messageId: string) => {
   try {
     const response = await axios.delete(`messages/${messageId}`);
     return response.data;

@@ -10,9 +10,24 @@ import { CreateRoomDto } from "./dto/create-room.dto";
 export class RoomsService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly _include: Prisma.RoomInclude = {
+    users: {
+      select: {
+        roomUserId: true,
+        userId: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
+      },
+    },
+  };
+
   async findOne(roomWhereUniqueInput: Prisma.RoomWhereUniqueInput) {
     const room = await this.prisma.room.findUnique({
       where: roomWhereUniqueInput,
+      include: this._include,
     });
     return room;
   }
@@ -23,6 +38,7 @@ export class RoomsService {
     const queryArgs = {
       where,
       orderBy,
+      include: this._include,
     };
 
     let result: PaginatedResult<Room> | Room[];

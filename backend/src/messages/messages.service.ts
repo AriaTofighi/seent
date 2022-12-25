@@ -40,6 +40,7 @@ export class MessagesService {
   }
 
   async create(data: Prisma.MessageCreateInput) {
+    console.log(data);
     return await this.prisma.message.create({
       data,
     });

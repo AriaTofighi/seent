@@ -95,8 +95,8 @@ model RoomUser {
 model Message {
   messageId  String    @id @default(uuid())
   body       String    @db.VarChar(360)
-  roomUserId String?
-  roomUser   RoomUser? @relation(fields: [roomUserId], references: [roomUserId], onDelete: SetNull)
+  roomUserId String
+  roomUser   RoomUser? @relation(fields: [roomUserId], references: [roomUserId], onDelete: Cascade)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
 }

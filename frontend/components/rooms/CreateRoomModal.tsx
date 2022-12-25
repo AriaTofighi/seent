@@ -31,6 +31,7 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
   const onSubmit = async (data: typeof defaultValues) => {
     const { title, users } = data;
     const userIds = users.map((u: UserEntity) => u.userId);
+
     userIds.push(user?.userId as string);
     await createRoom({ title, userIds, ownerId: user?.userId as string });
     setOpen(false);
@@ -51,12 +52,13 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
           onSubmit={handleSubmit(onSubmit)}
           style={{ display: "flex", gap: 12, flexDirection: "column" }}
         >
-          <TextInput
+          {/* <TextInput
             label="Room title"
             name="title"
             control={control}
             fullWidth
-          />
+          /> */}
+          {/* @ts-ignore */}
           <AutoComplete
             label="Add user(s)"
             name="users"

@@ -13,4 +13,8 @@ export class FindMessagesQueryDto extends FindManyQuery {
   @IsString()
   @IsOptional()
   body?: string;
+
+  @IsUUID()
+  @IsOptional()
+  roomId?: string;
 }

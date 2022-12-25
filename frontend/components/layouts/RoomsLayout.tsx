@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import MenuItem from "../navigation/MenuItem";
+import { getDisplayedRoomTitle } from "../../utils";
 
 type Props = {
   children: React.ReactNode;
@@ -15,6 +16,7 @@ type Props = {
 
 const RoomsLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
+  // Make it so user is always considered defined with typescript
   const { user } = useUser();
   const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
     `rooms?userId=${user?.userId}`
@@ -44,18 +46,19 @@ const RoomsLayout = ({ children }: Props) => {
               key={room.roomId}
               href={`/rooms/${room.roomId}`}
             >
-              {room.title}
+              {getDisplayedRoomTitle(room, user as any)}
             </MenuItem>
           ))}
         </Box>
         <Box sx={styles.room}>{children}</Box>
       </Box>
-
-      <CreateRoomModal
-        open={createRoomOpen}
-        setOpen={setCreateRoomOpen}
-        mutateRooms={mutateRooms}
-      />
+      {createRoomOpen && (
+        <CreateRoomModal
+          open={createRoomOpen}
+          setOpen={setCreateRoomOpen}
+          mutateRooms={mutateRooms}
+        />
+      )}
     </>
   );
 };
@@ -64,6 +67,8 @@ const styles: ThemedStyles = {
   root: {
     height: (theme) =>
       `calc(100% - 10px - ${theme.mixins.toolbar.minHeight}px)`,
+    maxHeight: (theme) =>
+      `calc(100vh - 10px - ${theme.mixins.toolbar.minHeight}px)`,
     display: "flex",
   },
   roomList: {

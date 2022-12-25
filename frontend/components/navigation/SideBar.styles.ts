@@ -14,6 +14,11 @@ const styles: Styles = {
     backgroundColor: "background.default",
     backgroundImage: "none",
   },
+  avatar: {
+    m: 2,
+    width: 60,
+    height: 60,
+  },
 };
 
 export default styles;

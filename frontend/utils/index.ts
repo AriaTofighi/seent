@@ -1,6 +1,6 @@
 import moment from "moment";
 import { MouseEvent } from "react";
-import { PaginatedResult } from "../types";
+import { PaginatedResult, UserEntity } from "../types";
 
 export const formatDate = (inputDate: Date) => {
   return moment(inputDate).format("MMM D YYYY, h:mm a");
@@ -47,4 +47,16 @@ export const infiniteSWRToFlat = (
   paginatedObjArray: PaginatedResult<any>[] | undefined
 ) => {
   return paginatedObjArray?.map((res: any) => res.data).flat() ?? [];
+};
+
+export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
+  if (room?.title !== "") {
+    return room?.title;
+  }
+
+  const otherUsers = room?.users.filter(
+    (u: UserEntity) => u.userId !== user?.userId
+  );
+  console.log(otherUsers);
+  return otherUsers.map((user: any) => user.user.name).join(", ");
 };

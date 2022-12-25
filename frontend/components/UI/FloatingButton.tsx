@@ -29,7 +29,7 @@ const FloatingButton = ({ onClick }: Props) => {
       flexDirection="row"
       sx={styles.root}
     >
-      <Fab size="medium" color="secondary" sx={styles.root} onClick={onClick}>
+      <Fab size="medium" color="secondary" sx={styles.fab} onClick={onClick}>
         <AddIcon />
       </Fab>
     </Stack>

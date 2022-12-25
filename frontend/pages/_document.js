@@ -34,7 +34,11 @@ export default class MyDocument extends Document {
             href="/images/favicon-16x16.png"
           />
           <link rel="preconnect" href="https://fonts.googleapis.com" />
-          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+          <link
+            rel="preconnect"
+            href="https://fonts.gstatic.com"
+            crossOrigin="true"
+          />
           <link
             href="https://fonts.googleapis.com/css2?family=Rajdhani&display=swap"
             rel="stylesheet"

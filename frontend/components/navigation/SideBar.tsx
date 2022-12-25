@@ -3,6 +3,7 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
+  Avatar,
   Button,
   Divider,
   SwipeableDrawer,
@@ -44,7 +45,7 @@ const SideBar = () => {
     <Box sx={styles.root}>
       <Link href="/">
         <a>
-          <Typography variant="h6" my={2}>
+          <Typography variant="h6" my={2} fontWeight="bold">
             Seent
           </Typography>
         </a>
@@ -68,6 +69,11 @@ const SideBar = () => {
           <MenuItem icon={<LogoutIcon />} onClick={logout}>
             Sign out
           </MenuItem>
+          <Link href={`/profiles/${user.username}`}>
+            <a style={{ display: "inline-block" }}>
+              <Avatar src={user.images[0].url} sx={styles.avatar} />
+            </a>
+          </Link>
         </>
       )}
       {!user && (
