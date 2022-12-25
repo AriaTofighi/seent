@@ -10,14 +10,14 @@ import { useAPI } from "../../hooks/useAPI";
 import { useUser } from "../../contexts/UserContext";
 import RoomCard from "../../components/rooms/RoomCard";
 import MenuItem from "../../components/navigation/MenuItem";
-import { getRoomsLayout } from "../../components/layouts/RoomsLayout";
+import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
 
-const Rooms: NextPageWithLayout = () => {
+const Messages: NextPageWithLayout = () => {
   return (
     <>
-      <Title title="Rooms" />
+      <Title title="Messages" />
       <Box sx={styles.root}>
-        Join or create a room to send messages to other people.
+        Send messages to other people, in private or group conversations.
       </Box>
     </>
   );
@@ -32,6 +32,6 @@ const styles: Styles = {
   },
 };
 
-Rooms.getLayout = getRoomsLayout;
+Messages.getLayout = getMessagesLayout;
 
-export default Rooms;
+export default Messages;

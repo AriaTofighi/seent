@@ -94,8 +94,8 @@ const Profile: NextPageWithLayout = () => {
                 <Stack
                   sx={{ justifyContent: "center", alignItems: "center", mb: 1 }}
                 >
-                  <Typography variant="h5">{profileUser?.name}</Typography>
-                  <Typography variant="subtitle2" color="primary.main">
+                  <Typography variant="h4">{profileUser?.name}</Typography>
+                  <Typography variant="subtitle2" color="text.secondary">
                     {`@${profileUser.username}`}{" "}
                     {profileUser.location && ` | ${profileUser.location}`}
                     {profileUser.gender && ` | ${profileUser.gender}`}

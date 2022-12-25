@@ -59,8 +59,8 @@ const SideBar = () => {
           <MenuItem icon={<PersonIcon />} href={`/profiles/${user.username}`}>
             Profile
           </MenuItem>
-          <MenuItem icon={<ChatIcon />} href="/rooms">
-            Rooms
+          <MenuItem icon={<ChatIcon />} href="/messages">
+            Messages
           </MenuItem>
           <MenuItem icon={<SettingsIcon />} href="/settings">
             Settings

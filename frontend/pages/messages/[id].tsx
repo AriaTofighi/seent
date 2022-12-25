@@ -5,7 +5,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../components/controls/TextInput";
-import { getRoomsLayout } from "../../components/layouts/RoomsLayout";
+import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
 import MessageList from "../../components/messages/MessageList";
 import Header from "../../components/UI/Header";
 import Title from "../../components/UI/Title";
@@ -113,6 +113,6 @@ const styles: ThemedStyles = {
   },
 };
 
-Room.getLayout = getRoomsLayout;
+Room.getLayout = getMessagesLayout;
 
 export default Room;

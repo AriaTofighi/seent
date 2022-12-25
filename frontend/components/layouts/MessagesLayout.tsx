@@ -14,7 +14,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const RoomsLayout = ({ children }: Props) => {
+const MessagesLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
   // Make it so user is always considered defined with typescript
   const { user } = useUser();
@@ -26,7 +26,7 @@ const RoomsLayout = ({ children }: Props) => {
   return (
     <>
       {/* {!inARoom && ( */}
-      <TopAppBar title="Rooms">
+      <TopAppBar title="Messages">
         <Box sx={styles.appBar}>
           <IconButton onClick={() => setCreateRoomOpen(true)}>
             <AddIcon />
@@ -44,7 +44,7 @@ const RoomsLayout = ({ children }: Props) => {
                 borderColor: "divider",
               }}
               key={room.roomId}
-              href={`/rooms/${room.roomId}`}
+              href={`/messages/${room.roomId}`}
             >
               {getDisplayedRoomTitle(room, user as any)}
             </MenuItem>
@@ -111,7 +111,7 @@ const styles: ThemedStyles = {
   },
 };
 
-export const getRoomsLayout = (page: React.ReactNode) =>
-  getMainLayout(<RoomsLayout>{page}</RoomsLayout>);
+export const getMessagesLayout = (page: React.ReactNode) =>
+  getMainLayout(<MessagesLayout>{page}</MessagesLayout>);
 
-export default RoomsLayout;
+export default MessagesLayout;

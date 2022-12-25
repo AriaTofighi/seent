@@ -3,26 +3,40 @@ import { PaletteMode, Theme } from "@mui/material";
 import { grey } from "@mui/material/colors";
 
 const lmColours = {
-  primary: { main: "#9EB0AC", light: "#889793", dark: "#848B90" },
-  secondary: { main: "#848B90", light: "#848B90" },
-  background: { default: "#F9F8F8" },
+  primary: {
+    main: "#D1E8E2", // light blue
+    light: "#EBF8F3", // lighter shade of the main color
+    dark: "#AED1CC", // darker shade of the main color
+  },
+  secondary: {
+    main: "#B8D1C7", // light green
+    light: "#E8F8F3", // lighter shade of the main color
+  },
+  background: {
+    default: "#F9F8F8", // white
+  },
+  text: {
+    primary: "#0C2733", // darker shade of blue
+    secondary: "#A6A6A6", // light grey
+  },
 };
 
 const dmColours = {
   primary: {
-    main: "#9EB0AC",
-    light: "#889793",
-    dark: "#848B90",
+    main: "#6A8CA3", // darker shade of blue
+    light: "#4F6C89", // darker shade of the main color
+    dark: "#435B72", // darker shade of the main color
   },
   secondary: {
-    main: "#93A3A1",
-    light: "#F9F8F8",
+    main: "#3C5165", // darker shade of blue
+    light: "#F9F8F8", // unchanged
   },
   background: {
-    default: "#1C3F4E",
+    default: "#0C2733", // unchanged
   },
   text: {
-    primary: "#F9F8F8",
+    primary: "#F9F8F8", // unchanged
+    secondary: "#BFBFBF",
   },
 };
 
@@ -98,7 +112,7 @@ const getTheme = (mode: PaletteMode) => {
     palette: {
       mode,
       error: {
-        main: "#e31b23",
+        main: "#f75f62",
       },
       ...(lightMode
         ? {

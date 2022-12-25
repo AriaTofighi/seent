@@ -31,7 +31,7 @@ const styles: Styles = {
 
 const MainLayout = ({ children }: any) => {
   const getSize = () => {
-    if (window.location.pathname.startsWith("/rooms")) {
+    if (window.location.pathname.startsWith("/messages")) {
       return styles.rooms;
     } else {
       return styles.general;

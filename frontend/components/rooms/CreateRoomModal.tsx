@@ -42,7 +42,7 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
     <Modal
       open={open}
       onClose={() => setOpen(false)}
-      title="Create Room"
+      title="Start a conversation"
       maxWidth="xs"
     >
       {usersLoading ? (
@@ -75,7 +75,8 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
             )}
             multiple
             rules={{
-              required: "You must add at least one other user to the room",
+              required:
+                "You must add at least one other user to the conversation",
             }}
             getOptionLabel={(option) => `${option.name} (${option.username})`}
             options={
@@ -83,7 +84,7 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
             }
           />
           <Button type="submit" variant="contained" color="primary" fullWidth>
-            Create Room
+            Start
           </Button>
         </form>
       )}
