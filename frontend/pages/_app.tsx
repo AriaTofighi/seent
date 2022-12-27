@@ -6,7 +6,12 @@ import "@fontsource/roboto/700.css";
 import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
 import { useState } from "react";
-import { CssBaseline, PaletteMode, StyledEngineProvider } from "@mui/material";
+import {
+  CssBaseline,
+  PaletteMode,
+  StyledEngineProvider,
+  useMediaQuery,
+} from "@mui/material";
 import { ThemeProvider } from "@mui/system";
 import getTheme from "../styles/theme";
 import { SWRConfig } from "swr";
@@ -22,7 +27,11 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const [mode, setMode] = useState<PaletteMode>("dark");
+  const systemDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+  const [mode, setMode] = useState<PaletteMode>(
+    // systemDarkMode ? "dark" : "light"
+    "dark"
+  );
 
   const getLayout = Component.getLayout ?? ((page) => page);
 

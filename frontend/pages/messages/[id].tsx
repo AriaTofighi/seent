@@ -22,10 +22,12 @@ const Room = () => {
   const { id } = router.query;
   const { user } = useUser();
   const { data: room, loading: roomLoading } = useAPI<any>(`rooms/${id}`);
-  const { control, handleSubmit } = useForm({ defaultValues: { message: "" } });
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: { message: "" },
+  });
   const formRef = useRef();
   const roomUserId = room?.users?.find(
-    (u: any) => u.userId !== user?.userId
+    (u: any) => u.userId === user?.userId
   )?.roomUserId;
   const socket = useSocket("messages");
   const title = getDisplayedRoomTitle(room, user as any);
@@ -34,8 +36,8 @@ const Room = () => {
     const { message } = data;
     if (isInvalidByClick()) return;
     await createMessage({ body: message, roomUserId: roomUserId as string });
-    // mutate(getMessagesKey());
     socket?.emit("sendMessage", { roomId: id, message });
+    reset();
   };
 
   const isInvalidByClick = () => {
@@ -50,7 +52,7 @@ const Room = () => {
 
   useEffect(() => {
     socket?.on("newMessage", async (data: any) => {
-      console.log("test");
+      console.log("new message");
       await mutate(getMessagesKey());
     });
   }, [socket]);
@@ -69,7 +71,10 @@ const Room = () => {
             onSubmit={handleSubmit(handleSendMessage)}
             sx={styles.root as Styles}
           >
-            <MessageList getMessagesKey={getMessagesKey} />
+            <MessageList
+              getMessagesKey={getMessagesKey}
+              isGroupChat={room.users.length > 2}
+            />
             <Box sx={styles.messageInputContainer as Styles}>
               <TextInput
                 name="message"

@@ -9,6 +9,28 @@ import { PaginatedResult } from "utils/types";
 export class MessagesService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly _include: Prisma.MessageInclude = {
+    roomUser: {
+      select: {
+        user: {
+          select: {
+            userId: true,
+            name: true,
+            username: true,
+            images: {
+              select: {
+                url: true,
+              },
+              where: {
+                type: "USER_AVATAR",
+              },
+            },
+          },
+        },
+      },
+    },
+  };
+
   async findOne(messageWhereUniqueInput: Prisma.MessageWhereUniqueInput) {
     const message = await this.prisma.message.findUnique({
       where: messageWhereUniqueInput,
@@ -22,6 +44,7 @@ export class MessagesService {
     const queryArgs = {
       where,
       orderBy,
+      include: this._include,
     };
 
     let result: PaginatedResult<Message> | Message[];

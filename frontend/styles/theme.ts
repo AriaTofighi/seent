@@ -55,7 +55,7 @@ const getTheme = (mode: PaletteMode) => {
     },
     typography: {
       fontFamily: "Rajdhani",
-      fontSize: 15,
+      fontSize: 14,
     },
     components: {
       MuiCssBaseline: {

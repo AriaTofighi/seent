@@ -55,7 +55,7 @@ export const UserProvider = ({ children }: Props) => {
     if (!t) return;
     localStorage.setItem(TOKEN_KEY, t);
     setDefaultHeader(t);
-    setUserState(jwtDecode(t));
+    setTokenData(jwtDecode(t));
   };
 
   const logout = () => {

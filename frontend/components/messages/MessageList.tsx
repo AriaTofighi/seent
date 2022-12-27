@@ -7,9 +7,10 @@ import Message from "./Message";
 
 type Props = {
   getMessagesKey: () => string;
+  isGroupChat: boolean;
 };
 
-const MessageList = ({ getMessagesKey }: Props) => {
+const MessageList = ({ getMessagesKey, isGroupChat }: Props) => {
   const { data: messages, loading: messagesLoading } =
     useAPI<MessageEntity[]>(getMessagesKey);
   const boxRef = useRef<HTMLDivElement>(null);
@@ -20,9 +21,30 @@ const MessageList = ({ getMessagesKey }: Props) => {
 
   return (
     <Box sx={styles.root} ref={boxRef}>
-      {messages?.map((m) => (
-        <Message key={m.messageId} body={m.body as string} />
-      ))}
+      {messages?.map((m, index) => {
+        const msgUserId = m.roomUser?.user?.userId;
+        const previousMsgUserId = messages[index - 1]?.roomUser?.user?.userId;
+        const msgUserSameAsPrevious = msgUserId === previousMsgUserId;
+        const avatarUrl = msgUserSameAsPrevious
+          ? undefined
+          : m.roomUser?.user?.images[0].url;
+        const nextUserRepeated =
+          msgUserId === messages[index + 1]?.roomUser?.user?.userId;
+
+        return (
+          <Message
+            key={m.messageId}
+            body={m.body as string}
+            avatarUrl={avatarUrl}
+            createdAt={m.createdAt as Date}
+            name={m.roomUser?.user?.name as string}
+            username={m.roomUser?.user?.username as string}
+            repeatedUser={msgUserSameAsPrevious}
+            nextUserRepeated={nextUserRepeated}
+            isGroupChat={isGroupChat}
+          />
+        );
+      })}
     </Box>
   );
 };
@@ -34,6 +56,7 @@ const styles: Styles = {
     overflowY: "auto",
     height: "100%",
     p: 1,
+    gap: 1,
   },
 };
 

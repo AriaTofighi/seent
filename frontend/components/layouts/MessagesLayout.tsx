@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material";
+import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
 import { Styles, ThemedStyles } from "../../types";
 import TopAppBar from "../navigation/TopAppBar";
 import CreateRoomModal from "../rooms/CreateRoomModal";
@@ -9,6 +9,7 @@ import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import MenuItem from "../navigation/MenuItem";
 import { getDisplayedRoomTitle } from "../../utils";
+import { useRouter } from "next/router";
 
 type Props = {
   children: React.ReactNode;
@@ -16,16 +17,22 @@ type Props = {
 
 const MessagesLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
-  // Make it so user is always considered defined with typescript
   const { user } = useUser();
   const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
     `rooms?userId=${user?.userId}`
   );
-  // const inARoom = window.location.pathname.includes("/rooms/");
+  const router = useRouter();
+  const inARoom = router.pathname.startsWith("/messages/");
+  const tabletOrMobile = useMediaQuery((theme: Theme) =>
+    theme.breakpoints.down("lg")
+  );
+  const showRoomList = !inARoom || !tabletOrMobile;
+
+  const mobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
+  const showRoom = inARoom || !mobile;
 
   return (
     <>
-      {/* {!inARoom && ( */}
       <TopAppBar title="Messages">
         <Box sx={styles.appBar}>
           <IconButton onClick={() => setCreateRoomOpen(true)}>
@@ -33,24 +40,25 @@ const MessagesLayout = ({ children }: Props) => {
           </IconButton>
         </Box>
       </TopAppBar>
-      {/* )} */}
 
       <Box sx={styles.root}>
-        <Box sx={styles.roomList}>
-          {rooms?.map((room) => (
-            <MenuItem
-              sx={{
-                borderBottom: "1px solid",
-                borderColor: "divider",
-              }}
-              key={room.roomId}
-              href={`/messages/${room.roomId}`}
-            >
-              {getDisplayedRoomTitle(room, user as any)}
-            </MenuItem>
-          ))}
-        </Box>
-        <Box sx={styles.room}>{children}</Box>
+        {showRoomList && (
+          <Box sx={styles.roomList}>
+            {rooms?.map((room) => (
+              <MenuItem
+                sx={{
+                  borderBottom: "1px solid",
+                  borderColor: "divider",
+                }}
+                key={room.roomId}
+                href={`/messages/${room.roomId}`}
+              >
+                {getDisplayedRoomTitle(room, user as any)}
+              </MenuItem>
+            ))}
+          </Box>
+        )}
+        {showRoom && <Box sx={styles.room}>{children}</Box>}
       </Box>
       {createRoomOpen && (
         <CreateRoomModal
@@ -79,18 +87,19 @@ const styles: ThemedStyles = {
       xs: "100%",
     },
     borderRight: {
-      md: "1px solid",
-      sm: "none",
+      sm: "1px solid",
     },
     borderBottom: {
       md: "1px solid",
-      sm: "none",
+      xs: "none",
     },
     borderColor: {
       md: "divider",
+      sm: "divider",
     },
   },
   room: {
+    flex: 1,
     width: {
       sm: "70%",
       xs: "100%",

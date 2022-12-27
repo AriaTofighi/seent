@@ -112,13 +112,31 @@ export type ImageEntity = {
 export type RoomEntity = {
   roomId: string;
   title: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type RoomUserEntity = {
+  roomUserId: string;
+  roomId: string;
+  userId: string;
+  isOwner: boolean;
+
+  user?: UserEntity;
+
+  createdAt: Date;
+  updatedAt: Date;
 };
 
 export type MessageEntity = {
   messageId: string;
   roomUserId: string;
   body: string;
+
+  roomUser?: RoomUserEntity;
+
   createdAt: Date;
+  updatedAt: Date;
 };
 
 export const POSTS_SORT_MODES = {

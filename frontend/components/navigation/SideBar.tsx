@@ -21,11 +21,12 @@ import MenuItem from "./MenuItem";
 import SearchBar from "./SearchBar";
 import styles from "./SideBar.styles";
 import ChatIcon from "@mui/icons-material/Chat";
+import UserAvatar from "../users/UserAvatar";
 
 const SideBar = () => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
-  const tabletMode = useMediaQuery(theme.breakpoints.down("lg"));
+  const tabletMode = useMediaQuery(theme.breakpoints.down("xl"));
   const { user, logout } = useUser();
   const { open, setOpen } = useNav();
   const [mode, setMode] = useState(MODES.SIGN_IN);
@@ -40,6 +41,8 @@ const SideBar = () => {
     setMode(MODES.SIGN_IN);
     setAuthDialogOpen(true);
   };
+
+  // console.log(user);
 
   const content = (
     <Box sx={styles.root}>
@@ -56,9 +59,6 @@ const SideBar = () => {
       </MenuItem>
       {user && (
         <>
-          <MenuItem icon={<PersonIcon />} href={`/profiles/${user.username}`}>
-            Profile
-          </MenuItem>
           <MenuItem icon={<ChatIcon />} href="/messages">
             Messages
           </MenuItem>
@@ -69,11 +69,11 @@ const SideBar = () => {
           <MenuItem icon={<LogoutIcon />} onClick={logout}>
             Sign out
           </MenuItem>
-          <Link href={`/profiles/${user.username}`}>
-            <a style={{ display: "inline-block" }}>
-              <Avatar src={user.images[0].url} sx={styles.avatar} />
-            </a>
-          </Link>
+          <UserAvatar
+            username={user.username}
+            avatarUrl={user.images[0].url}
+            AvatarProps={{ sx: styles.avatar }}
+          />
         </>
       )}
       {!user && (

@@ -3,7 +3,7 @@ import SearchBar from "./SearchBar";
 
 const SearchSideBar = () => {
   const theme = useTheme();
-  const mobileMode = useMediaQuery(theme.breakpoints.down("lg"));
+  const mobileMode = useMediaQuery(theme.breakpoints.down("xl"));
 
   return <>{!mobileMode && <SearchBar />}</>;
 };
