@@ -30,11 +30,13 @@ const Message = ({
   const isOtherUser = username !== user?.username;
   const styles = getStyles(repeatedUser);
   const alignSelf = isOtherUser ? styles.flexStart : styles.flexEnd;
+  const showName = !nextUserRepeated && isOtherUser && isGroupChat;
+  const showAvatar = isOtherUser && avatarUrl;
 
   return (
     <Box sx={{ ...styles.root, ...alignSelf } as object}>
       <Box sx={styles.avatarContainer}>
-        {avatarUrl && isOtherUser && (
+        {showAvatar && (
           <UserAvatar
             username={username}
             avatarUrl={avatarUrl}
@@ -43,7 +45,7 @@ const Message = ({
         )}
       </Box>
       <Box>
-        {!nextUserRepeated && isOtherUser && isGroupChat && (
+        {showName && (
           <Typography variant="caption" color="textSecondary" ml={1.5}>
             {name}
           </Typography>
@@ -89,6 +91,7 @@ const getStyles = (repeatedUser: boolean): Styles => ({
     border: 1,
     borderRadius: 5,
     borderColor: "divider",
+    maxWidth: "fit-content",
   },
 });
 

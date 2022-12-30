@@ -56,24 +56,29 @@ function RouteGuard({ children }: Props) {
       {authorized ? (
         children
       ) : (
-        <div
-          style={{
-            width: "100vw",
-            height: "100vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <GridLoader
-            color={theme.palette.primary.main}
-            loading={loading}
-            size={50}
-            // cssOverride={override}
-          />
+        <div>
+          {/* TODO: Fix the error related to client/server mismatch */}
+          {/* <GridLoader
+          color={theme.palette.primary.main}
+          loading={loading}
+          size={50}
+          cssOverride={override}
+          /> */}
         </div>
       )}
       {/* null} */}
     </>
   );
 }
+
+const override: CSSProperties = {
+  display: "inline-block",
+  backgroundColor: "#6A8CA3",
+  width: 50,
+  height: 50,
+  margin: 2,
+  borderRadius: 100,
+  animationFillMode: "both",
+  animation:
+    "react-spinners-GridLoader-grid 1.2047813684980246s 0.40478136849802454s infinite ease",
+};

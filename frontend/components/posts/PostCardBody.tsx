@@ -33,6 +33,7 @@ const PostCardBody = ({ body, replyAuthor, image }: any) => {
             borderColor: "background.default",
             borderRadius: 5,
             bgcolor: "#040a0c",
+            overflow: "hidden",
           }}
         >
           <Image
