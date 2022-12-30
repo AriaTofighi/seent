@@ -11,38 +11,41 @@ datasource db {
 }
 
 model User {
-  userId    String     @id @default(uuid())
-  email     String     @unique
-  username  String     @unique
-  name      String
-  password  String
-  birthday  DateTime
-  location  String?
-  bio       String?
-  gender    String?
-  locked    Boolean    @default(false)
-  role      Role       @default(USER)
-  posts     Post[]
-  reactions Reaction[]
-  rooms     RoomUser[]
-  images    Image[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  userId            String         @id @default(uuid())
+  email             String         @unique
+  username          String         @unique
+  name              String
+  password          String
+  birthday          DateTime
+  location          String?
+  bio               String?
+  gender            String?
+  locked            Boolean        @default(false)
+  role              Role           @default(USER)
+  posts             Post[]
+  reactions         Reaction[]
+  rooms             RoomUser[]
+  images            Image[]
+  notifications     Notification[] @relation(name: "notificationRecipient")
+  sentNotifications Notification[] @relation(name: "notificationSender")
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 }
 
 model Post {
-  postId       String     @id @default(uuid())
-  authorId     String
-  author       User?      @relation(fields: [authorId], references: [userId])
-  body         String     @db.VarChar(360)
-  isPublic     Boolean
-  parentPostId String?
-  parentPost   Post?      @relation("PostToPost", fields: [parentPostId], references: [postId], onDelete: Cascade)
-  childPosts   Post[]     @relation("PostToPost")
-  reactions    Reaction[]
-  images       Image[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  postId        String         @id @default(uuid())
+  authorId      String
+  author        User?          @relation(fields: [authorId], references: [userId])
+  body          String         @db.VarChar(360)
+  isPublic      Boolean
+  parentPostId  String?
+  parentPost    Post?          @relation("PostToPost", fields: [parentPostId], references: [postId], onDelete: Cascade)
+  childPosts    Post[]         @relation("PostToPost")
+  reactions     Reaction[]
+  images        Image[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Reaction {
@@ -71,11 +74,12 @@ model Image {
 }
 
 model Room {
-  roomId    String     @id @default(uuid())
-  title     String
-  users     RoomUser[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  roomId        String         @id @default(uuid())
+  title         String
+  users         RoomUser[]
+  notifications Notification[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model RoomUser {
@@ -99,6 +103,29 @@ model Message {
   roomUser   RoomUser? @relation(fields: [roomUserId], references: [roomUserId], onDelete: Cascade)
   createdAt  DateTime  @default(now())
   updatedAt  DateTime  @updatedAt
+}
+
+model Notification {
+  notificationId String           @id @default(uuid())
+  type           NotificationType
+  recipientId    String
+  recipient      User             @relation(name: "notificationRecipient", fields: [recipientId], references: [userId])
+  senderId       String
+  sender         User             @relation(name: "notificationSender", fields: [senderId], references: [userId])
+  message        String
+  postId         String
+  post           Post             @relation(fields: [postId], references: [postId])
+  roomId         String
+  room           Room             @relation(fields: [roomId], references: [roomId])
+  read           Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+enum NotificationType {
+  LIKE
+  REPLY
+  MESSAGE
 }
 
 enum Role {
