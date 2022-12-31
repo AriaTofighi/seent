@@ -1148,6 +1148,11 @@
     "language-tags" "^1.0.5"
     "minimatch" "^3.0.4"
 
+"eslint-plugin-next@^0.0.0":
+  "integrity" "sha512-IldNDVb6WNduggwRbYzSGZhaskUwVecJ6fhmqwX01+S1aohwAWNzU4me6y47DDzpD/g0fdayNBGxEdt9vKkUtg=="
+  "resolved" "https://registry.npmjs.org/eslint-plugin-next/-/eslint-plugin-next-0.0.0.tgz"
+  "version" "0.0.0"
+
 "eslint-plugin-react-hooks@^4.5.0":
   "integrity" "sha512-8k1gRt7D7h03kd+SAAlzXkQwWK22BnK6GKZG+FJA6BAGy22CFvl8kCIXKpVux0cCxMWDQUPqSok0LKaZ0aOcCw=="
   "resolved" "https://registry.npmjs.org/eslint-plugin-react-hooks/-/eslint-plugin-react-hooks-4.5.0.tgz"

@@ -41,7 +41,9 @@ const MainLayout = ({ children }: any) => {
   return (
     <Box sx={styles.container}>
       <SideBar />
-      <Box sx={{ ...styles.mainContent, ...getSize() }}>{children}</Box>
+      <Box sx={{ ...styles.mainContent, ...getSize() } as object}>
+        {children}
+      </Box>
       <SearchSideBar />
     </Box>
   );
