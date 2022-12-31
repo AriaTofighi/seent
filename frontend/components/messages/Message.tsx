@@ -14,6 +14,7 @@ type Props = {
   repeatedUser: boolean;
   nextUserRepeated: boolean;
   isGroupChat: boolean;
+  showAvatar: boolean;
 };
 
 const Message = ({
@@ -25,18 +26,19 @@ const Message = ({
   repeatedUser,
   nextUserRepeated,
   isGroupChat,
+  showAvatar,
 }: Props) => {
   const { user } = useUser();
   const isOtherUser = username !== user?.username;
   const styles = getStyles(repeatedUser);
   const alignSelf = isOtherUser ? styles.flexStart : styles.flexEnd;
   const showName = !nextUserRepeated && isOtherUser && isGroupChat;
-  const showAvatar = isOtherUser && avatarUrl;
+  const showUserAvatar = isOtherUser && showAvatar;
 
   return (
     <Box sx={{ ...styles.root, ...alignSelf } as object}>
       <Box sx={styles.avatarContainer}>
-        {showAvatar && (
+        {showUserAvatar && (
           <UserAvatar
             username={username}
             avatarUrl={avatarUrl}

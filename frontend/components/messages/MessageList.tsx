@@ -25,9 +25,7 @@ const MessageList = ({ getMessagesKey, isGroupChat }: Props) => {
         const msgUserId = m.roomUser?.user?.userId;
         const previousMsgUserId = messages[index - 1]?.roomUser?.user?.userId;
         const msgUserSameAsPrevious = msgUserId === previousMsgUserId;
-        const avatarUrl = msgUserSameAsPrevious
-          ? undefined
-          : m.roomUser?.user?.images[0]?.url;
+        const avatarUrl = m.roomUser?.user?.images[0]?.url;
         const nextUserRepeated =
           msgUserId === messages[index + 1]?.roomUser?.user?.userId;
 
@@ -36,6 +34,7 @@ const MessageList = ({ getMessagesKey, isGroupChat }: Props) => {
             key={m.messageId}
             body={m.body as string}
             avatarUrl={avatarUrl}
+            showAvatar={!msgUserSameAsPrevious}
             createdAt={m.createdAt as Date}
             name={m.roomUser?.user?.name as string}
             username={m.roomUser?.user?.username as string}

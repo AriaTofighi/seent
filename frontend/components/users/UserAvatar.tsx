@@ -4,7 +4,7 @@ import React from "react";
 
 type Props = {
   username: string;
-  avatarUrl: string;
+  avatarUrl?: string;
   AvatarProps?: AvatarProps;
 };
 
