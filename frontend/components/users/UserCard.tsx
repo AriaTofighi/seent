@@ -8,7 +8,7 @@ type Props = {
 };
 
 const UserCard = ({ user }: Props) => {
-  const avatar = user.images?.[0].url;
+  const avatar = user.images?.[0]?.url;
 
   return (
     <Link href={`/profiles/${user.username}`}>
