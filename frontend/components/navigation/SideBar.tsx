@@ -56,7 +56,7 @@ const SideBar = () => {
       {user && (
         <UserAvatar
           username={user.username}
-          avatarUrl={user.images[0].url}
+          avatarUrl={user.images[0]?.url}
           AvatarProps={{ sx: styles.avatar }}
         />
       )}

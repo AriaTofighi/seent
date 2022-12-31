@@ -67,7 +67,7 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
             TextFieldProps={{ fullWidth: true }}
             renderOption={(props: any, option: any) => (
               <Box display="flex" alignItems="center" gap={2} p={1} {...props}>
-                <Avatar src={option.images[0].url} />
+                <Avatar src={option.images[0]?.url} />
                 <Typography variant="body1">
                   {option.name} ({option.username})
                 </Typography>

@@ -58,7 +58,7 @@ const PostDetails: NextPageWithLayout = () => {
   }
 
   if (postLoading || repliesLoading || !post) {
-    return <Box>Loading...</Box>;
+    return <Box p={2.5}>Loading...</Box>;
   }
 
   return (
