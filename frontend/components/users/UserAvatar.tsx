@@ -10,7 +10,7 @@ type Props = {
 
 const UserAvatar = ({ username, avatarUrl, AvatarProps }: Props) => {
   return (
-    <Link href={`/profiles/${username}`}>
+    <Link href={`/${username}`}>
       <a style={{ display: "inline-block" }}>
         <Avatar src={avatarUrl} {...AvatarProps} />
       </a>

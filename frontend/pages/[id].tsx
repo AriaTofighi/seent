@@ -2,24 +2,24 @@ import { Avatar, Button, Fade, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { getMainLayout } from "../../components/layouts/MainLayout";
-import TopAppBar from "../../components/navigation/TopAppBar";
-import PostsList from "../../components/posts/PostList";
-import PostListSorting from "../../components/posts/PostListSorting";
-import EditProfileDialog from "../../components/profile/EditProfileDialog";
-import Title from "../../components/UI/Title";
-import { useUser } from "../../contexts/UserContext";
-import { useAPI } from "../../hooks/useAPI";
-import useInfiniteAPI from "../../hooks/useInfiniteAPI";
+import { getMainLayout } from "../components/layouts/MainLayout";
+import TopAppBar from "../components/navigation/TopAppBar";
+import PostsList from "../components/posts/PostList";
+import PostListSorting from "../components/posts/PostListSorting";
+import EditProfileDialog from "../components/profile/EditProfileDialog";
+import Title from "../components/UI/Title";
+import { useUser } from "../contexts/UserContext";
+import { useAPI } from "../hooks/useAPI";
+import useInfiniteAPI from "../hooks/useInfiniteAPI";
 import {
   NextPageWithLayout,
   PaginatedResult,
   PostEntity,
   POSTS_SORT_MODES,
   UserEntity,
-} from "../../types";
-import { infiniteSWRToFlat } from "../../utils";
-import styles from "../../styles/profiles/[id].styles";
+} from "../types";
+import { infiniteSWRToFlat } from "../utils";
+import styles from "../styles/profiles/[id].styles";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();

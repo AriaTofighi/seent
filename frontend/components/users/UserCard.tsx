@@ -11,7 +11,7 @@ const UserCard = ({ user }: Props) => {
   const avatar = user.images?.[0]?.url;
 
   return (
-    <Link href={`/profiles/${user.username}`}>
+    <Link href={`/${user.username}`}>
       <a>
         <StyledCard variant="outlined">
           <Stack spacing={2} direction="row" alignItems="center">

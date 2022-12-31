@@ -4,6 +4,7 @@ import React from "react";
 import useInfiniteAPI from "../../hooks/useInfiniteAPI";
 import { PaginatedResult, UserEntity } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
+import Loader from "../UI/Loader";
 import UserCard from "./UserCard";
 
 type Props = {
@@ -16,8 +17,8 @@ const UserList = ({ getUsersKey }: Props) => {
     size,
     setSize,
     loading,
-    mutate: mutateUsers,
   } = useInfiniteAPI<PaginatedResult<UserEntity>>(getUsersKey);
+  const hasMore = usersRes?.[usersRes.length - 1].meta?.next;
   const users = infiniteSWRToFlat(usersRes);
   const noResults = users.length === 0 && !loading;
 
@@ -28,6 +29,11 @@ const UserList = ({ getUsersKey }: Props) => {
       {users?.map((user) => {
         return <UserCard user={user} key={user.userId} />;
       })}
+      <Loader
+        disabled={!hasMore}
+        onClick={() => setSize(size + 1)}
+        loading={loading}
+      />
     </Box>
   );
 };

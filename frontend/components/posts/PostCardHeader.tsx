@@ -49,7 +49,7 @@ const PostCardHeader = ({
     <>
       <Stack direction="row" justifyContent="space-between">
         <Stack spacing={2} direction="row" alignItems="center">
-          <Link href={`/profiles/${author.username}`}>
+          <Link href={`/${author.username}`}>
             <a>
               <Avatar src={avatar} />
             </a>
