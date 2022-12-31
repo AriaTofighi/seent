@@ -2,17 +2,27 @@ import { useState } from "react";
 import { useEffect } from "react";
 import io, { Socket } from "socket.io-client";
 
-const useSocket = (url: string) => {
+const useSocket = (url: string, data?: any) => {
   const [socket, setSocket] = useState<Socket>();
 
   useEffect(() => {
-    const socketIo = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/${url}`);
+    const socket = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}/${url}`, {
+      query: data,
+    });
+    socket.on("connect", () => {
+      console.log("Connected to socket");
+      setSocket(socket);
+    });
+    socket.on("disconnect", () => {
+      console.log("Disconnected from socket");
+      setSocket(undefined);
+    });
 
-    setSocket(socketIo);
-
-    function cleanup() {
-      socketIo.disconnect();
-    }
+    const cleanup = () => {
+      socket.off("connect");
+      socket.off("disconnect");
+      socket.disconnect();
+    };
     return cleanup;
   }, []);
 

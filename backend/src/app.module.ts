@@ -6,6 +6,7 @@ import { ReactionsModule } from "./reactions/reactions.module";
 import { ImagesModule } from "./images/images.module";
 import { RoomsModule } from "./rooms/rooms.module";
 import { MessagesModule } from "./messages/messages.module";
+import { SocketModule } from "./socket/socket.module";
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { MessagesModule } from "./messages/messages.module";
     ImagesModule,
     RoomsModule,
     MessagesModule,
+    SocketModule,
   ],
 })
 export class AppModule {}

@@ -23,6 +23,7 @@ type DefaultContextType = {
   loading: boolean;
   logout: () => void;
   mutate: () => void;
+  tokenData: any;
 };
 
 const defaultContext: DefaultContextType = {
@@ -31,6 +32,7 @@ const defaultContext: DefaultContextType = {
   loading: true,
   logout: () => {},
   mutate: () => {},
+  tokenData: undefined,
 };
 
 const UserContext = createContext<typeof defaultContext>(defaultContext);
@@ -38,7 +40,7 @@ const UserContext = createContext<typeof defaultContext>(defaultContext);
 export const useUser = () => useContext(UserContext);
 
 export const UserProvider = ({ children }: Props) => {
-  const [tokenData, setTokenData] = useState<JwtPayload>();
+  const [tokenData, setTokenData] = useState<any>();
   const [user, setUserState] = useState<UserEntity>();
   const [loading, setLoading] = useState(true);
   const { data: userRes, mutate } = useSWR<UserEntity>(
@@ -55,7 +57,7 @@ export const UserProvider = ({ children }: Props) => {
     if (!t) return;
     localStorage.setItem(TOKEN_KEY, t);
     setDefaultHeader(t);
-    setTokenData(jwtDecode(t));
+    setTokenData({ ...jwtDecode(t), accessToken: t });
   };
 
   const logout = () => {
@@ -66,7 +68,7 @@ export const UserProvider = ({ children }: Props) => {
   useEffect(() => {
     const t = localStorage.getItem(TOKEN_KEY);
     if (t) {
-      setTokenData(jwtDecode(t));
+      setTokenData({ ...jwtDecode(t), accessToken: t });
       setDefaultHeader(t);
     } else {
       fakeLoadToCompletion();
@@ -80,7 +82,9 @@ export const UserProvider = ({ children }: Props) => {
   }, [userRes]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, loading, logout, mutate }}>
+    <UserContext.Provider
+      value={{ user, setUser, loading, logout, mutate, tokenData }}
+    >
       {children}
     </UserContext.Provider>
   );

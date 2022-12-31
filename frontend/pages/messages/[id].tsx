@@ -14,14 +14,18 @@ import { useAPI } from "../../hooks/useAPI";
 import { createMessage } from "../../services/api/messageAxios";
 import { Styles, ThemedStyles } from "../../types";
 import { mutate } from "swr";
-import useSocket from "../../hooks/useSocket";
 import { getDisplayedRoomTitle } from "../../utils";
+import { useAppSocket } from "../../contexts/SocketContext";
 
 const Room = () => {
   const router = useRouter();
   const { id } = router.query;
   const { user } = useUser();
-  const { data: room, loading: roomLoading } = useAPI<any>(`rooms/${id}`);
+  const {
+    data: room,
+    loading: roomLoading,
+    error: roomError,
+  } = useAPI<any>(`rooms/${id}`);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { message: "" },
   });
@@ -29,7 +33,7 @@ const Room = () => {
   const roomUserId = room?.users?.find(
     (u: any) => u.userId === user?.userId
   )?.roomUserId;
-  const socket = useSocket("messages");
+  const socket = useAppSocket();
   const title = getDisplayedRoomTitle(room, user as any);
 
   const handleSendMessage = async (data: any) => {
@@ -51,11 +55,21 @@ const Room = () => {
   const getMessagesKey = () => `messages?roomId=${id}`;
 
   useEffect(() => {
-    socket?.on("newMessage", async (data: any) => {
-      console.log("new message");
-      await mutate(getMessagesKey());
+    if (!room) return;
+
+    socket?.emit("joinRoom", { roomId: id });
+
+    socket?.on("newMessage", () => {
+      mutate(getMessagesKey());
     });
-  }, [socket]);
+
+    return () => {
+      socket?.emit("leaveRoom", { roomId: id });
+      socket?.off("newMessage");
+    };
+  }, [room, socket]);
+
+  if (roomError) return <Box p={2.5}>Error</Box>;
 
   return (
     <>

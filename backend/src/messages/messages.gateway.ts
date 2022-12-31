@@ -1,71 +1,52 @@
-import { Length } from "class-validator";
 import {
   SubscribeMessage,
   WebSocketGateway,
-  OnGatewayInit,
-  OnGatewayConnection,
-  OnGatewayDisconnect,
   WsResponse,
 } from "@nestjs/websockets";
-import { Socket, Server } from "socket.io";
+import { WebSocketServer } from "@nestjs/websockets/decorators";
+import { Server, Socket } from "socket.io";
+import { GatewaySessionManager } from "src/socket/socket.session";
+import { AuthenticatedSocket } from "utils/types";
 
 @WebSocketGateway({
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
   },
-  namespace: "/messages",
 })
-export class MessagesGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+export class MessagesGateway {
+  constructor(readonly sessionManager: GatewaySessionManager) {}
+
+  @WebSocketServer()
   private server: Server;
 
-  @SubscribeMessage("sendMessage")
-  handleSendMessage(
-    client: Socket,
-    data: { roomId: string; message: string }
-  ): WsResponse<string> {
-    const event = "newMessage";
-    console.log("NEW MESSAGE RECEIVED", data);
-    // this.server.to(data.roomId).emit(event, data.message);
-    this.server.emit(event, data.message);
-    return { event, data: data.message };
+  @SubscribeMessage("joinRoom")
+  handleJoinRoom(client: AuthenticatedSocket, data: { roomId: string }) {
+    const { roomId } = data;
+    // const {
+    //   user: { userId },
+    // } = client;
+
+    client.join(`room-${roomId}`);
+    this.server.to(`room-${roomId}`).emit("userJoined");
   }
 
-  @SubscribeMessage("deleteMessage")
-  handleDeleteMessage(
-    client: Socket,
-    data: { roomId: string; messageId: string }
-  ): WsResponse<string> {
-    const event = "messageDeleted";
-    this.server.to(data.roomId).emit(event, data.messageId);
-    return { event, data: data.messageId };
+  @SubscribeMessage("leaveRoom")
+  handleLeaveRoom(client: AuthenticatedSocket, data: { roomId: string }) {
+    const { roomId } = data;
+    client.leave(`room-${roomId}`);
+    this.server.to(`room-${roomId}`).emit("userLeft");
+  }
+
+  @SubscribeMessage("sendMessage")
+  handleSendMessage(client: AuthenticatedSocket, data: { roomId: string }) {
+    const { roomId } = data;
+    this.server.to(`room-${roomId}`).emit("newMessage");
   }
 
   @SubscribeMessage("userTyping")
-  handleUserTyping(
-    client: Socket,
-    data: { roomId: string; userId: string }
-  ): WsResponse<string> {
-    const event = "userTyping";
-    this.server.to(data.roomId).emit(event, data.userId);
-    return { event, data: data.userId };
-  }
-
-  afterInit(server: Server) {
-    this.server = server;
-  }
-
-  handleConnection(client: Socket, ...args: any[]) {
-    console.log("NEW CONNECTION", client.handshake.query);
-    const { roomId } = client.handshake.query;
-    client.join(roomId);
-  }
-
-  handleDisconnect(client: Socket) {
-    // handle disconnection
-    const {} = client.handshake.query;
-    // client.leave(roomId);
+  handleUserTyping(client: AuthenticatedSocket, data: { roomId: string }) {
+    const { roomId } = data;
+    this.server.to(`room-${roomId}`).emit("userTyping");
   }
 }

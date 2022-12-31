@@ -1,3 +1,4 @@
+import { toast } from "react-toastify";
 import { DEFAULT_API as axios } from "./AxiosInstance";
 
 export const signIn = async (email: string, password: string) => {
@@ -8,6 +9,7 @@ export const signIn = async (email: string, password: string) => {
     });
     return response.data;
   } catch (error) {
+    toast.error("Invalid email or password");
     console.log(error);
   }
 };

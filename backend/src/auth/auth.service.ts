@@ -26,6 +26,15 @@ export class AuthService {
     return null;
   }
 
+  async validateToken(token: string) {
+    try {
+      const decoded = this.jwtService.verify(token);
+      return decoded;
+    } catch (ex) {
+      return null;
+    }
+  }
+
   async login(user: JwtPayload) {
     return {
       access_token: this.jwtService.sign(user),

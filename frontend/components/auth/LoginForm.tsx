@@ -25,6 +25,7 @@ const LoginForm = ({ onClose }: Props) => {
   const handleSignIn = async (formData: any) => {
     const { email, password } = formData;
     const res = await signIn(email, password);
+    if (!res) return;
     setUser(res.access_token);
     onClose();
     router.push("/feed");

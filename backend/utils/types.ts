@@ -1,4 +1,5 @@
 import { IsNumber, IsOptional } from "class-validator";
+import { Socket } from "socket.io";
 
 export class FindManyQuery {
   @IsNumber()
@@ -38,4 +39,8 @@ export type JwtPayload = {
   userId: string;
   name: string;
   username: string;
+};
+
+export type AuthenticatedSocket = Socket & {
+  user: JwtPayload;
 };

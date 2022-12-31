@@ -21,6 +21,7 @@ import { NextPageWithLayout } from "../types";
 import { ToastContainer } from "react-toastify";
 import { RouteGuard } from "../components/auth/RouteGuard";
 import { NavProvider } from "../contexts/NavContext";
+import { SocketProvider } from "../contexts/SocketContext";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -32,7 +33,6 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
     // systemDarkMode ? "dark" : "light"
     "dark"
   );
-
   const getLayout = Component.getLayout ?? ((page) => page);
 
   const componentWithLayout = getLayout(<Component {...pageProps} />);
@@ -43,10 +43,12 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
         <CssBaseline />
         <SWRConfig value={swrConfig}>
           <UserProvider>
-            <NavProvider>
-              <RouteGuard>{componentWithLayout}</RouteGuard>
-              <ToastContainer autoClose={2000} />
-            </NavProvider>
+            <SocketProvider>
+              <NavProvider>
+                <RouteGuard>{componentWithLayout}</RouteGuard>
+                <ToastContainer autoClose={2000} />
+              </NavProvider>
+            </SocketProvider>
           </UserProvider>
         </SWRConfig>
       </StyledEngineProvider>

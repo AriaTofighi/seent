@@ -57,5 +57,5 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
   const otherUsers = room?.users.filter(
     (u: UserEntity) => u.userId !== user?.userId
   );
-  return otherUsers.map((user: any) => user.user.name).join(", ");
+  return otherUsers.map((roomUser: any) => roomUser.user.name).join(", ");
 };

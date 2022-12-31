@@ -3,11 +3,13 @@ import { NestFactory } from "@nestjs/core";
 import corsConfig from "../config/cors.config";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { ValidationPipe } from "@nestjs/common";
+import { WebsocketAdapter } from "./socket/gateway.adapter";
+import { INestApplication } from "@nestjs/common/interfaces";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<INestApplication>(AppModule);
   app.enableCors(corsConfig);
-
+  app.useWebSocketAdapter(new WebsocketAdapter(app));
   const options = new DocumentBuilder()
     .setTitle("Seent API")
     .setDescription("The API for Seent.")

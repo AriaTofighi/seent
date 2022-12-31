@@ -1,28 +1,12 @@
-import {
-  Button,
-  IconButton,
-  Stack,
-  Theme,
-  Typography,
-  useMediaQuery,
-} from "@mui/material";
+import { Theme, Typography, useMediaQuery } from "@mui/material";
 import { Box } from "@mui/system";
-import { getMainLayout } from "../../components/layouts/MainLayout";
-import TopAppBar from "../../components/navigation/TopAppBar";
-import Title from "../../components/UI/Title";
-import { NextPageWithLayout, Styles, UserEntity } from "../../types";
-import CreateRoomModal from "../../components/rooms/CreateRoomModal";
-import { useState } from "react";
-import { useAPI } from "../../hooks/useAPI";
-import { useUser } from "../../contexts/UserContext";
-import RoomCard from "../../components/rooms/RoomCard";
-import MenuItem from "../../components/navigation/MenuItem";
-import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
 import { useRouter } from "next/router";
+import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
+import Title from "../../components/UI/Title";
+import { NextPageWithLayout, Styles } from "../../types";
 
 const Messages: NextPageWithLayout = () => {
   const router = useRouter();
-  const inARoom = router.pathname.startsWith("/messages/");
   const breakpoint = useMediaQuery((theme: Theme) =>
     theme.breakpoints.up("sm")
   );
