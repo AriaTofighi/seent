@@ -20,7 +20,7 @@ const MenuItem = ({
   const defaultContent = (
     <Box sx={styles.root}>
       {icon}
-      <Typography variant="h6">{children}</Typography>
+      {children}
     </Box>
   );
 
@@ -28,7 +28,7 @@ const MenuItem = ({
     <Box sx={{ height: 50 }} {...otherProps}>
       {href ? (
         <Link href={href}>
-          <a>{defaultContent}</a>
+          <a style={{ width: "inherit" }}>{defaultContent}</a>
         </Link>
       ) : (
         <ButtonBase sx={{ width: "100%" }} onClick={onClick}>

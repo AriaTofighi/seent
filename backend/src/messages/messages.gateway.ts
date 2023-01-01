@@ -22,9 +22,9 @@ export class MessagesGateway {
     // const {
     //   user: { userId },
     // } = client;
-
     // console.log("Joined room ", roomId);
     client.join(`room-${roomId}`);
+    // console.log(this.server.sockets.adapter.rooms);
     this.server.to(`room-${roomId}`).emit("userJoined");
   }
 
@@ -45,6 +45,8 @@ export class MessagesGateway {
     // console.log("Active rooms: ", this.server.sockets.adapter.rooms);
 
     this.server.to(`room-${roomId}`).emit("newMessage");
+    // console.log(this.server.sockets.adapter.rooms);
+    // console.log("Emmited newMessage to room ", roomId);
   }
 
   @SubscribeMessage("userTyping")

@@ -50,7 +50,7 @@ const MessagesLayout = ({ children }: Props) => {
 
     return () => {
       rooms.forEach(({ roomId }) => {
-        socket?.emit("leaveRoom", roomId);
+        socket?.emit("leaveRoom", { roomId });
       });
     };
   }, [rooms]);
@@ -95,7 +95,7 @@ const styles: ThemedStyles = {
     display: "flex",
   },
   roomList: {
-    overflowY: "scroll",
+    overflowY: "auto",
     display: "flex",
     flexDirection: "column",
     width: {

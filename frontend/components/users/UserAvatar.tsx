@@ -6,7 +6,7 @@ import { Styles } from "../../types";
 
 type Props = {
   userId: string;
-  username: string;
+  username?: string;
   avatarUrl?: string;
   AvatarProps?: AvatarProps;
 };
@@ -15,21 +15,35 @@ const UserAvatar = ({ userId, username, avatarUrl, AvatarProps }: Props) => {
   const { onlineUsers } = useAppSocket();
   const userIsOnline = onlineUsers.some((uid: any) => uid === userId);
 
+  const avatarContent = (
+    <>
+      <Avatar src={avatarUrl} {...AvatarProps} />
+      {userIsOnline ? (
+        <Tooltip title="Online" placement="top" enterDelay={400}>
+          <Box sx={{ ...styles.status, ...styles.onlineStatus } as object} />
+        </Tooltip>
+      ) : (
+        <Tooltip title="Offline" placement="top" enterDelay={400}>
+          <Box sx={{ ...styles.status, ...styles.offlineStatus } as object} />
+        </Tooltip>
+      )}
+    </>
+  );
+
   return (
-    <Link href={`/${username}`}>
-      <a style={{ display: "inline-block", position: "relative" }}>
-        <Avatar src={avatarUrl} {...AvatarProps} />
-        {userIsOnline ? (
-          <Tooltip title="Online" placement="top" enterDelay={400}>
-            <Box sx={{ ...styles.status, ...styles.onlineStatus } as object} />
-          </Tooltip>
-        ) : (
-          <Tooltip title="Offline" placement="top" enterDelay={400}>
-            <Box sx={{ ...styles.status, ...styles.offlineStatus } as object} />
-          </Tooltip>
-        )}
-      </a>
-    </Link>
+    <>
+      {!username ? (
+        <Box sx={{ display: "inline-block", position: "relative" }}>
+          {avatarContent}
+        </Box>
+      ) : (
+        <Link href={`/${username}`}>
+          <a style={{ display: "inline-block", position: "relative" }}>
+            {avatarContent}
+          </a>
+        </Link>
+      )}
+    </>
   );
 };
 

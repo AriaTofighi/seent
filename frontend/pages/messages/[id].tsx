@@ -1,5 +1,5 @@
 import SendIcon from "@mui/icons-material/Send";
-import { IconButton, Typography } from "@mui/material";
+import { Button, IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
@@ -18,6 +18,7 @@ import { getDisplayedRoomTitle } from "../../utils";
 import { useAppSocket } from "../../contexts/SocketContext";
 import useSocketEvent from "../../hooks/useSocketEvent";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import OptionsIcon from "@mui/icons-material/MoreVert";
 
 const Room = () => {
   const router = useRouter();
@@ -27,7 +28,7 @@ const Room = () => {
     data: room,
     loading: roomLoading,
     error: roomError,
-  } = useAPI<any>(`rooms/${id}`);
+  } = useAPI<any>(id ? `rooms/${id}` : null);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { message: "" },
   });
@@ -59,6 +60,7 @@ const Room = () => {
   useSocketEvent(
     "newMessage",
     () => {
+      console.log("new message event");
       mutate(getMessagesKey());
     },
     [getMessagesKey]
@@ -75,15 +77,24 @@ const Room = () => {
           <Title title={title} />
           <Header
             sx={{
-              justifyContent: "flex-start",
               alignItems: "center",
               height: 50,
             }}
           >
-            <IconButton sx={{ mr: 1 }} onClick={() => router.push("/messages")}>
-              <ArrowBackIcon />
-            </IconButton>
-            <Typography variant="h6">{title}</Typography>
+            <Box sx={{ display: "flex", alignItems: "center" }}>
+              <IconButton
+                sx={{ mr: 1 }}
+                onClick={() => router.push("/messages")}
+              >
+                <ArrowBackIcon />
+              </IconButton>
+              <Typography variant="h6">{title}</Typography>
+            </Box>
+            <Box>
+              <IconButton onClick={() => alert("More options")}>
+                <OptionsIcon />
+              </IconButton>
+            </Box>
           </Header>
           <Box
             component="form"

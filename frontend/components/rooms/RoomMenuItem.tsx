@@ -4,7 +4,8 @@ import StyledCard from "../UI/StyledCard";
 import { Props as MenuItemProps } from "../navigation/MenuItem";
 import { formatDateTime, getDisplayedRoomTitle } from "../../utils";
 import { useUser } from "../../contexts/UserContext";
-import { Typography } from "@mui/material";
+import { Avatar, Box, Typography } from "@mui/material";
+import UserAvatar from "../users/UserAvatar";
 
 type Props = {
   children?: React.ReactNode;
@@ -20,7 +21,7 @@ const RoomMenuItem = ({
 
   const getLatestMessage = (room: any) => {
     let latestMessage: any;
-    let name: string = "";
+    let user: any;
 
     room.users.forEach((roomUser: any) => {
       roomUser.messages.forEach((message: any) => {
@@ -29,36 +30,54 @@ const RoomMenuItem = ({
           new Date(message.createdAt) > new Date(latestMessage.createdAt)
         ) {
           latestMessage = message;
-          name = roomUser.user.name;
+          user = roomUser.user;
         }
       });
     });
 
-    return { message: latestMessage, name };
+    return { message: latestMessage, user };
   };
 
   const latestMessage = getLatestMessage(room);
-  const name = room.users.length > 2 ? `${latestMessage.name}:` : "";
+  const name = room.users.length > 2 ? `${latestMessage.user.name}:` : "";
   const body = latestMessage.message.body;
+
+  const previewUser =
+    room.users.length > 2
+      ? latestMessage.user
+      : room.users.find((u: any) => u.userId !== user?.userId).user;
+  const { userId } = previewUser;
+  const avatarUrl = previewUser.images?.[0]?.url;
 
   return (
     <MenuItem
       sx={{
         borderBottom: "1px solid",
         borderColor: "divider",
-        height: 70,
+        display: "flex",
+        alignItems: "center",
+        flexDirection: "row",
+        width: "100%",
       }}
       key={room.roomId}
       href={`/messages/${room.roomId}`}
       {...rest}
     >
-      {getDisplayedRoomTitle(room, user as any)}
-      <Typography variant="body2" color="textSecondary">
-        {name} {body} ·{" "}
-        <Typography variant="caption">
-          {formatDateTime(latestMessage.message.createdAt)}
+      {/* <Avatar src={avatarUrl} /> */}
+      <UserAvatar
+        userId={userId}
+        avatarUrl={avatarUrl}
+        // sx={{ mr: 2 }}
+      />
+      <Box>
+        {getDisplayedRoomTitle(room, user as any)}
+        <Typography variant="body2" color="textSecondary">
+          {name} {body} ·{" "}
+          <Typography variant="caption">
+            {formatDateTime(latestMessage.message.createdAt)}
+          </Typography>
         </Typography>
-      </Typography>
+      </Box>
     </MenuItem>
   );
 };

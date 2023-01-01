@@ -78,7 +78,9 @@ const Message = ({
         <Box sx={{ display: "flex", gap: 1.5 }}>
           {showDate && !isOtherUser && dateContent}
           <Box sx={styles.content}>
-            <Typography variant="body1">{body}</Typography>
+            <Typography variant="body1" sx={{ wordBreak: "break-word" }}>
+              {body}
+            </Typography>
           </Box>
           {showDate && isOtherUser && dateContent}
         </Box>

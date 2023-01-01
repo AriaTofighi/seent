@@ -1,6 +1,6 @@
 import { PrismaService } from "../orm/prisma.service";
 import { Injectable } from "@nestjs/common";
-import { Prisma, Room } from "@prisma/client";
+import { ImageType, Prisma, Room } from "@prisma/client";
 import { RoomFindManyParams } from "./rooms.types";
 import { createPaginator } from "utils/paginationUtils";
 import { PaginatedResult } from "utils/types";
@@ -18,6 +18,17 @@ export class RoomsService {
         user: {
           select: {
             name: true,
+            username: true,
+            userId: true,
+            images: {
+              select: {
+                url: true,
+                imageId: true,
+              },
+              where: {
+                type: ImageType.USER_AVATAR,
+              },
+            },
           },
         },
         messages: {

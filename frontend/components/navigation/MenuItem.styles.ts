@@ -17,6 +17,8 @@ const styles: Styles = {
     width: "100%",
     display: "flex",
     alignItems: "center",
+    fontSize: 20,
+    fontFamily: "inherit",
     gap: 2,
     "& > *": {
       maxWidth: "100%",
