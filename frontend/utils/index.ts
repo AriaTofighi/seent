@@ -14,7 +14,7 @@ export const formatDateTime = (inputDate: Date) => {
   const date = moment(inputDate);
 
   if (date.isSame(today, "d")) {
-    return `Today, ${date.format("h:mm a")}`;
+    return `${date.format("h:mm a")}`;
   } else if (date.isSame(yesterday, "d")) {
     return `Yesterday, ${date.format("h:mm a")}`;
   } else if (date.isSame(tomorrow, "d")) {

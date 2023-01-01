@@ -27,6 +27,12 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       `${process.env.NEXT_PUBLIC_SOCKET_URL}`,
       socketOptions
     );
+    socket?.on("disconnect", () => {
+      setTimeout(() => {
+        newSocket.connect();
+      }, 3000);
+    });
+
     setSocket(newSocket);
 
     return () => {

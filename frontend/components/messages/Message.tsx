@@ -1,5 +1,5 @@
 import { Avatar, Box, Typography } from "@mui/material";
-import React from "react";
+import React, { useState } from "react";
 import { useUser } from "../../contexts/UserContext";
 import { Styles } from "../../types";
 import { formatDateTime } from "../../utils";
@@ -34,9 +34,29 @@ const Message = ({
   const alignSelf = isOtherUser ? styles.flexStart : styles.flexEnd;
   const showName = !nextUserRepeated && isOtherUser && isGroupChat;
   const showUserAvatar = isOtherUser && showAvatar;
+  const [showDate, setShowDate] = useState(false);
+
+  const toggleShowDate = () => setShowDate((showDate) => !showDate);
+
+  const dateContent = (
+    <Typography
+      variant="caption"
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        whiteSpace: "nowrap",
+      }}
+    >
+      <Box>{formatDateTime(createdAt as Date)}</Box>
+    </Typography>
+  );
 
   return (
-    <Box sx={{ ...styles.root, ...alignSelf } as object}>
+    <Box
+      sx={{ ...styles.root, ...alignSelf } as object}
+      onClick={toggleShowDate}
+    >
       <Box sx={styles.avatarContainer}>
         {showUserAvatar && (
           <UserAvatar
@@ -52,11 +72,12 @@ const Message = ({
             {name}
           </Typography>
         )}
-        <Box sx={styles.content}>
-          <Typography variant="body1">{body}</Typography>
-          {/* <Typography variant="caption">
-          {formatDateTime(createdAt as Date)}
-        </Typography> */}
+        <Box sx={{ display: "flex", gap: 1.5 }}>
+          {showDate && !isOtherUser && dateContent}
+          <Box sx={styles.content}>
+            <Typography variant="body1">{body}</Typography>
+          </Box>
+          {showDate && isOtherUser && dateContent}
         </Box>
       </Box>
     </Box>

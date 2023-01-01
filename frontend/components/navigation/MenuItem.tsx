@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ReactNode } from "react";
 import styles from "./MenuItem.styles";
 
-type Props = {
+export type Props = {
   children: ReactNode;
   icon?: ReactNode;
   href?: string;
@@ -25,7 +25,7 @@ const MenuItem = ({
   );
 
   return (
-    <Box {...otherProps}>
+    <Box sx={{ height: 50 }} {...otherProps}>
       {href ? (
         <Link href={href}>
           <a>{defaultContent}</a>

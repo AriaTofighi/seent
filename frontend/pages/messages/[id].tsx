@@ -16,6 +16,7 @@ import { Styles, ThemedStyles } from "../../types";
 import { mutate } from "swr";
 import { getDisplayedRoomTitle } from "../../utils";
 import { useAppSocket } from "../../contexts/SocketContext";
+import useSocketEvent from "../../hooks/useSocketEvent";
 
 const Room = () => {
   const router = useRouter();
@@ -54,20 +55,13 @@ const Room = () => {
 
   const getMessagesKey = () => `messages?roomId=${id}`;
 
-  useEffect(() => {
-    if (!room) return;
-
-    socket?.emit("joinRoom", { roomId: id });
-
-    socket?.on("newMessage", () => {
+  useSocketEvent(
+    "newMessage",
+    () => {
       mutate(getMessagesKey());
-    });
-
-    return () => {
-      socket?.emit("leaveRoom", { roomId: id });
-      socket?.off("newMessage");
-    };
-  }, [room, socket]);
+    },
+    [getMessagesKey]
+  );
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 

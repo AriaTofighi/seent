@@ -1,15 +1,16 @@
-import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
-import { Styles, ThemedStyles } from "../../types";
-import TopAppBar from "../navigation/TopAppBar";
-import CreateRoomModal from "../rooms/CreateRoomModal";
-import { getMainLayout } from "./MainLayout";
 import AddIcon from "@mui/icons-material/Add";
-import { useState } from "react";
+import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
-import MenuItem from "../navigation/MenuItem";
-import { getDisplayedRoomTitle } from "../../utils";
-import { useRouter } from "next/router";
+import useSocketEvent from "../../hooks/useSocketEvent";
+import { ThemedStyles } from "../../types";
+import TopAppBar from "../navigation/TopAppBar";
+import CreateRoomModal from "../rooms/CreateRoomModal";
+import RoomMenuItem from "../rooms/RoomMenuItem";
+import { getMainLayout } from "./MainLayout";
 
 type Props = {
   children: React.ReactNode;
@@ -18,6 +19,7 @@ type Props = {
 const MessagesLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
   const { user } = useUser();
+  const socket = useAppSocket();
   const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
     `rooms?userId=${user?.userId}`
   );
@@ -30,6 +32,28 @@ const MessagesLayout = ({ children }: Props) => {
 
   const mobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const showRoom = inARoom || !mobile;
+
+  useSocketEvent(
+    "newMessage",
+    () => {
+      mutateRooms();
+    },
+    [mutateRooms]
+  );
+
+  useEffect(() => {
+    if (!rooms) return;
+
+    rooms.forEach(({ roomId }) => {
+      socket?.emit("joinRoom", { roomId });
+    });
+
+    return () => {
+      rooms.forEach(({ roomId }) => {
+        socket?.emit("leaveRoom", roomId);
+      });
+    };
+  }, [rooms]);
 
   return (
     <>
@@ -45,16 +69,7 @@ const MessagesLayout = ({ children }: Props) => {
         {showRoomList && (
           <Box sx={styles.roomList}>
             {rooms?.map((room) => (
-              <MenuItem
-                sx={{
-                  borderBottom: "1px solid",
-                  borderColor: "divider",
-                }}
-                key={room.roomId}
-                href={`/messages/${room.roomId}`}
-              >
-                {getDisplayedRoomTitle(room, user as any)}
-              </MenuItem>
+              <RoomMenuItem key={room.roomId} room={room} />
             ))}
           </Box>
         )}

@@ -25,7 +25,7 @@ const styles: Styles = {
     },
   },
   rooms: {
-    width: 843,
+    width: 900,
   },
 };
 

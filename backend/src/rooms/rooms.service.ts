@@ -20,6 +20,15 @@ export class RoomsService {
             name: true,
           },
         },
+        messages: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+          select: {
+            messageId: true,
+            body: true,
+            createdAt: true,
+          },
+        },
       },
     },
   };

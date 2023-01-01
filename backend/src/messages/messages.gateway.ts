@@ -27,6 +27,7 @@ export class MessagesGateway {
     //   user: { userId },
     // } = client;
 
+    // console.log("Joined room ", roomId);
     client.join(`room-${roomId}`);
     this.server.to(`room-${roomId}`).emit("userJoined");
   }
@@ -34,6 +35,8 @@ export class MessagesGateway {
   @SubscribeMessage("leaveRoom")
   handleLeaveRoom(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
+
+    // console.log("Left room ", roomId);
     client.leave(`room-${roomId}`);
     this.server.to(`room-${roomId}`).emit("userLeft");
   }
@@ -41,6 +44,10 @@ export class MessagesGateway {
   @SubscribeMessage("sendMessage")
   handleSendMessage(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
+    // console.log("Message sent by ", client.user.username);
+    // console.log("Message sent to room ", roomId);
+    // console.log("Active rooms: ", this.server.sockets.adapter.rooms);
+
     this.server.to(`room-${roomId}`).emit("newMessage");
   }
 

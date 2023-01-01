@@ -6,7 +6,7 @@ const fadeTransitionTime = "0.3";
 
 const styles: Styles = {
   root: {
-    height: 50,
+    height: "100%",
     transition: "background " + fadeTransitionTime + "s ease-in-out",
     p: 2,
     ":hover": {
