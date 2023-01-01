@@ -19,7 +19,8 @@ import {
   UserEntity,
 } from "../types";
 import { infiniteSWRToFlat } from "../utils";
-import styles from "../styles/profiles/[id].styles";
+import styles from "../styles/[id].styles";
+import UserAvatar from "../components/users/UserAvatar";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -85,11 +86,11 @@ const Profile: NextPageWithLayout = () => {
               )}
 
               <Box sx={styles.profileHeader}>
-                <Avatar
-                  src={
-                    profileUser.images ? profileUser?.images[0]?.url : undefined
-                  }
-                  sx={styles.avatar}
+                <UserAvatar
+                  userId={profileUser.userId}
+                  username={profileUser.username}
+                  avatarUrl={profileUser.images?.[0]?.url}
+                  AvatarProps={{ sx: styles.avatar }}
                 />
                 <Stack
                   sx={{ justifyContent: "center", alignItems: "center", mb: 1 }}
@@ -137,7 +138,9 @@ const Profile: NextPageWithLayout = () => {
             onSave={onSaveProfile}
           />
         </>
-      ) : null}
+      ) : (
+        <Box p={2}>Loading...</Box>
+      )}
     </>
   );
 };

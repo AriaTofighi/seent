@@ -1,5 +1,5 @@
 import SendIcon from "@mui/icons-material/Send";
-import { IconButton } from "@mui/material";
+import { IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
@@ -17,6 +17,7 @@ import { mutate } from "swr";
 import { getDisplayedRoomTitle } from "../../utils";
 import { useAppSocket } from "../../contexts/SocketContext";
 import useSocketEvent from "../../hooks/useSocketEvent";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const Room = () => {
   const router = useRouter();
@@ -34,7 +35,7 @@ const Room = () => {
   const roomUserId = room?.users?.find(
     (u: any) => u.userId === user?.userId
   )?.roomUserId;
-  const socket = useAppSocket();
+  const { socket } = useAppSocket();
   const title = getDisplayedRoomTitle(room, user as any);
 
   const handleSendMessage = async (data: any) => {
@@ -72,7 +73,18 @@ const Room = () => {
       ) : (
         <>
           <Title title={title} />
-          <Header>{title}</Header>
+          <Header
+            sx={{
+              justifyContent: "flex-start",
+              alignItems: "center",
+              height: 50,
+            }}
+          >
+            <IconButton sx={{ mr: 1 }} onClick={() => router.push("/messages")}>
+              <ArrowBackIcon />
+            </IconButton>
+            <Typography variant="h6">{title}</Typography>
+          </Header>
           <Box
             component="form"
             ref={formRef}

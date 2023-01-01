@@ -15,7 +15,6 @@ const styles: Styles = {
     backgroundImage: "none",
   },
   avatar: {
-    m: 2,
     width: 60,
     height: 60,
   },

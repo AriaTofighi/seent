@@ -37,6 +37,7 @@ const MessageList = ({ getMessagesKey, isGroupChat }: Props) => {
             showAvatar={!msgUserSameAsPrevious}
             createdAt={m.createdAt as Date}
             name={m.roomUser?.user?.name as string}
+            userId={m.roomUser?.user?.userId as string}
             username={m.roomUser?.user?.username as string}
             repeatedUser={msgUserSameAsPrevious}
             nextUserRepeated={nextUserRepeated}

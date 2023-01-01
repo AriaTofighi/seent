@@ -2,10 +2,19 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 import { useUser } from "./UserContext";
 
-const SocketContext = createContext<Socket | null>(null);
+type SocketWithUsers = {
+  socket: Socket | null;
+  onlineUsers: string[];
+};
+
+const SocketContext = createContext<SocketWithUsers>({
+  socket: null,
+  onlineUsers: [],
+});
 
 export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<Socket | null>(null);
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
   const { tokenData } = useUser();
 
   useEffect(() => {
@@ -27,7 +36,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
       `${process.env.NEXT_PUBLIC_SOCKET_URL}`,
       socketOptions
     );
-    socket?.on("disconnect", () => {
+    newSocket?.on("userConnected", (data) => {
+      setOnlineUsers(data);
+    });
+    newSocket?.on("userDisconnected", (data) => {
+      setOnlineUsers(data);
+    });
+    newSocket?.on("disconnect", () => {
       setTimeout(() => {
         newSocket.connect();
       }, 3000);
@@ -41,7 +56,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   }, [tokenData]);
 
   return (
-    <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>
+    <SocketContext.Provider value={{ socket, onlineUsers }}>
+      {children}
+    </SocketContext.Provider>
   );
 };
 

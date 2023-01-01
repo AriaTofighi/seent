@@ -26,10 +26,22 @@ export class AppGateway implements OnGatewayConnection, OnGatewayDisconnect {
   handleDisconnect(client: AuthenticatedSocket) {
     this.logger.log(`Client disconnected: ${client.user.userId}`);
     this.sessionManager.removeUserSocket(client.user.userId);
+    this.logger.log("Connected users: ");
+    const userIds = Array.from(this.sessionManager.getSockets().keys());
+    for (const [userId, socket] of this.sessionManager.getSockets()) {
+      this.server.emit("userDisconnected", userIds);
+      // console.log(userId, socket.user);
+    }
   }
 
   handleConnection(client: AuthenticatedSocket) {
     this.logger.log(`Client connected: ${client.user.userId}`);
     this.sessionManager.setUserSocket(client.user.userId, client);
+    this.logger.log("Connected users: ");
+    const userIds = Array.from(this.sessionManager.getSockets().keys());
+    for (const [userId, socket] of this.sessionManager.getSockets()) {
+      socket.emit("userConnected", userIds);
+      // console.log(userId, socket.user);
+    }
   }
 }

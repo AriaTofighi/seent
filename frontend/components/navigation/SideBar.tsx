@@ -54,11 +54,14 @@ const SideBar = () => {
         </a>
       </Link>
       {user && (
-        <UserAvatar
-          username={user.username}
-          avatarUrl={user.images[0]?.url}
-          AvatarProps={{ sx: styles.avatar }}
-        />
+        <Box p={1}>
+          <UserAvatar
+            userId={user.userId}
+            username={user.username}
+            avatarUrl={user.images[0]?.url}
+            AvatarProps={{ sx: styles.avatar }}
+          />
+        </Box>
       )}
       {tabletMode && <SearchBar />}
       <MenuItem icon={<HomeIcon width="16" />} href="/feed">

@@ -6,7 +6,7 @@ const useSocketEvent = (
   callback: () => void,
   ...deps: any
 ) => {
-  const socket = useAppSocket();
+  const { socket } = useAppSocket();
 
   useEffect(() => {
     socket?.on(eventName, callback);

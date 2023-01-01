@@ -14,6 +14,7 @@ import { stopPropagation } from "../../utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useMenu from "../../hooks/useMenu";
+import UserAvatar from "../users/UserAvatar";
 
 const PostCardHeader = ({
   postId,
@@ -49,12 +50,11 @@ const PostCardHeader = ({
     <>
       <Stack direction="row" justifyContent="space-between">
         <Stack spacing={2} direction="row" alignItems="center">
-          <Link href={`/${author.username}`}>
-            <a>
-              <Avatar src={avatar} />
-            </a>
-          </Link>
-
+          <UserAvatar
+            userId={author.userId}
+            username={author.username}
+            avatarUrl={avatar}
+          />
           <Typography variant="subtitle2">{author.name}</Typography>
         </Stack>
         <Box>

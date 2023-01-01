@@ -14,6 +14,7 @@ export class PostsService {
       select: {
         name: true,
         username: true,
+        userId: true,
         images: {
           where: {
             type: ImageType.USER_AVATAR,

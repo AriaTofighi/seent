@@ -1,10 +1,6 @@
-import {
-  SubscribeMessage,
-  WebSocketGateway,
-  WsResponse,
-} from "@nestjs/websockets";
+import { SubscribeMessage, WebSocketGateway } from "@nestjs/websockets";
 import { WebSocketServer } from "@nestjs/websockets/decorators";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import { GatewaySessionManager } from "src/socket/socket.session";
 import { AuthenticatedSocket } from "utils/types";
 

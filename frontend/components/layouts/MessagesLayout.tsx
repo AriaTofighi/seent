@@ -19,7 +19,7 @@ type Props = {
 const MessagesLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
   const { user } = useUser();
-  const socket = useAppSocket();
+  const { socket } = useAppSocket();
   const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
     `rooms?userId=${user?.userId}`
   );
@@ -95,6 +95,7 @@ const styles: ThemedStyles = {
     display: "flex",
   },
   roomList: {
+    overflowY: "scroll",
     display: "flex",
     flexDirection: "column",
     width: {

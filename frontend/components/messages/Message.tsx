@@ -10,6 +10,7 @@ type Props = {
   createdAt?: Date;
   name: string;
   avatarUrl?: string;
+  userId: string;
   username: string;
   repeatedUser: boolean;
   nextUserRepeated: boolean;
@@ -22,6 +23,7 @@ const Message = ({
   createdAt,
   name,
   avatarUrl,
+  userId,
   username,
   repeatedUser,
   nextUserRepeated,
@@ -60,6 +62,7 @@ const Message = ({
       <Box sx={styles.avatarContainer}>
         {showUserAvatar && (
           <UserAvatar
+            userId={userId}
             username={username}
             avatarUrl={avatarUrl}
             AvatarProps={{ sx: styles.avatar }}

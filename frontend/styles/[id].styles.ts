@@ -1,4 +1,4 @@
-import { Styles } from "../../types";
+import { Styles } from "../types";
 
 const styles: Styles = {
   profileHeaderContainer: {
@@ -23,6 +23,10 @@ const styles: Styles = {
   },
   avatar: {
     maxWidth: {
+      lg: 135,
+      xs: 75,
+    },
+    maxHeight: {
       lg: 135,
       xs: 75,
     },
