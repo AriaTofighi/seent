@@ -7,9 +7,14 @@ import {
   SetStateAction,
 } from "react";
 import jwtDecode from "jwt-decode";
-import { setDefaultHeader } from "../services/api/AxiosInstance";
+import {
+  checkTokenValidity,
+  setDefaultHeader,
+} from "../services/api/AxiosInstance";
 import useSWR from "swr";
 import { JwtPayload, UserEntity } from "../types";
+import { DEFAULT_API as axios } from "../services/api/AxiosInstance";
+import { AxiosRequestConfig } from "axios";
 
 type Props = {
   children: ReactNode;
@@ -67,7 +72,17 @@ export const UserProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const t = localStorage.getItem(TOKEN_KEY);
+
     if (t) {
+      axios.interceptors.request.use((config: AxiosRequestConfig) => {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (checkTokenValidity(token)) {
+          logout();
+        } else {
+          return config;
+        }
+      });
+
       setTokenData({ ...jwtDecode(t), accessToken: t });
       setDefaultHeader(t);
     } else {
