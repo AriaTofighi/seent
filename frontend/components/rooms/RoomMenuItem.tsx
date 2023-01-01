@@ -2,7 +2,7 @@ import React from "react";
 import MenuItem from "../navigation/MenuItem";
 import StyledCard from "../UI/StyledCard";
 import { Props as MenuItemProps } from "../navigation/MenuItem";
-import { getDisplayedRoomTitle } from "../../utils";
+import { formatDateTime, getDisplayedRoomTitle } from "../../utils";
 import { useUser } from "../../contexts/UserContext";
 import { Typography } from "@mui/material";
 
@@ -38,6 +38,8 @@ const RoomMenuItem = ({
   };
 
   const latestMessage = getLatestMessage(room);
+  const name = room.users.length > 2 ? `${latestMessage.name}:` : "";
+  const body = latestMessage.message.body;
 
   return (
     <MenuItem
@@ -52,7 +54,10 @@ const RoomMenuItem = ({
     >
       {getDisplayedRoomTitle(room, user as any)}
       <Typography variant="body2" color="textSecondary">
-        {latestMessage.name}: {latestMessage.message.body}
+        {name} {body} ·{" "}
+        <Typography variant="caption">
+          {formatDateTime(latestMessage.message.createdAt)}
+        </Typography>
       </Typography>
     </MenuItem>
   );
