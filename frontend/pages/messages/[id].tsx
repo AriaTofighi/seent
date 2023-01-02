@@ -2,7 +2,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { Button, IconButton, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../components/controls/TextInput";
 import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
@@ -57,14 +57,12 @@ const Room = () => {
 
   const getMessagesKey = () => `messages?roomId=${id}`;
 
-  useSocketEvent(
-    "newMessage",
-    () => {
-      console.log("new message event");
-      mutate(getMessagesKey());
-    },
-    [getMessagesKey]
-  );
+  const onNewMessage = useCallback(() => {
+    console.log("New message event in room");
+    mutate(getMessagesKey());
+  }, [id]);
+
+  useSocketEvent("newMessage", onNewMessage);
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 

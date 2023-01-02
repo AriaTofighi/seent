@@ -1,7 +1,7 @@
 import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
@@ -33,13 +33,12 @@ const MessagesLayout = ({ children }: Props) => {
   const mobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const showRoom = inARoom || !mobile;
 
-  useSocketEvent(
-    "newMessage",
-    () => {
-      mutateRooms();
-    },
-    [mutateRooms]
-  );
+  const onNewMessage = useCallback(() => {
+    console.log("New message event in layout");
+    mutateRooms();
+  }, [user?.userId]);
+
+  useSocketEvent("newMessage", onNewMessage);
 
   useEffect(() => {
     if (!rooms) return;
