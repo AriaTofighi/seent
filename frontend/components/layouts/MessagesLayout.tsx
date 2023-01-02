@@ -40,19 +40,31 @@ const MessagesLayout = ({ children }: Props) => {
 
   useSocketEvent("newMessage", onNewMessage);
 
+  const joinRooms = () => {
+    rooms?.forEach(({ roomId }) => {
+      socket?.emit("joinRoom", { roomId });
+    });
+  };
+
   useEffect(() => {
     if (!rooms) return;
 
-    rooms.forEach(({ roomId }) => {
-      socket?.emit("joinRoom", { roomId });
+    socket?.on("connect", () => {
+      joinRooms();
     });
+
+    // setTimeout(() => {
+    //   joinRooms();
+    // }, 1000);
+
+    joinRooms();
 
     return () => {
       rooms.forEach(({ roomId }) => {
         socket?.emit("leaveRoom", { roomId });
       });
     };
-  }, [rooms]);
+  }, [rooms, socket]);
 
   return (
     <>
