@@ -33,7 +33,9 @@ const UserAvatar = ({ userId, username, avatarUrl, AvatarProps }: Props) => {
   return (
     <>
       {!username ? (
-        <Box sx={{ display: "inline-block", position: "relative" }}>
+        <Box
+          sx={{ display: "inline-block", position: "relative", flexShrink: 0 }}
+        >
           {avatarContent}
         </Box>
       ) : (

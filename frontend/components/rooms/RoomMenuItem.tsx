@@ -64,14 +64,18 @@ const RoomMenuItem = ({
       {...rest}
     >
       {/* <Avatar src={avatarUrl} /> */}
-      <UserAvatar
-        userId={userId}
-        avatarUrl={avatarUrl}
-        // sx={{ mr: 2 }}
-      />
+      <UserAvatar userId={userId} avatarUrl={avatarUrl} />
       <Box>
         {getDisplayedRoomTitle(room, user as any)}
-        <Typography variant="body2" color="textSecondary">
+        <Typography
+          variant="body2"
+          color="textSecondary"
+          sx={{
+            whiteSspace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
           {name} {body} ·{" "}
           <Typography variant="caption">
             {formatDateTime(latestMessage.message.createdAt)}
