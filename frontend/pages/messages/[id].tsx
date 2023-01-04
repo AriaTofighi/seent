@@ -30,6 +30,7 @@ const Room = () => {
     data: room,
     loading: roomLoading,
     error: roomError,
+    mutate: mutateRoom,
   } = useAPI<any>(id ? `rooms/${id}` : null);
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { message: "" },
@@ -62,6 +63,7 @@ const Room = () => {
 
   const onNewMessage = useCallback(() => {
     console.log("New message event in room");
+    mutateRoom();
     mutate(getMessagesKey());
   }, [id]);
 

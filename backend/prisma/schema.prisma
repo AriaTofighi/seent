@@ -89,6 +89,7 @@ model RoomUser {
   roomId     String
   userId     String
   isOwner    Boolean
+  leftRoom   DateTime?
   room       Room?     @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
   user       User?     @relation(fields: [userId], references: [userId], onDelete: Cascade)
   messages   Message[]
@@ -114,7 +115,6 @@ model Notification {
   recipient      User             @relation(name: "notificationRecipient", fields: [recipientId], references: [userId])
   senderId       String
   sender         User             @relation(name: "notificationSender", fields: [senderId], references: [userId])
-  message        String
   postId         String
   post           Post?            @relation(fields: [postId], references: [postId])
   roomId         String

@@ -57,8 +57,8 @@ const styles: Styles = {
     borderRadius: "50%",
     width: 10,
     height: 10,
-    borderColor: "text.primary",
-    border: "1px solid",
+    border: 1,
+    borderColor: "background.default",
   },
   onlineStatus: {
     bgcolor: "green",
