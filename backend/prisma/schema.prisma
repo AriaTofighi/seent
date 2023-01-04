@@ -11,25 +11,27 @@ datasource db {
 }
 
 model User {
-  userId            String         @id @default(uuid())
-  email             String         @unique
-  username          String         @unique
-  name              String
-  password          String
-  birthday          DateTime
-  location          String?
-  bio               String?
-  gender            String?
-  locked            Boolean        @default(false)
-  role              Role           @default(USER)
-  posts             Post[]
-  reactions         Reaction[]
-  rooms             RoomUser[]
-  images            Image[]
-  notifications     Notification[] @relation(name: "notificationRecipient")
-  sentNotifications Notification[] @relation(name: "notificationSender")
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
+  userId              String         @id @default(uuid())
+  email               String         @unique
+  username            String         @unique
+  name                String
+  password            String
+  birthday            DateTime
+  location            String?
+  bio                 String?
+  gender              String?
+  locked              Boolean        @default(false)
+  role                Role           @default(USER)
+  posts               Post[]
+  reactions           Reaction[]
+  rooms               RoomUser[]
+  images              Image[]
+  receivedFriendships Friendship[]   @relation(name: "friendshipRecipient")
+  sentFriendships     Friendship[]   @relation(name: "friendshipSender")
+  notifications       Notification[] @relation(name: "notificationRecipient")
+  sentNotifications   Notification[] @relation(name: "notificationSender")
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
 }
 
 model Post {
@@ -114,12 +116,30 @@ model Notification {
   sender         User             @relation(name: "notificationSender", fields: [senderId], references: [userId])
   message        String
   postId         String
-  post           Post             @relation(fields: [postId], references: [postId])
+  post           Post?            @relation(fields: [postId], references: [postId])
   roomId         String
-  room           Room             @relation(fields: [roomId], references: [roomId])
+  room           Room?            @relation(fields: [roomId], references: [roomId])
   read           Boolean          @default(false)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
+}
+
+model Friendship {
+  friendshipId String           @id @default(uuid())
+  recipientId  String
+  recipient    User             @relation(name: "friendshipRecipient", fields: [recipientId], references: [userId])
+  senderId     String
+  sender       User             @relation(name: "friendshipSender", fields: [senderId], references: [userId])
+  status       FriendshipStatus
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([recipientId, senderId])
+}
+
+enum FriendshipStatus {
+  PENDING
+  ACCEPTED
 }
 
 enum NotificationType {

@@ -54,7 +54,7 @@ const getTheme = (mode: PaletteMode) => {
       },
     },
     typography: {
-      fontFamily: "Rajdhani",
+      fontFamily: "Roboto, sans-serif",
       fontSize: 14,
     },
     components: {

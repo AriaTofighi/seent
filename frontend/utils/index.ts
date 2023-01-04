@@ -59,3 +59,21 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
   );
   return otherUsers.map((roomUser: any) => roomUser.user.name).join(", ");
 };
+
+export const getLatestMessage = (room: any) => {
+  let latestMessage: any;
+
+  room.users.forEach((roomUser: any) => {
+    roomUser.messages.forEach((message: any) => {
+      if (
+        !latestMessage ||
+        new Date(message.createdAt) > new Date(latestMessage.createdAt)
+      ) {
+        latestMessage = message;
+        latestMessage.user = roomUser.user;
+      }
+    });
+  });
+
+  return latestMessage;
+};

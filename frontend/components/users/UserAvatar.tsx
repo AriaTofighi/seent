@@ -13,7 +13,7 @@ type Props = {
 
 const UserAvatar = ({ userId, username, avatarUrl, AvatarProps }: Props) => {
   const { onlineUsers } = useAppSocket();
-  const userIsOnline = onlineUsers.some((uid: any) => uid === userId);
+  const userIsOnline = onlineUsers.some((uid: string) => uid === userId);
 
   const avatarContent = (
     <>

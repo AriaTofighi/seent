@@ -39,6 +39,7 @@ export type JwtPayload = {
   userId: string;
   name: string;
   username: string;
+  role: string;
 };
 
 export type AuthenticatedSocket = Socket & {

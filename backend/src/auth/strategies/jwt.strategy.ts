@@ -16,12 +16,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   // JWT is validated by passport when this method is reached, return user object
   async validate(payload: JwtPayload): Promise<JwtPayload> {
-    const { userId, email, username, name } = payload;
+    const { userId, email, username, name, role } = payload;
     return {
       userId,
       email,
       username,
       name,
+      role,
     };
   }
 }

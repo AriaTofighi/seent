@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, LinearProgress, Typography } from "@mui/material";
 import dynamic from "next/dynamic";
 import useInfiniteAPI from "../../hooks/useInfiniteAPI";
 import usePostDialog from "../../hooks/usePostDialog";
@@ -32,6 +32,10 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
   const posts = infiniteSWRToFlat(postsRes);
   const hasMore = postsRes?.[postsRes.length - 1].meta?.next;
   const noResults = posts.length === 0 && !loading;
+
+  if (loading) {
+    return <LinearProgress />;
+  }
 
   return (
     <>

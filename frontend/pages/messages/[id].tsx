@@ -19,6 +19,8 @@ import { useAppSocket } from "../../contexts/SocketContext";
 import useSocketEvent from "../../hooks/useSocketEvent";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import OptionsIcon from "@mui/icons-material/MoreVert";
+import UserAvatar from "../../components/users/UserAvatar";
+import { useRoomInfo } from "../../hooks/useRoomInfo";
 
 const Room = () => {
   const router = useRouter();
@@ -38,6 +40,7 @@ const Room = () => {
   )?.roomUserId;
   const { socket } = useAppSocket();
   const title = getDisplayedRoomTitle(room, user as any);
+  const { userId, username, avatarUrl } = useRoomInfo(room);
 
   const handleSendMessage = async (data: any) => {
     const { message } = data;
@@ -73,19 +76,22 @@ const Room = () => {
       ) : (
         <>
           <Title title={title} />
-          <Header
-            sx={{
-              alignItems: "center",
-              height: 50,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <IconButton
-                sx={{ mr: 1 }}
-                onClick={() => router.push("/messages")}
-              >
+          <Header>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+              }}
+            >
+              <IconButton onClick={() => router.push("/messages")}>
                 <ArrowBackIcon />
               </IconButton>
+              <UserAvatar
+                userId={userId}
+                username={username}
+                avatarUrl={avatarUrl}
+              />{" "}
               <Typography variant="h6">{title}</Typography>
             </Box>
             <Box>

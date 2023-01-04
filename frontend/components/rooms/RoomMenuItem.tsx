@@ -6,6 +6,7 @@ import { formatDateTime, getDisplayedRoomTitle } from "../../utils";
 import { useUser } from "../../contexts/UserContext";
 import { Avatar, Box, Typography } from "@mui/material";
 import UserAvatar from "../users/UserAvatar";
+import { useRoomInfo } from "../../hooks/useRoomInfo";
 
 type Props = {
   children?: React.ReactNode;
@@ -18,36 +19,7 @@ const RoomMenuItem = ({
   ...rest
 }: Props & Omit<MenuItemProps, "children">) => {
   const { user } = useUser();
-
-  const getLatestMessage = (room: any) => {
-    let latestMessage: any;
-    let user: any;
-
-    room.users.forEach((roomUser: any) => {
-      roomUser.messages.forEach((message: any) => {
-        if (
-          !latestMessage ||
-          new Date(message.createdAt) > new Date(latestMessage.createdAt)
-        ) {
-          latestMessage = message;
-          user = roomUser.user;
-        }
-      });
-    });
-
-    return { message: latestMessage, user };
-  };
-
-  const latestMessage = getLatestMessage(room);
-  const name = room.users.length > 2 ? `${latestMessage.user.name}:` : "";
-  const body = latestMessage.message.body;
-
-  const previewUser =
-    room.users.length > 2
-      ? latestMessage.user
-      : room.users.find((u: any) => u.userId !== user?.userId).user;
-  const { userId } = previewUser;
-  const avatarUrl = previewUser.images?.[0]?.url;
+  const { latestMessage, name, body, userId, avatarUrl } = useRoomInfo(room);
 
   return (
     <MenuItem
@@ -78,7 +50,7 @@ const RoomMenuItem = ({
         >
           {name} {body} ·{" "}
           <Typography variant="caption">
-            {formatDateTime(latestMessage.message.createdAt)}
+            {formatDateTime(latestMessage.createdAt)}
           </Typography>
         </Typography>
       </Box>

@@ -1,25 +1,30 @@
-import { DeleteRoomDto } from "./dto/delete-room-dto";
 import {
-  Controller,
-  Get,
-  Post,
   Body,
+  Controller,
   Delete,
-  Query,
-  UseGuards,
-  Req,
-  UnauthorizedException,
+  Get,
   Param,
+  Post,
+  Query,
+  UnauthorizedException,
+  UseGuards,
 } from "@nestjs/common";
-import { RoomsService } from "./rooms.service";
+import { Role } from "@prisma/client";
+import { User } from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
+import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RoomUsersService } from "./../room-users/room-users.service";
 import { CreateRoomDto } from "./dto/create-room.dto";
 import { FindRoomsQueryDto } from "./dto/find-rooms-query.dto";
 import { RoomEntity } from "./entities/room.entity";
-import { JwtAuthGuard } from "../auth/guards/jwt-auth.guard";
+import { RoomsService } from "./rooms.service";
 
 @Controller("/api/rooms")
 export class RoomsController {
-  constructor(private readonly roomsService: RoomsService) {}
+  constructor(
+    private readonly roomsService: RoomsService,
+    private readonly roomUsersService: RoomUsersService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
@@ -29,16 +34,37 @@ export class RoomsController {
 
   @UseGuards(JwtAuthGuard)
   @Get(":id")
-  async findOne(@Param("id") roomId: string) {
+  async findOne(@Param("id") roomId: string, @User() user: JwtPayload) {
+    const isUser = user.role === Role.USER;
+
+    const roomUser = await this.roomUsersService.findOne({
+      roomId_userId: {
+        roomId: roomId,
+        userId: user.userId,
+      },
+    });
+
+    if (isUser && !roomUser) {
+      throw new UnauthorizedException();
+    }
+
     const room = await this.roomsService.findOne({ roomId });
+
     const roomEntity = new RoomEntity(room);
     return roomEntity;
   }
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() query: FindRoomsQueryDto) {
+  async findAll(@Query() query: FindRoomsQueryDto, @User() user: JwtPayload) {
     const { roomId, userId, title, page, perPage } = query;
+    const isUser = user.role === Role.USER;
+    const nonSelfRequest = userId && userId !== user.userId;
+
+    if (isUser && nonSelfRequest) {
+      throw new UnauthorizedException();
+    }
+
     const rooms = this.roomsService.findMany({
       page,
       perPage,
@@ -47,7 +73,7 @@ export class RoomsController {
         title,
         users: {
           some: {
-            userId: userId,
+            userId: userId ? userId : user.userId,
           },
         },
       },
@@ -56,19 +82,24 @@ export class RoomsController {
     return rooms;
   }
 
-  //   @UseGuards(JwtAuthGuard)
-  //   @Delete(":id")
-  //   async remove(@Param("id") roomId: string, @Req() req: any) {
-  //     const room = await this.roomsService.findOne({
-  //       roomId,
-  //     });
+  @UseGuards(JwtAuthGuard)
+  @Delete(":id")
+  async remove(@Param("id") roomId: string, @User() user: JwtPayload) {
+    const isUser = user.role === Role.USER;
 
-  //     if (req.user.userId !== room.roomUser.userId) {
-  //       throw new UnauthorizedException();
-  //     }
+    const roomUser = await this.roomUsersService.findOne({
+      roomId_userId: {
+        roomId: roomId,
+        userId: user.userId,
+      },
+    });
 
-  //     return this.roomsService.delete({
-  //       roomId,
-  //     });
-  //   }
+    if (isUser && (!roomUser || !roomUser.isOwner)) {
+      throw new UnauthorizedException();
+    }
+
+    return this.roomsService.delete({
+      roomId,
+    });
+  }
 }

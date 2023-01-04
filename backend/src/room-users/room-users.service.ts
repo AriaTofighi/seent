@@ -9,9 +9,9 @@ import { PaginatedResult } from "utils/types";
 export class RoomUsersService {
   constructor(private prisma: PrismaService) {}
 
-  async findOne(roomWhereUniqueInput: Prisma.RoomUserWhereUniqueInput) {
+  async findOne(roomUserWhereUniqueInput: Prisma.RoomUserWhereUniqueInput) {
     const roomUsers = await this.prisma.roomUser.findUnique({
-      where: roomWhereUniqueInput,
+      where: roomUserWhereUniqueInput,
     });
     return roomUsers;
   }
