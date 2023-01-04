@@ -130,7 +130,10 @@ const Profile: NextPageWithLayout = () => {
             </Box>
           </Fade>
 
-          <PostsList getPostsKey={getPostsKey} />
+          <PostsList
+            getPostsKey={getPostsKey}
+            repliesMode={profileUser.userId !== user?.userId}
+          />
 
           <EditProfileDialog
             open={showEditProfileDialog}
