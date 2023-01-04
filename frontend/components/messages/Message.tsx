@@ -93,7 +93,7 @@ const getStyles = (repeatedUser: boolean): Styles => ({
   root: {
     display: "flex",
     gap: 1.5,
-    maxWidth: "60%",
+    maxWidth: "80%",
     mb: repeatedUser ? 0 : 1,
   },
   flexStart: {
