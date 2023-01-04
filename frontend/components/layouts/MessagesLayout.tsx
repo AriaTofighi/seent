@@ -114,15 +114,15 @@ const styles: ThemedStyles = {
       xs: "100%",
     },
     borderRight: {
-      sm: "1px solid",
+      sm: 1,
     },
     borderBottom: {
-      md: "1px solid",
-      xs: "none",
+      md: 1,
     },
     borderColor: {
-      md: "divider",
+      xs: "divider",
       sm: "divider",
+      md: "divider",
     },
   },
   room: {

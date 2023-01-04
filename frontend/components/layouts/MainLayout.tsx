@@ -26,6 +26,7 @@ const styles: Styles = {
   },
   rooms: {
     width: 900,
+    maxWidth: "100%",
   },
 };
 

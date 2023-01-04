@@ -35,24 +35,29 @@ const RoomMenuItem = ({
       href={`/messages/${room.roomId}`}
       {...rest}
     >
-      {/* <Avatar src={avatarUrl} /> */}
       <UserAvatar userId={userId} avatarUrl={avatarUrl} />
       <Box>
-        {getDisplayedRoomTitle(room, user as any)}
-        <Typography
-          variant="body2"
-          color="textSecondary"
-          sx={{
-            whiteSspace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {name} {body} ·{" "}
-          <Typography variant="caption">
-            {formatDateTime(latestMessage.createdAt)}
-          </Typography>
+        <Typography variant="body1">
+          {getDisplayedRoomTitle(room, user as any)}
         </Typography>
+        {latestMessage && (
+          <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              sx={{
+                whiteSspace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {name} {body}
+            </Typography>
+            <Typography variant="caption" color="textSecondary">
+              · {formatDateTime(latestMessage?.createdAt)}
+            </Typography>
+          </Box>
+        )}
       </Box>
     </MenuItem>
   );
