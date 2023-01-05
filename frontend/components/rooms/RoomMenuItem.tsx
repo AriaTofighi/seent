@@ -1,12 +1,10 @@
+import { Box, Typography } from "@mui/material";
 import React from "react";
-import MenuItem from "../navigation/MenuItem";
-import StyledCard from "../UI/StyledCard";
-import { Props as MenuItemProps } from "../navigation/MenuItem";
-import { formatDateTime, getDisplayedRoomTitle } from "../../utils";
 import { useUser } from "../../contexts/UserContext";
-import { Avatar, Box, Typography } from "@mui/material";
-import UserAvatar from "../users/UserAvatar";
 import { useRoomInfo } from "../../hooks/useRoomInfo";
+import { formatDateTimeAgo, getDisplayedRoomTitle } from "../../utils";
+import MenuItem, { Props as MenuItemProps } from "../navigation/MenuItem";
+import UserAvatar from "../users/UserAvatar";
 
 type Props = {
   children?: React.ReactNode;
@@ -54,7 +52,7 @@ const RoomMenuItem = ({
               {name} {body}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              · {formatDateTime(latestMessage?.createdAt)}
+              · {formatDateTimeAgo(latestMessage?.createdAt)}
             </Typography>
           </Box>
         )}

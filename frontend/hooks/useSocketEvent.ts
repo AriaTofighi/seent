@@ -7,7 +7,6 @@ const useSocketEvent = (eventName: string, callback: () => void) => {
   useEffect(() => {
     socket?.on(eventName, callback);
     return () => {
-      console.log("Removing listener for:", eventName);
       socket?.off(eventName, callback);
     };
   }, [eventName, callback]);

@@ -34,7 +34,6 @@ const MessagesLayout = ({ children }: Props) => {
   const showRoom = inARoom || !mobile;
 
   const onNewMessage = useCallback(() => {
-    console.log("New message event in layout");
     mutateRooms();
   }, [user?.userId]);
 

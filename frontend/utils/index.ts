@@ -14,13 +14,37 @@ export const formatDateTime = (inputDate: Date) => {
   const date = moment(inputDate);
 
   if (date.isSame(today, "d")) {
-    return `${date.format("h:mm a")}`;
+    return `Today, ${date.format("h:mm a")}`;
   } else if (date.isSame(yesterday, "d")) {
     return `Yesterday, ${date.format("h:mm a")}`;
   } else if (date.isSame(tomorrow, "d")) {
     return `Tomorrow, ${date.format("h:mm a")}`;
+  } else if (date.isSame(today, "y")) {
+    return date.format("MMM D, h:mm a");
   } else {
     return date.format("MMM D YYYY, h:mm a");
+  }
+};
+
+export const formatDateTimeAgo = (inputDate: Date) => {
+  const date = moment(inputDate);
+  const now = moment();
+
+  const days = now.diff(date, "days");
+  const weeks = now.diff(date, "weeks");
+  const months = now.diff(date, "months");
+  const years = now.diff(date, "years");
+
+  if (days < 1) {
+    return date.format("h:mm a");
+  } else if (days < 7) {
+    return `${days}d`;
+  } else if (weeks < 4) {
+    return `${weeks}w`;
+  } else if (months < 12) {
+    return `${months}m`;
+  } else {
+    return `${years}y`;
   }
 };
 

@@ -62,7 +62,6 @@ const Room = () => {
   const getMessagesKey = () => `messages?roomId=${id}`;
 
   const onNewMessage = useCallback(() => {
-    console.log("New message event in room");
     mutateRoom();
     mutate(getMessagesKey());
   }, [id]);
