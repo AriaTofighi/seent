@@ -15,7 +15,7 @@ const SignIn: NextPageWithLayout = () => {
     if (user) {
       router.push("/feed");
     }
-  }, []);
+  }, [user]);
 
   if (user) {
     return <LoadAppSpinner />;

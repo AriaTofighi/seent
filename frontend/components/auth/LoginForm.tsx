@@ -26,7 +26,7 @@ const LoginForm = ({ onClose }: Props) => {
     const { email, password } = formData;
     const res = await signIn(email, password);
     if (!res) return;
-    setUser(res.access_token);
+    setUser(res.accessToken);
     onClose();
     router.push("/feed");
     toast.success("Signed in successfully");
@@ -34,9 +34,6 @@ const LoginForm = ({ onClose }: Props) => {
 
   return (
     <>
-      <Typography variant="h4" mb={3}>
-        Sign in
-      </Typography>
       <form onSubmit={handleSubmit(handleSignIn)}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextInput

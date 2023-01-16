@@ -19,4 +19,10 @@ export class AuthController {
     const token = await this.authService.login(req.user);
     return token;
   }
+
+  @Post("google/login")
+  async signInGoogle(@Body("token") token) {
+    const seentToken = await this.authService.googleLogin(token);
+    return seentToken;
+  }
 }

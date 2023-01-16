@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   async validate(email: string, password: string): Promise<JwtPayload> {
     const user = await this.authService.validateUser(email, password);
     if (!user) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException({ message: "Invalid email or password" });
     }
     const { userId, username, name, role } = user;
 

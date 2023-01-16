@@ -22,16 +22,8 @@ const styles: Styles = {
     color: "primary.main",
   },
   avatar: {
-    maxWidth: {
-      lg: 135,
-      xs: 75,
-    },
-    maxHeight: {
-      lg: 135,
-      xs: 75,
-    },
-    width: "100%",
-    height: "auto",
+    width: 100,
+    height: 100,
   },
   profileStatsContainer: {
     width: "100%",

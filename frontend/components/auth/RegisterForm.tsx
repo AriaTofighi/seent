@@ -50,9 +50,6 @@ const RegisterForm = ({ onClose }: Props) => {
 
   return (
     <>
-      <Typography variant="h4" mb={3}>
-        Sign up
-      </Typography>
       <form onSubmit={handleSubmit(handleSignUp)}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
           <TextInput

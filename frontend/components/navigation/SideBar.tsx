@@ -42,8 +42,6 @@ const SideBar = () => {
     setAuthDialogOpen(true);
   };
 
-  // console.log(user);
-
   const content = (
     <Box sx={styles.root}>
       <Link href="/">

@@ -22,6 +22,7 @@ import { ToastContainer } from "react-toastify";
 import { RouteGuard } from "../components/auth/RouteGuard";
 import { NavProvider } from "../contexts/NavContext";
 import { SocketProvider } from "../contexts/SocketContext";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -42,14 +43,18 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
       <StyledEngineProvider injectFirst>
         <CssBaseline />
         <SWRConfig value={swrConfig}>
-          <UserProvider>
-            <SocketProvider>
-              <NavProvider>
-                <RouteGuard>{componentWithLayout}</RouteGuard>
-                <ToastContainer autoClose={2000} />
-              </NavProvider>
-            </SocketProvider>
-          </UserProvider>
+          <GoogleOAuthProvider
+            clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
+          >
+            <UserProvider>
+              <SocketProvider>
+                <NavProvider>
+                  <RouteGuard>{componentWithLayout}</RouteGuard>
+                  <ToastContainer autoClose={2000} />
+                </NavProvider>
+              </SocketProvider>
+            </UserProvider>
+          </GoogleOAuthProvider>
         </SWRConfig>
       </StyledEngineProvider>
     </ThemeProvider>

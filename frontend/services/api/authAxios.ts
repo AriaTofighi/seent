@@ -8,8 +8,8 @@ export const signIn = async (email: string, password: string) => {
       password,
     });
     return response.data;
-  } catch (error) {
-    toast.error("Invalid email or password");
+  } catch (error: any) {
+    toast.error(error.response.data.message);
     console.log(error);
   }
 };
@@ -31,6 +31,18 @@ export const signUp = async (
     });
     return response.data;
   } catch (error) {
+    console.log(error);
+  }
+};
+
+export const signInGoogle = async (token: string) => {
+  try {
+    const response = await axios.post(`/auth/google/login`, {
+      token,
+    });
+    return response.data;
+  } catch (error: any) {
+    toast.error(error.response.data.message);
     console.log(error);
   }
 };

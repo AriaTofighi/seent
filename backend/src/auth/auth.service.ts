@@ -6,7 +6,14 @@ import { exclude } from "utils/modelUtils";
 import { SignUpDto } from "./dto/signup.dto";
 import { UserEntity } from "src/users/entities/user.entity";
 import { JwtPayload } from "utils/types";
+import { OAuth2Client } from "google-auth-library";
+import { ImageType } from "@prisma/client";
+import { randomUUID } from "crypto";
 
+const client = new OAuth2Client(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET
+);
 @Injectable()
 export class AuthService {
   constructor(
@@ -15,12 +22,11 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-    const user = new UserEntity(await this.usersService.findOne({ email }));
-
+    const user = await this.usersService.findOne({ email });
     if (user) {
       const validPassword = await argon2.verify(user.password, password);
       if (validPassword) {
-        return user;
+        return new UserEntity(user);
       }
     }
     return null;
@@ -36,8 +42,19 @@ export class AuthService {
   }
 
   async login(user: JwtPayload) {
+    const { email } = user;
+    const dbUser = await this.usersService.findOne({
+      email,
+    });
+
+    if (dbUser.password === "google") {
+      throw new UnauthorizedException(
+        "You signed up with Google. Please use Google to login"
+      );
+    }
+
     return {
-      access_token: this.jwtService.sign(user),
+      accessToken: this.jwtService.sign(user),
     };
   }
 
@@ -73,6 +90,61 @@ export class AuthService {
     return {
       ...userWithoutPassword,
       accessToken: this.jwtService.sign(userWithoutPassword),
+    };
+  }
+
+  async googleLogin(token: string) {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const payload = ticket.getPayload();
+
+    if (!payload) {
+      throw new UnauthorizedException({ message: "Invalid Google token" });
+    }
+
+    const { email, name, picture } = payload;
+
+    let user = await this.usersService.findOne({
+      email,
+    });
+
+    if (!user) {
+      user = await this.usersService.create({
+        email,
+        name,
+        birthday: new Date(),
+        username: name + randomUUID(),
+        password: "google",
+        images: {
+          create: [
+            {
+              url: picture,
+              type: ImageType.USER_AVATAR,
+            },
+          ],
+        },
+      });
+    } else if (user.password !== "google") {
+      throw new UnauthorizedException({
+        message:
+          "You signed up with email and password. Please use email and password to login",
+      });
+    }
+
+    const userToSign: JwtPayload = {
+      userId: user.userId,
+      email: user.email,
+      name: user.name,
+      username: user.username,
+      role: user.role,
+    };
+
+    return {
+      ...user,
+      accessToken: this.jwtService.sign(userToSign),
     };
   }
 }

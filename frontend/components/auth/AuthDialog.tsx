@@ -1,6 +1,9 @@
 import { Button, Dialog, DialogContent, Typography } from "@mui/material";
 import { Box } from "@mui/system";
+import { GoogleLogin } from "@react-oauth/google";
 import React, { useState } from "react";
+import { useUser } from "../../contexts/UserContext";
+import { signInGoogle } from "../../services/api/authAxios";
 import { Styles } from "../../types";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
@@ -21,11 +24,37 @@ type Props = {
 
 const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
   const signInMode = mode === MODES.SIGN_IN;
+  const { setUser } = useUser();
+
+  const onGoogleLoginSuccess = async (response: any) => {
+    const res = await signInGoogle(response.credential);
+    if (!res) return;
+    setUser(res.accessToken);
+    onClose();
+  };
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogContent>
         <Box sx={styles.root}>
+          <Typography variant="h4" mb={3}>
+            {signInMode ? "Sign in" : "Sign up"}
+          </Typography>
+          <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <GoogleLogin
+              width="240px"
+              useOneTap
+              onSuccess={onGoogleLoginSuccess}
+              onError={() => {
+                console.log("Login Failed");
+              }}
+            />
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Box sx={{ flexGrow: 1, height: 2, bgcolor: "divider" }} />
+            <Box sx={{ mx: 2 }}>or</Box>
+            <Box sx={{ flexGrow: 1, height: 2, bgcolor: "divider" }} />
+          </Box>
           {signInMode ? (
             <LoginForm onClose={onClose} />
           ) : (
