@@ -10,12 +10,14 @@ import FileUpload from "../controls/FileUpload";
 import { createImage, updateImage } from "../../services/api/imageAxios";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import Modal from "../UI/Modal";
+import { useRouter } from "next/router";
 
 const defaultValues = {
   name: "",
   bio: "",
   location: "",
   gender: "",
+  username: "",
 };
 
 type Props = {
@@ -29,11 +31,14 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
   const { image, handleImageChange, fileInputRef, handleBrowse } =
     useImageUpload();
   const { user, mutate } = useUser();
+  const router = useRouter();
 
   const handleSave = async (data: typeof defaultValues) => {
-    await updateUser(user?.userId as string, data);
+    const res = await updateUser(user?.userId as string, data);
+    if (!res) return;
     mutate();
     onSave();
+    router.push(`/${res.username}`);
   };
 
   const handleUpload = async () => {
@@ -57,6 +62,7 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
         bio: user.bio ?? "",
         location: user.location ?? "",
         gender: user.gender ?? "",
+        username: user.username,
       });
     } else {
       reset(defaultValues);
@@ -124,6 +130,12 @@ const EditProfileDialog = ({ open, setOpen, onSave }: Props) => {
             />
           </Box>
           <TextInput name="name" label="Name" control={control} fullWidth />
+          <TextInput
+            name="username"
+            label="Username"
+            control={control}
+            fullWidth
+          />
           <TextInput
             name="bio"
             label="Bio"

@@ -76,6 +76,13 @@ export class UsersController {
       throw new UnauthorizedException();
     }
 
+    const user = await this.usersService.findOne({
+      username: updateUserDto.username,
+    });
+    if (user && user.userId !== userId) {
+      throw new UnauthorizedException({ message: "Username already in use" });
+    }
+
     return this.usersService.update({
       where: { userId },
       data: updateUserDto,

@@ -56,17 +56,6 @@ export class UsersService {
       result = await this.prisma.user.findMany(queryArgs);
     }
 
-    // const paginate = createPaginator({ perPage: perPage });
-    // const result = await paginate<User, Prisma.UserFindManyArgs>(
-    //   this.prisma.user,
-    //   {
-    //     where,
-    //     orderBy,
-    //     include: this._include,
-    //   },
-    //   { page: page }
-    // );
-
     return result;
   }
 

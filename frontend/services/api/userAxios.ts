@@ -20,8 +20,8 @@ export const updateUser = async (userId: string, user: any) => {
     const response = await axios.patch(`users/${userId}`, user);
     toast.success("Updated user successfully");
     return response.data;
-  } catch (error) {
-    // console.log(error);
-    toast.error("Error updating user");
+  } catch (error: any) {
+    console.log(error);
+    toast.error(error.response.data.message);
   }
 };
