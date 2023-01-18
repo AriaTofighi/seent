@@ -1,6 +1,8 @@
 import { SubscribeMessage, WebSocketGateway } from "@nestjs/websockets";
 import { WebSocketServer } from "@nestjs/websockets/decorators";
+import { RoomUser } from "@prisma/client";
 import { Server } from "socket.io";
+import { RoomUsersService } from "src/room-users/room-users.service";
 import { GatewaySessionManager } from "src/socket/socket.session";
 import { AuthenticatedSocket } from "utils/types";
 
@@ -11,7 +13,10 @@ import { AuthenticatedSocket } from "utils/types";
   },
 })
 export class MessagesGateway {
-  constructor(readonly sessionManager: GatewaySessionManager) {}
+  constructor(
+    readonly sessionManager: GatewaySessionManager,
+    readonly roomUsersService: RoomUsersService
+  ) {}
 
   @WebSocketServer()
   private server: Server;
@@ -19,12 +24,7 @@ export class MessagesGateway {
   @SubscribeMessage("joinRoom")
   handleJoinRoom(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
-    // const {
-    //   user: { userId },
-    // } = client;
-    // console.log("Joined room ", roomId);
     client.join(`room-${roomId}`);
-    // console.log(this.server.sockets.adapter.rooms);
     this.server.to(`room-${roomId}`).emit("userJoined");
   }
 
@@ -32,7 +32,6 @@ export class MessagesGateway {
   handleLeaveRoom(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
 
-    // console.log("Left room ", roomId);
     client.leave(`room-${roomId}`);
     this.server.to(`room-${roomId}`).emit("userLeft");
   }
@@ -40,13 +39,22 @@ export class MessagesGateway {
   @SubscribeMessage("sendMessage")
   handleSendMessage(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
-    // console.log("Message sent by ", client.user.username);
-    // console.log("Message sent to room ", roomId);
-    // console.log("Active rooms: ", this.server.sockets.adapter.rooms);
-
     this.server.to(`room-${roomId}`).emit("newMessage");
-    // console.log(this.server.sockets.adapter.rooms);
-    // console.log("Emmited newMessage to room ", roomId);
+  }
+
+  @SubscribeMessage("newRoom")
+  async handleNewRoom(client: AuthenticatedSocket, data: { roomId: string }) {
+    const { roomId } = data;
+    console.log(data);
+    const roomUsers = (await this.roomUsersService.findMany({
+      where: { roomId },
+    })) as RoomUser[];
+    for (const roomUser of roomUsers) {
+      const userSocket = this.sessionManager.getUserSocket(roomUser.userId);
+      if (userSocket) {
+        userSocket.emit("newRoom");
+      }
+    }
   }
 
   @SubscribeMessage("userTyping")

@@ -29,7 +29,7 @@ export class RoomsController {
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@Body() room: CreateRoomDto) {
-    await this.roomsService.create(room);
+    return await this.roomsService.create(room);
   }
 
   @UseGuards(JwtAuthGuard)

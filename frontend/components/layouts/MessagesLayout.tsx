@@ -39,6 +39,8 @@ const MessagesLayout = ({ children }: Props) => {
 
   useSocketEvent("newMessage", onNewMessage);
 
+  useSocketEvent("newRoom", onNewMessage);
+
   const joinRooms = () => {
     rooms?.forEach(({ roomId }) => {
       socket?.emit("joinRoom", { roomId });

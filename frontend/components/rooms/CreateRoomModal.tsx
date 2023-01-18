@@ -2,6 +2,7 @@ import { Avatar, Button, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import { createRoom } from "../../services/api/roomAxios";
@@ -27,15 +28,22 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
     defaultValues,
   });
   const { data: users, loading: usersLoading } = useAPI<UserEntity[]>("users");
+  const { socket } = useAppSocket();
 
   const onSubmit = async (data: typeof defaultValues) => {
     const { title, users } = data;
     const userIds = users.map((u: UserEntity) => u.userId);
 
     userIds.push(user?.userId as string);
-    await createRoom({ title, userIds, ownerId: user?.userId as string });
+    const res = await createRoom({
+      title,
+      userIds,
+      ownerId: user?.userId as string,
+    });
+    if (!res) return;
     setOpen(false);
     mutateRooms();
+    socket?.emit("newRoom", { roomId: res?.roomId });
   };
 
   return (
