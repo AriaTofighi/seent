@@ -83,6 +83,7 @@ const Room = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: 2,
+                maxWidth: "90%",
               }}
             >
               <IconButton onClick={() => router.push("/messages")}>
@@ -93,13 +94,20 @@ const Room = () => {
                 username={username}
                 avatarUrl={avatarUrl}
               />{" "}
-              <Typography variant="h6">{title}</Typography>
+              <Typography
+                variant="h6"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {title}
+              </Typography>
             </Box>
-            <Box>
-              <IconButton onClick={() => alert("More options")}>
-                <OptionsIcon />
-              </IconButton>
-            </Box>
+            <IconButton onClick={() => alert("More options")}>
+              <OptionsIcon />
+            </IconButton>
           </Header>
           <Box
             component="form"
@@ -141,7 +149,7 @@ const styles: ThemedStyles = {
     flexDirection: "column",
     justifyContent: "space-between",
     height: (theme) =>
-      `calc(100% - 1px - ${theme.mixins.toolbar.minHeight as number}px)`,
+      `calc(100% - 10px - ${theme.mixins.toolbar.minHeight as number}px)`,
   },
   messageInputContainer: {
     display: "flex",

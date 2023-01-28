@@ -129,7 +129,7 @@ const styles: ThemedStyles = {
   room: {
     flex: 1,
     width: {
-      sm: "70%",
+      sm: "calc(100% - 300px)",
       xs: "100%",
     },
     borderBottom: {

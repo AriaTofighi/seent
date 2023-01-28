@@ -20,10 +20,10 @@ const styles = {
     borderBottom: "1px solid",
     width: "100%",
     borderColor: "divider",
-    flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     display: "flex",
+    height: (theme: any) => theme.mixins.toolbar.minHeight + 10,
   },
 };
 export default Header;
