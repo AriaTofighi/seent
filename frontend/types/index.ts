@@ -45,6 +45,12 @@ export const ImageType = {
   USER_BANNER: "USER_BANNER",
   POST: "POST",
 };
+
+export const FriendshipStatus = {
+  PENDING: "PENDING",
+  ACCEPTED: "ACCEPTED",
+};
+
 type ImageTypeKeys = keyof typeof ImageType;
 type ImageTypeValues = typeof ImageType[ImageTypeKeys];
 
@@ -135,6 +141,15 @@ export type MessageEntity = {
 
   roomUser?: RoomUserEntity;
 
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type FriendshipEntity = {
+  friendshipId: string;
+  recipientId: string;
+  senderId: string;
+  status: typeof FriendshipStatus;
   createdAt: Date;
   updatedAt: Date;
 };

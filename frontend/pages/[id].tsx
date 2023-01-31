@@ -1,4 +1,4 @@
-import { Avatar, Button, Fade, Stack, Typography } from "@mui/material";
+import { Avatar, Button, Fade, Icon, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -21,6 +21,7 @@ import {
 import { infiniteSWRToFlat } from "../utils";
 import styles from "../styles/[id].styles";
 import UserAvatar from "../components/users/UserAvatar";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -61,6 +62,8 @@ const Profile: NextPageWithLayout = () => {
     setShowEditProfileDialog(false);
   };
 
+  const onAddFriend = () => {};
+
   if (userErr || postsErr) {
     return <Box>Error loading data</Box>;
   }
@@ -82,6 +85,17 @@ const Profile: NextPageWithLayout = () => {
                   onClick={() => setShowEditProfileDialog(true)}
                 >
                   Edit
+                </Button>
+              )}
+
+              {!userIsOwner && (
+                <Button
+                  sx={styles.editBtn}
+                  variant="outlined"
+                  onClick={onAddFriend}
+                >
+                  <PersonAddIcon />
+                  Add Friend
                 </Button>
               )}
 

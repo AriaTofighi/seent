@@ -127,9 +127,9 @@ model Notification {
 model Friendship {
   friendshipId String           @id @default(uuid())
   recipientId  String
-  recipient    User             @relation(name: "friendshipRecipient", fields: [recipientId], references: [userId])
+  recipient    User?            @relation(name: "friendshipRecipient", fields: [recipientId], references: [userId])
   senderId     String
-  sender       User             @relation(name: "friendshipSender", fields: [senderId], references: [userId])
+  sender       User?            @relation(name: "friendshipSender", fields: [senderId], references: [userId])
   status       FriendshipStatus
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt

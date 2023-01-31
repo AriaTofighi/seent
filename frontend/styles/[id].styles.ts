@@ -20,6 +20,9 @@ const styles: Styles = {
     top: 0,
     m: 2,
     color: "primary.main",
+    display: "flex",
+    gap: 1,
+    alignItems: "center",
   },
   avatar: {
     width: 100,
