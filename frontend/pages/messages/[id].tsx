@@ -36,7 +36,7 @@ const Room = () => {
     defaultValues: { message: "" },
   });
   const formRef = useRef();
-  const roomUserId = room?.users?.find(
+  const roomUserId = room?.roomUsers?.find(
     (u: any) => u.userId === user?.userId
   )?.roomUserId;
   const { socket } = useAppSocket();
@@ -117,7 +117,7 @@ const Room = () => {
           >
             <MessageList
               getMessagesKey={getMessagesKey}
-              isGroupChat={room.users.length > 2}
+              isGroupChat={room.roomUsers.length > 2}
             />
             <Box sx={styles.messageInputContainer as Styles}>
               <TextInput

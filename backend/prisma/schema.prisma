@@ -78,7 +78,7 @@ model Image {
 model Room {
   roomId        String         @id @default(uuid())
   title         String
-  users         RoomUser[]
+  roomUsers     RoomUser[]
   notifications Notification[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt

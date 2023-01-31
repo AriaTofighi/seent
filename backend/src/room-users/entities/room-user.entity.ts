@@ -5,6 +5,7 @@ export class RoomUserEntity implements RoomUser {
   roomId: string;
   userId: string;
   isOwner: boolean;
+  leftRoom: Date;
   createdAt: Date;
   updatedAt: Date;
 

@@ -58,10 +58,10 @@ export class RoomsController {
   @Get()
   async findAll(@Query() query: FindRoomsQueryDto, @User() user: JwtPayload) {
     const { roomId, userId, title, page, perPage } = query;
-    const isUser = user.role === Role.USER;
+    const notAdmin = user.role !== Role.ADMIN;
     const nonSelfRequest = userId && userId !== user.userId;
 
-    if (isUser && nonSelfRequest) {
+    if (notAdmin && nonSelfRequest) {
       throw new UnauthorizedException();
     }
 
@@ -71,7 +71,7 @@ export class RoomsController {
       where: {
         roomId,
         title,
-        users: {
+        roomUsers: {
           some: {
             userId: userId ? userId : user.userId,
           },

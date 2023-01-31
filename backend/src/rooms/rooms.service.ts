@@ -11,7 +11,7 @@ export class RoomsService {
   constructor(private prisma: PrismaService) {}
 
   private readonly _include: Prisma.RoomInclude = {
-    users: {
+    roomUsers: {
       select: {
         roomUserId: true,
         userId: true,
@@ -82,7 +82,7 @@ export class RoomsService {
     return await this.prisma.room.create({
       data: {
         title,
-        users: {
+        roomUsers: {
           create: userIds.map((userId) => ({
             userId,
             isOwner: userId === ownerId,

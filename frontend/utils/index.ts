@@ -39,10 +39,10 @@ export const formatDateTimeAgo = (inputDate: Date) => {
     return date.format("h:mm a");
   } else if (days < 7) {
     return `${days}d`;
-  } else if (weeks < 4) {
+  } else if (weeks < 5) {
     return `${weeks}w`;
   } else if (months < 12) {
-    return `${months}m`;
+    return `${months}mo`;
   } else {
     return `${years}y`;
   }
@@ -78,7 +78,7 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
     return room?.title;
   }
 
-  const otherUsers = room?.users.filter(
+  const otherUsers = room?.roomUsers.filter(
     (u: UserEntity) => u.userId !== user?.userId
   );
   return otherUsers.map((roomUser: any) => roomUser.user.name).join(", ");
@@ -87,7 +87,7 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
 export const getLatestMessage = (room: any) => {
   let latestMessage: any;
 
-  room.users.forEach((roomUser: any) => {
+  room.roomUsers.forEach((roomUser: any) => {
     roomUser.messages.forEach((message: any) => {
       if (
         !latestMessage ||

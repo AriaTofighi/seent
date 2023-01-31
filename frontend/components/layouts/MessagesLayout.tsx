@@ -54,10 +54,6 @@ const MessagesLayout = ({ children }: Props) => {
       joinRooms();
     });
 
-    // setTimeout(() => {
-    //   joinRooms();
-    // }, 1000);
-
     joinRooms();
 
     return () => {
