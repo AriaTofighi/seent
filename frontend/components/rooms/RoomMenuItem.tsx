@@ -2,6 +2,7 @@ import { Box, Typography } from "@mui/material";
 import React from "react";
 import { useUser } from "../../contexts/UserContext";
 import { useRoomInfo } from "../../hooks/useRoomInfo";
+import { Styles } from "../../types";
 import { formatDateTimeAgo, getDisplayedRoomTitle } from "../../utils";
 import MenuItem, { Props as MenuItemProps } from "../navigation/MenuItem";
 import UserAvatar from "../users/UserAvatar";
@@ -21,21 +22,14 @@ const RoomMenuItem = ({
 
   return (
     <MenuItem
-      sx={{
-        borderBottom: "1px solid",
-        borderColor: "divider",
-        display: "flex",
-        alignItems: "center",
-        flexDirection: "row",
-        width: "100%",
-      }}
+      sx={styles.root}
       key={room.roomId}
       href={`/messages/${room.roomId}`}
       {...rest}
     >
       <UserAvatar userId={userId} avatarUrl={avatarUrl} />
       <Box>
-        <Typography variant="body1">
+        <Typography variant="body1" sx={styles.nowrap}>
           {getDisplayedRoomTitle(room, user as any)}
         </Typography>
         {latestMessage && (
@@ -43,11 +37,7 @@ const RoomMenuItem = ({
             <Typography
               variant="caption"
               color="textSecondary"
-              sx={{
-                whiteSspace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
+              sx={styles.nowrap}
             >
               {name} {body}
             </Typography>
@@ -59,6 +49,22 @@ const RoomMenuItem = ({
       </Box>
     </MenuItem>
   );
+};
+
+const styles: Styles = {
+  root: {
+    borderBottom: "1px solid",
+    borderColor: "divider",
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    width: "100%",
+  },
+  nowrap: {
+    whiteSspace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+  },
 };
 
 export default RoomMenuItem;
