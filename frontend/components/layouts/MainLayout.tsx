@@ -17,6 +17,7 @@ const styles: Styles = {
     borderLeft: "1px solid",
     borderColor: "divider",
     minHeight: "100vh",
+    minWidth: 0,
   },
   general: {
     width: {
