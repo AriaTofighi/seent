@@ -12,6 +12,8 @@ import { useUser } from "../contexts/UserContext";
 import { useAPI } from "../hooks/useAPI";
 import useInfiniteAPI from "../hooks/useInfiniteAPI";
 import {
+  FriendshipEntity,
+  FriendshipStatus,
   NextPageWithLayout,
   PaginatedResult,
   PostEntity,
@@ -22,6 +24,11 @@ import { infiniteSWRToFlat } from "../utils";
 import styles from "../styles/[id].styles";
 import UserAvatar from "../components/users/UserAvatar";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import {
+  createFriendship,
+  deleteFriendship,
+  updateFriendship,
+} from "../services/api/friendshipAxios";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
@@ -32,11 +39,23 @@ const Profile: NextPageWithLayout = () => {
     mutate: mutateUser,
     loading: userLoading,
   } = useAPI<UserEntity[]>(query ? `users?username=${query.id}` : null);
-  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
-  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
 
   const profileUser = userRes?.[0];
   const userIsOwner = profileUser?.userId === user?.userId;
+
+  const {
+    data: friendshipRes,
+    error: friendshipErr,
+    mutate: mutateFriendship,
+    loading: friendshipLoading,
+  } = useAPI<FriendshipEntity>(
+    !userIsOwner && user && profileUser
+      ? `friendships/pair?userIdOne=${user?.userId}&userIdTwo=${profileUser?.userId}`
+      : null
+  );
+
+  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
 
   const getPostsKey = (index: number) =>
     profileUser
@@ -62,7 +81,62 @@ const Profile: NextPageWithLayout = () => {
     setShowEditProfileDialog(false);
   };
 
-  const onAddFriend = () => {};
+  const onAcceptFriendRequest = async () => {
+    if (!friendshipRes) return;
+    await updateFriendship(friendshipRes.friendshipId, {
+      status: FriendshipStatus.ACCEPTED as keyof typeof FriendshipStatus,
+    });
+    mutateFriendship();
+  };
+
+  const onSendFriendRequest = async () => {
+    if (!profileUser || !user) return;
+    await createFriendship({
+      recipientId: profileUser.userId,
+      senderId: user.userId,
+      status: FriendshipStatus.PENDING as keyof typeof FriendshipStatus,
+    });
+    mutateFriendship();
+  };
+
+  const onUnfriend = async () => {
+    if (!friendshipRes) return;
+    await deleteFriendship(friendshipRes.friendshipId);
+    mutateFriendship(undefined);
+  };
+
+  const onFriendButtonClick = () => {
+    if (friendshipRes?.status === (FriendshipStatus.PENDING as any)) {
+      if (friendshipRes?.recipientId === user?.userId) {
+        onAcceptFriendRequest();
+      } else {
+        onUnfriend();
+      }
+    } else if (friendshipRes?.status === (FriendshipStatus.ACCEPTED as any)) {
+      onUnfriend();
+    } else {
+      onSendFriendRequest();
+    }
+  };
+
+  const getFriendshipText = () => {
+    if (
+      friendshipRes?.status === (FriendshipStatus.PENDING as any) &&
+      friendshipRes?.recipientId === user?.userId
+    ) {
+      return "Accept Request";
+    }
+    if (
+      friendshipRes?.status === (FriendshipStatus.PENDING as any) &&
+      friendshipRes?.senderId === user?.userId
+    ) {
+      return "Cancel Request";
+    }
+    if (friendshipRes?.status === (FriendshipStatus.ACCEPTED as any)) {
+      return "Unfriend";
+    }
+    return "Add Friend";
+  };
 
   if (userErr || postsErr) {
     return <Box>Error loading data</Box>;
@@ -92,10 +166,10 @@ const Profile: NextPageWithLayout = () => {
                 <Button
                   sx={styles.editBtn}
                   variant="outlined"
-                  onClick={onAddFriend}
+                  onClick={onFriendButtonClick}
                 >
                   <PersonAddIcon />
-                  Add Friend
+                  {getFriendshipText()}
                 </Button>
               )}
 

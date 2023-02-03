@@ -9,12 +9,22 @@ export class FriendshipsService {
   constructor(private prisma: PrismaService) {}
 
   private readonly FRIENDSHIP_INCLUDES: Prisma.FriendshipInclude = {
-    sender: true,
-    recipient: true,
+    sender: {
+      select: {
+        userId: true,
+        username: true,
+      },
+    },
+    recipient: {
+      select: {
+        userId: true,
+        username: true,
+      },
+    },
   };
 
-  async findOne(friendshipWhereUniqueInput: Prisma.FriendshipWhereUniqueInput) {
-    const friendship = await this.prisma.friendship.findUnique({
+  async findOne(friendshipWhereUniqueInput: Prisma.FriendshipWhereInput) {
+    const friendship = await this.prisma.friendship.findFirst({
       where: friendshipWhereUniqueInput,
       include: this.FRIENDSHIP_INCLUDES,
     });

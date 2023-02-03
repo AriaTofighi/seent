@@ -5,12 +5,13 @@ import { toast } from "react-toastify";
 type CreateFriendshipDto = {
   recipientId: string;
   senderId: string;
-  status: typeof FriendshipStatus;
+  status: keyof typeof FriendshipStatus;
 };
 
 export const createFriendship = async (friendship: CreateFriendshipDto) => {
   try {
     const response = await axios.post("friendships", friendship);
+    toast.success("Friend request sent!");
     return response.data;
   } catch (error) {
     console.log(error);

@@ -7,6 +7,7 @@ import { ImagesModule } from "./images/images.module";
 import { RoomsModule } from "./rooms/rooms.module";
 import { MessagesModule } from "./messages/messages.module";
 import { SocketModule } from "./socket/socket.module";
+import { FriendshipsModule } from "./friendships/friendships.module";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SocketModule } from "./socket/socket.module";
     RoomsModule,
     MessagesModule,
     SocketModule,
+    FriendshipsModule,
   ],
 })
 export class AppModule {}
