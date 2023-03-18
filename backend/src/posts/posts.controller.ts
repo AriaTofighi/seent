@@ -85,8 +85,40 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto, @Req() req) {
-    const token = req.headers.authorization.replace("Bearer ", "");
-    const user = await this.authService.validateToken(token);
+    const orClause = [];
+    orClause.push({ isPublic: true });
+
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.replace("Bearer ", "");
+      const user = await this.authService.validateToken(token);
+
+      if (user) {
+        orClause.push({
+          author: {
+            receivedFriendships: {
+              some: {
+                status: "ACCEPTED",
+                sender: {
+                  userId: user.userId,
+                },
+              },
+            },
+          },
+        });
+        orClause.push({
+          author: {
+            sentFriendships: {
+              some: {
+                status: "ACCEPTED",
+                recipient: {
+                  userId: user.userId,
+                },
+              },
+            },
+          },
+        });
+      }
+    }
 
     const {
       authorId,
@@ -98,36 +130,6 @@ export class PostsController {
       orderBy,
       search,
     } = query;
-
-    const orClause = [];
-
-    if (user) {
-      orClause.push({
-        author: {
-          receivedFriendships: {
-            some: {
-              status: "ACCEPTED",
-              sender: {
-                userId: user.userId,
-              },
-            },
-          },
-        },
-      });
-      orClause.push({
-        author: {
-          sentFriendships: {
-            some: {
-              status: "ACCEPTED",
-              recipient: {
-                userId: user.userId,
-              },
-            },
-          },
-        },
-      });
-      orClause.push({ isPublic: true });
-    }
 
     const result = await this.postsService.findMany({
       where: {
