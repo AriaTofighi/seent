@@ -47,7 +47,12 @@ const PostDialog = ({
     formData.append("images", image as Blob);
     formData.append("body", body);
     formData.append("authorId", user.userId);
-    formData.append("isPublic", "true");
+    formData.append(
+      "isPublic",
+      privacyMode === PRIVACY_MODES.PUBLIC
+        ? (true as unknown as string)
+        : (false as unknown as string)
+    );
     if (parentPost) {
       formData.append("parentPostId", parentPost.postId);
     }
@@ -62,6 +67,10 @@ const PostDialog = ({
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     setImage(undefined);
     reset();
+  };
+
+  const handleSelectPrivacy = (privacyMode: string) => {
+    setPrivacyMode(privacyMode);
   };
 
   return (
@@ -114,6 +123,8 @@ const PostDialog = ({
             setValue={setValue}
             getValues={getValues}
             handleBrowse={handleBrowse}
+            handleSelectPrivacy={handleSelectPrivacy}
+            privacyMode={privacyMode}
           />
           {imagePreview && (
             <Box sx={styles.images}>
@@ -170,8 +181,8 @@ const defaultValues = {
 };
 
 const PRIVACY_MODES = {
-  PUBLIC: true,
-  PRIVATE: false,
+  PUBLIC: "public",
+  FRIENDS: "friends",
 };
 
 export default PostDialog;

@@ -15,10 +15,17 @@ import {
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { ImageType, NotificationType } from "@prisma/client";
+import { Request } from "express";
+import { AuthService } from "src/auth/auth.service";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ImagesService } from "src/images/images.service";
 import { NotificationsService } from "src/notifications/notifications.service";
+import {
+  AuthenticatedRequest,
+  User,
+} from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
@@ -30,7 +37,8 @@ export class PostsController {
     private readonly postsService: PostsService,
     private readonly fileUploadService: FileUploadService,
     private readonly imagesService: ImagesService,
-    private readonly notificationsService: NotificationsService
+    private readonly notificationsService: NotificationsService,
+    private readonly authService: AuthService
   ) {}
 
   @UseGuards(JwtAuthGuard)
@@ -39,6 +47,7 @@ export class PostsController {
   async create(@UploadedFiles() images, @Body() post: CreatePostDto) {
     delete post.images;
     const newPost = await this.postsService.create(post);
+    console.log(post);
 
     if (images[0]) {
       const uploadedImage: any = await this.fileUploadService.upload(images[0]);
@@ -75,7 +84,10 @@ export class PostsController {
   }
 
   @Get()
-  async findMany(@Query() query: FindPostsQueryDto) {
+  async findMany(@Query() query: FindPostsQueryDto, @Req() req) {
+    const token = req.headers.authorization.replace("Bearer ", "");
+    const user = await this.authService.validateToken(token);
+
     const {
       authorId,
       postId,
@@ -86,12 +98,44 @@ export class PostsController {
       orderBy,
       search,
     } = query;
+
+    const orClause = [];
+
+    if (user) {
+      orClause.push({
+        author: {
+          receivedFriendships: {
+            some: {
+              status: "ACCEPTED",
+              sender: {
+                userId: user.userId,
+              },
+            },
+          },
+        },
+      });
+      orClause.push({
+        author: {
+          sentFriendships: {
+            some: {
+              status: "ACCEPTED",
+              recipient: {
+                userId: user.userId,
+              },
+            },
+          },
+        },
+      });
+      orClause.push({ isPublic: true });
+    }
+
     const result = await this.postsService.findMany({
       where: {
         authorId,
         postId,
         parentPostId,
         body: { contains: search, mode: "insensitive" },
+        OR: orClause.length > 0 ? orClause : undefined,
       },
       orderBy,
       page,

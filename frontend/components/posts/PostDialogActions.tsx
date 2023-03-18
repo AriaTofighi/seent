@@ -1,4 +1,12 @@
-import { Box, Stack, Tooltip, IconButton } from "@mui/material";
+import {
+  Box,
+  Stack,
+  Tooltip,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import EmojiPicker, { IEmojiData } from "emoji-picker-react";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ImageIcon from "@mui/icons-material/Image";
@@ -7,19 +15,34 @@ import { UseFormGetValues, UseFormSetValue } from "react-hook-form";
 import { DefaultValueType } from "./PostDialog";
 import { useState } from "react";
 import { Styles } from "../../types";
+import useMenu from "../../hooks/useMenu";
 
 type Props = {
   setValue: UseFormSetValue<DefaultValueType>;
   getValues: UseFormGetValues<DefaultValueType>;
   handleBrowse: () => void;
+  handleSelectPrivacy: (privacyMode: string) => void;
+  privacyMode: string;
 };
 
-const PostDialogActions = ({ setValue, getValues, handleBrowse }: Props) => {
+const PostDialogActions = ({
+  setValue,
+  getValues,
+  handleBrowse,
+  handleSelectPrivacy,
+  privacyMode,
+}: Props) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const { anchorEl, handleClick, handleClose, open } = useMenu();
 
   const onEmojiClick = (_event: any, emojiObject: IEmojiData) => {
     const body = getValues("body");
     setValue("body", body + emojiObject.emoji);
+  };
+
+  const handleMenuItemClick = (privacyMode: string) => {
+    handleSelectPrivacy(privacyMode);
+    handleClose();
   };
 
   return (
@@ -29,7 +52,7 @@ const PostDialogActions = ({ setValue, getValues, handleBrowse }: Props) => {
           mb: 1,
         }}
       >
-        <Stack direction="row">
+        <Stack direction="row" alignItems="center">
           <Tooltip title="Emoji">
             <IconButton onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
               <EmojiEmotionsIcon />
@@ -41,10 +64,15 @@ const PostDialogActions = ({ setValue, getValues, handleBrowse }: Props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title="Privacy">
-            <IconButton>
+            <IconButton onClick={handleClick}>
               <ShieldIcon />
             </IconButton>
           </Tooltip>
+          <Typography variant="caption" mt={0.5}>
+            {privacyMode === "public"
+              ? "Visible to everyone"
+              : "Visible to friends"}
+          </Typography>
         </Stack>
       </Box>
       {showEmojiPicker && (
@@ -53,6 +81,15 @@ const PostDialogActions = ({ setValue, getValues, handleBrowse }: Props) => {
           pickerStyle={styles.emojiPicker as KeyValuePair}
         />
       )}
+      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <Typography p={1.5}>Who should see this post?</Typography>
+        <MenuItem onClick={() => handleMenuItemClick("public")}>
+          Everyone
+        </MenuItem>
+        <MenuItem onClick={() => handleMenuItemClick("friends")}>
+          Friends
+        </MenuItem>
+      </Menu>
     </>
   );
 };

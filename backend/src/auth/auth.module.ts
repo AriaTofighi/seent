@@ -21,6 +21,7 @@ import { forwardRef } from "@nestjs/common/utils";
     forwardRef(() => UsersModule),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
+  exports: [AuthService],
   controllers: [AuthController],
 })
 export class AuthModule {}
