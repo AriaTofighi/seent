@@ -1,6 +1,6 @@
-import { Transform } from "class-transformer";
-import { IsBoolean, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsOptional, IsString, IsUUID } from "class-validator";
 import { FindManyQuery } from "utils/types";
+import { ToBoolean } from "utils/validators";
 
 export class FindPostsQueryDto extends FindManyQuery {
   @IsUUID()
@@ -11,8 +11,7 @@ export class FindPostsQueryDto extends FindManyQuery {
   @IsOptional()
   parentPostId?: string;
 
-  @IsBoolean()
-  @Transform(({ value }) => value === "true")
+  @ToBoolean()
   @IsOptional()
   isChild?: boolean;
 

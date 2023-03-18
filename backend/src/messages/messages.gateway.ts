@@ -45,7 +45,6 @@ export class MessagesGateway {
   @SubscribeMessage("newRoom")
   async handleNewRoom(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
-    console.log(data);
     const roomUsers = (await this.roomUsersService.findMany({
       where: { roomId },
     })) as RoomUser[];

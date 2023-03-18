@@ -21,6 +21,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import OptionsIcon from "@mui/icons-material/MoreVert";
 import UserAvatar from "../../components/users/UserAvatar";
 import { useRoomInfo } from "../../hooks/useRoomInfo";
+import { markNotificationsRead } from "../../services/api/notificationAxios";
 
 const Room = () => {
   const router = useRouter();
@@ -32,6 +33,11 @@ const Room = () => {
     error: roomError,
     mutate: mutateRoom,
   } = useAPI<any>(id ? `rooms/${id}` : null);
+
+  const { data: roomNotifications, mutate: mutateRoomNotifications } = useAPI<
+    any[]
+  >(`notifications?roomId=${id}&read=false&recipientId=${user?.userId}`);
+
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { message: "" },
   });
@@ -61,12 +67,31 @@ const Room = () => {
 
   const getMessagesKey = () => `messages?roomId=${id}`;
 
-  const onNewMessage = useCallback(() => {
+  const onNewMessage = async () => {
     mutateRoom();
     mutate(getMessagesKey());
-  }, [id]);
+    refreshNotifications();
+  };
 
   useSocketEvent("newMessage", onNewMessage);
+
+  useEffect(() => {
+    (async () => {
+      if (!room) return;
+      refreshNotifications();
+    })();
+  }, [room]);
+
+  const refreshNotifications = async () => {
+    await mutateRoomNotifications();
+    mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
+    const notificationIds = roomNotifications?.map(
+      (n: any) => n.notificationId
+    ) as string[];
+    await markNotificationsRead(notificationIds, true);
+    mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
+    mutateRoomNotifications();
+  };
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 

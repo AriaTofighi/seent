@@ -3,6 +3,7 @@ import { Button, Dialog, IconButton, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { mutate } from "swr";
 import { useUser } from "../../contexts/UserContext";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
@@ -50,6 +51,7 @@ const PostDialog = ({
     }
     await createPost(formData);
     mutatePostList();
+    mutate(`users/${user.userId}`);
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
     setImage(undefined);
     reset();

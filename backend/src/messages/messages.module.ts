@@ -5,10 +5,11 @@ import { PrismaService } from "src/orm/prisma.service";
 import { MessagesGateway } from "./messages.gateway";
 import { SocketModule } from "src/socket/socket.module";
 import { RoomUsersModule } from "src/room-users/room-users.module";
+import { NotificationsModule } from "src/notifications/notifications.module";
 
 @Module({
   controllers: [MessagesController],
-  imports: [SocketModule, RoomUsersModule],
+  imports: [SocketModule, RoomUsersModule, NotificationsModule],
   providers: [MessagesService, PrismaService, MessagesGateway],
   exports: [MessagesService],
 })

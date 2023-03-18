@@ -17,6 +17,7 @@ const RoomMenuItem = ({
   room,
   ...rest
 }: Props & Omit<MenuItemProps, "children">) => {
+  const styles = getStyles(room);
   const { user } = useUser();
   const { latestMessage, name, body, userId, avatarUrl } = useRoomInfo(room);
 
@@ -51,7 +52,7 @@ const RoomMenuItem = ({
   );
 };
 
-const styles: Styles = {
+const getStyles: (room: any) => Styles = (room) => ({
   root: {
     borderBottom: "1px solid",
     borderColor: "divider",
@@ -59,12 +60,14 @@ const styles: Styles = {
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
+    bgcolor: room.notification ? "#0a1f28" : "transparent",
+    // opacity: room.notification ? 0.75 : "none",
   },
   nowrap: {
     whiteSspace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
   },
-};
+});
 
 export default RoomMenuItem;

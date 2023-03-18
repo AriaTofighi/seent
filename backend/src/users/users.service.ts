@@ -23,6 +23,12 @@ export class UsersService {
     _count: {
       select: {
         reactions: true,
+        notifications: {
+          where: {
+            read: false,
+            roomId: null,
+          },
+        },
       },
     },
   };

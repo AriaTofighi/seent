@@ -2,11 +2,13 @@ import AddIcon from "@mui/icons-material/Add";
 import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
+import { mutate } from "swr";
 import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import useSocketEvent from "../../hooks/useSocketEvent";
 import { ThemedStyles } from "../../types";
+import { sortRoomsByLatestMessage } from "../../utils";
 import TopAppBar from "../navigation/TopAppBar";
 import CreateRoomModal from "../rooms/CreateRoomModal";
 import RoomMenuItem from "../rooms/RoomMenuItem";
@@ -23,6 +25,9 @@ const MessagesLayout = ({ children }: Props) => {
   const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
     `rooms?userId=${user?.userId}`
   );
+  const { data: notifications } = useAPI<any[]>(
+    `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
+  );
   const router = useRouter();
   const inARoom = router.pathname.startsWith("/messages/");
   const tabletOrMobile = useMediaQuery((theme: Theme) =>
@@ -33,8 +38,19 @@ const MessagesLayout = ({ children }: Props) => {
   const mobile = useMediaQuery((theme: Theme) => theme.breakpoints.down("sm"));
   const showRoom = inARoom || !mobile;
 
+  const roomsWithUnreadNotifications = rooms?.map((room) => {
+    const notification = notifications?.find(
+      (notification) => notification.roomId === room.roomId
+    );
+    return {
+      ...room,
+      notification,
+    };
+  });
+
   const onNewMessage = useCallback(() => {
     mutateRooms();
+    mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
   }, [user?.userId]);
 
   useSocketEvent("newMessage", onNewMessage);
@@ -76,9 +92,11 @@ const MessagesLayout = ({ children }: Props) => {
       <Box sx={styles.root}>
         {showRoomList && (
           <Box sx={styles.roomList}>
-            {rooms?.map((room) => (
-              <RoomMenuItem key={room.roomId} room={room} />
-            ))}
+            {sortRoomsByLatestMessage(roomsWithUnreadNotifications)?.map(
+              (room) => (
+                <RoomMenuItem key={room.roomId} room={room} />
+              )
+            )}
           </Box>
         )}
         {showRoom && <Box sx={styles.room}>{children}</Box>}

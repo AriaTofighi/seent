@@ -1,6 +1,6 @@
-import { Transform } from "class-transformer";
-import { IsBoolean, IsOptional, IsUUID } from "class-validator";
+import { IsOptional, IsUUID } from "class-validator";
 import { FindManyQuery } from "utils/types";
+import { ToBoolean } from "utils/validators";
 
 export class FindRoomUsersQueryDto extends FindManyQuery {
   @IsUUID()
@@ -15,8 +15,7 @@ export class FindRoomUsersQueryDto extends FindManyQuery {
   @IsOptional()
   roomId?: string;
 
-  @IsBoolean()
-  @Transform(({ value }) => value === "true")
+  @ToBoolean()
   @IsOptional()
   isOwner?: boolean;
 }

@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useState } from "react";
 import { toast } from "react-toastify";
+import { mutate } from "swr";
 import { useUser } from "../../contexts/UserContext";
 import {
   createReaction,
@@ -71,6 +72,7 @@ const PostCardFooter = ({
     }
 
     mutatePosts();
+    mutate(`users/${user.userId}`);
   };
 
   const handleViewReactions = () => {

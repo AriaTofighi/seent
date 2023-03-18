@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = "filteredRelationCount"
 }
 
 datasource db {
@@ -112,12 +113,12 @@ model Notification {
   notificationId String           @id @default(uuid())
   type           NotificationType
   recipientId    String
-  recipient      User             @relation(name: "notificationRecipient", fields: [recipientId], references: [userId])
+  recipient      User?            @relation(name: "notificationRecipient", fields: [recipientId], references: [userId])
   senderId       String
-  sender         User             @relation(name: "notificationSender", fields: [senderId], references: [userId])
-  postId         String
+  sender         User?            @relation(name: "notificationSender", fields: [senderId], references: [userId])
+  postId         String?
   post           Post?            @relation(fields: [postId], references: [postId])
-  roomId         String
+  roomId         String?
   room           Room?            @relation(fields: [roomId], references: [roomId])
   read           Boolean          @default(false)
   createdAt      DateTime         @default(now())

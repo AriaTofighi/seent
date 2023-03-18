@@ -64,6 +64,23 @@ export class MessagesService {
 
   async create(data: Prisma.MessageCreateInput) {
     return await this.prisma.message.create({
+      include: {
+        roomUser: {
+          select: {
+            userId: true,
+            room: {
+              select: {
+                roomId: true,
+                roomUsers: {
+                  select: {
+                    userId: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
       data,
     });
   }

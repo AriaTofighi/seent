@@ -10,6 +10,7 @@ export type Props = {
   href?: string;
   onClick?: () => void;
 };
+
 const MenuItem = ({
   children,
   icon,

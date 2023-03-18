@@ -1,4 +1,3 @@
-import { DeleteReactionDto } from "./dto/delete-reaction-dto";
 import {
   Controller,
   Get,
@@ -15,15 +14,43 @@ import { ReactionsService } from "./reactions.service";
 import { CreateReactionDto } from "./dto/create-reaction.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindReactionsQueryDto } from "./dto/find-reactions-query.dto";
+import { NotificationsService } from "src/notifications/notifications.service";
 
 @Controller("/api/reactions")
 export class ReactionsController {
-  constructor(private readonly reactionsService: ReactionsService) {}
+  constructor(
+    private readonly reactionsService: ReactionsService,
+    private readonly notificationsService: NotificationsService
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() reaction: CreateReactionDto) {
-    return this.reactionsService.create(reaction);
+  async create(@Body() reaction: CreateReactionDto) {
+    const createdReaction = await this.reactionsService.create(reaction);
+    const reactionWithPostUser = await this.reactionsService.findOne({
+      reactionId: createdReaction.reactionId,
+    });
+
+    await this.notificationsService.create({
+      type: "LIKE",
+      sender: {
+        connect: {
+          userId: reaction.userId,
+        },
+      },
+      recipient: {
+        connect: {
+          userId: reactionWithPostUser.post.authorId,
+        },
+      },
+      post: {
+        connect: {
+          postId: reaction.postId,
+        },
+      },
+    });
+
+    return createdReaction;
   }
 
   @Get()

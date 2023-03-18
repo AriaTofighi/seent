@@ -4,6 +4,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import SettingsIcon from "@mui/icons-material/Settings";
 import {
   Avatar,
+  Badge,
   Button,
   Divider,
   SwipeableDrawer,
@@ -22,6 +23,8 @@ import SearchBar from "./SearchBar";
 import styles from "./SideBar.styles";
 import ChatIcon from "@mui/icons-material/Chat";
 import UserAvatar from "../users/UserAvatar";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import { useAPI } from "../../hooks/useAPI";
 
 const SideBar = () => {
   const theme = useTheme();
@@ -31,6 +34,10 @@ const SideBar = () => {
   const { open, setOpen } = useNav();
   const [mode, setMode] = useState(MODES.SIGN_IN);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
+
+  const { data: messageNotifications } = useAPI<any[]>(
+    `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
+  );
 
   const onSignUp = () => {
     setMode(MODES.SIGN_UP);
@@ -67,7 +74,33 @@ const SideBar = () => {
       </MenuItem>
       {user && (
         <>
-          <MenuItem icon={<ChatIcon />} href="/messages">
+          <MenuItem
+            icon={
+              <Badge
+                sx={{ overflow: "inherit" }}
+                badgeContent={user._count?.notifications}
+                color="primary"
+              >
+                <NotificationsIcon />
+              </Badge>
+            }
+            href="/notifications"
+          >
+            Notifications
+          </MenuItem>
+
+          <MenuItem
+            icon={
+              <Badge
+                sx={{ overflow: "inherit" }}
+                badgeContent={messageNotifications?.length}
+                color="primary"
+              >
+                <ChatIcon />
+              </Badge>
+            }
+            href="/messages"
+          >
             Messages
           </MenuItem>
           <MenuItem icon={<SettingsIcon />} href="/settings">

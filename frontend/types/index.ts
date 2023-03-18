@@ -51,6 +51,12 @@ export const FriendshipStatus = {
   ACCEPTED: "ACCEPTED",
 };
 
+export const NotificationType = {
+  LIKE: "LIKE",
+  REPLY: "REPLY",
+  MESSAGE: "MESSAGE",
+};
+
 type ImageTypeKeys = keyof typeof ImageType;
 type ImageTypeValues = typeof ImageType[ImageTypeKeys];
 
@@ -58,8 +64,9 @@ type PostCounts = {
   childPosts: number;
 };
 
-type ReactionCount = {
+type UserCounts = {
   reactions: number;
+  notifications: number;
 };
 
 export type UserEntity = {
@@ -75,7 +82,7 @@ export type UserEntity = {
   role: typeof Role;
   createdAt: Date;
   updatedAt: Date;
-  _count: ReactionCount;
+  _count: UserCounts;
 
   images: ImageEntity[];
 };
@@ -141,6 +148,18 @@ export type MessageEntity = {
 
   roomUser?: RoomUserEntity;
 
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type NotificationEntity = {
+  notificationId: string;
+  type: typeof NotificationType;
+  recipientId: string;
+  senderId: string;
+  postId: string;
+  roomId: string;
+  read: boolean;
   createdAt: Date;
   updatedAt: Date;
 };

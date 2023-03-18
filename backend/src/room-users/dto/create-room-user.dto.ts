@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { Transform } from "class-transformer";
-import { IsBoolean, IsUUID } from "class-validator";
+import { IsUUID } from "class-validator";
+import { ToBoolean } from "utils/validators";
 
 export class CreateRoomUserDto implements Prisma.RoomUserCreateInput {
   @IsUUID()
@@ -9,7 +9,6 @@ export class CreateRoomUserDto implements Prisma.RoomUserCreateInput {
   @IsUUID()
   userId: string;
 
-  @IsBoolean()
-  @Transform(({ value }) => value === "true")
+  @ToBoolean()
   isOwner: boolean;
 }

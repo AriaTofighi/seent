@@ -14,10 +14,11 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FilesInterceptor } from "@nestjs/platform-express";
-import { ImageType } from "@prisma/client";
+import { ImageType, NotificationType } from "@prisma/client";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ImagesService } from "src/images/images.service";
+import { NotificationsService } from "src/notifications/notifications.service";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
@@ -28,14 +29,14 @@ export class PostsController {
   constructor(
     private readonly postsService: PostsService,
     private readonly fileUploadService: FileUploadService,
-    private readonly imagesService: ImagesService
+    private readonly imagesService: ImagesService,
+    private readonly notificationsService: NotificationsService
   ) {}
 
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor("images"))
   @Post()
   async create(@UploadedFiles() images, @Body() post: CreatePostDto) {
-    // TODO: support multiple images being uploaded from the frontend, currently can only upload one
     delete post.images;
     const newPost = await this.postsService.create(post);
 
@@ -47,6 +48,27 @@ export class PostsController {
         url: uploadedImage.Location,
       };
       await this.imagesService.create(image);
+    }
+
+    if (newPost.parentPostId) {
+      await this.notificationsService.create({
+        type: NotificationType.REPLY,
+        sender: {
+          connect: {
+            userId: newPost.authorId,
+          },
+        },
+        recipient: {
+          connect: {
+            userId: newPost.parentPost.author.userId,
+          },
+        },
+        post: {
+          connect: {
+            postId: newPost.postId,
+          },
+        },
+      });
     }
 
     return newPost;

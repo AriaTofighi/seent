@@ -101,3 +101,22 @@ export const getLatestMessage = (room: any) => {
 
   return latestMessage;
 };
+
+export const sortRoomsByLatestMessage = (rooms: any[] | undefined) => {
+  return rooms?.sort((a, b) => {
+    const aLatestMessage = getLatestMessage(a);
+    const bLatestMessage = getLatestMessage(b);
+
+    if (!aLatestMessage && !bLatestMessage) {
+      return 0;
+    } else if (!aLatestMessage) {
+      return 1;
+    } else if (!bLatestMessage) {
+      return -1;
+    }
+    return (
+      (new Date(bLatestMessage.createdAt) as any) -
+      (new Date(aLatestMessage.createdAt) as any)
+    );
+  });
+};

@@ -12,6 +12,13 @@ export class ReactionsService {
   async findOne(reactionWhereUniqueInput: Prisma.ReactionWhereUniqueInput) {
     const reaction = await this.prisma.reaction.findUnique({
       where: reactionWhereUniqueInput,
+      include: {
+        post: {
+          include: {
+            author: true,
+          },
+        },
+      },
     });
     return reaction;
   }
