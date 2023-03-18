@@ -56,6 +56,10 @@ const SideBar = () => {
     mutate(`users/${user?.userId}`);
   });
 
+  useSocketEvent("newMessage", () => {
+    mutateMessageNotifications();
+  });
+
   const content = (
     <Box sx={styles.root}>
       <Link href="/">
