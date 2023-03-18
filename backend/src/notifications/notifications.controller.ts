@@ -62,7 +62,6 @@ export class NotificationsController {
       page,
       perPage,
     } = query;
-    console.log(read);
     return this.notificationsService.findMany({
       page,
       perPage,

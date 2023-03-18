@@ -37,8 +37,20 @@ export class MessagesGateway {
   }
 
   @SubscribeMessage("sendMessage")
-  handleSendMessage(client: AuthenticatedSocket, data: { roomId: string }) {
+  async handleSendMessage(
+    client: AuthenticatedSocket,
+    data: { roomId: string }
+  ) {
     const { roomId } = data;
+    const roomUsers = (await this.roomUsersService.findMany({
+      where: { roomId },
+    })) as RoomUser[];
+    for (const roomUser of roomUsers) {
+      const userSocket = this.sessionManager.getUserSocket(roomUser.userId);
+      if (userSocket) {
+        userSocket.emit("newMessage");
+      }
+    }
     this.server.to(`room-${roomId}`).emit("newMessage");
   }
 
@@ -60,5 +72,15 @@ export class MessagesGateway {
   handleUserTyping(client: AuthenticatedSocket, data: { roomId: string }) {
     const { roomId } = data;
     this.server.to(`room-${roomId}`).emit("userTyping");
+  }
+
+  @SubscribeMessage("postEngagement")
+  async handlePostReply(client: AuthenticatedSocket, payload: any) {
+    const { recipientId } = payload;
+    const userSocket = this.sessionManager.getUserSocket(recipientId);
+    console.log(recipientId);
+    if (userSocket) {
+      userSocket.emit("newPostEngagement");
+    }
   }
 }

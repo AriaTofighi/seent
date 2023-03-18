@@ -142,6 +142,7 @@ const PostCard = ({
               mutatePosts={mutateAllPosts}
               childPostsCount={post._count?.childPosts ?? 0}
               isMainPost={isMainPost}
+              postAuthorId={post.authorId}
             />
           </Box>
         </Link>

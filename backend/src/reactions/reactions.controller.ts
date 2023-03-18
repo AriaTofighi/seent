@@ -66,8 +66,6 @@ export class ReactionsController {
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async remove(@Param("id") reactionId: string, @Req() req: any) {
-    console.log(reactionId);
-
     const reaction = await this.reactionsService.findOne({
       reactionId,
     });

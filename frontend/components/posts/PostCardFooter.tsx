@@ -12,6 +12,7 @@ import {
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
+import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import {
   createReaction,
@@ -36,6 +37,7 @@ type Props = {
   mutatePosts: any;
   childPostsCount: number;
   isMainPost: boolean;
+  postAuthorId: string;
 };
 
 const PostCardFooter = ({
@@ -48,9 +50,11 @@ const PostCardFooter = ({
   mutatePosts,
   childPostsCount,
   isMainPost,
+  postAuthorId,
 }: Props) => {
   const { user } = useUser();
   const [showReactions, setShowReactions] = useState(false);
+  const { socket } = useAppSocket();
 
   const handleReply = () => {
     if (!user) {
@@ -69,10 +73,12 @@ const PostCardFooter = ({
       await deleteReaction(userReaction.reactionId);
     } else {
       await createReaction(postId, user.userId, type);
+      mutate(`users/${user.userId}`);
+      socket?.emit("postEngagement", {
+        recipientId: postAuthorId,
+      });
     }
-
     mutatePosts();
-    mutate(`users/${user.userId}`);
   };
 
   const handleViewReactions = () => {

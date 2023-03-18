@@ -8,6 +8,7 @@ import { UsersModule } from "./../users/users.module";
 import { ImagesModule } from "src/images/images.module";
 import { JwtStrategy } from "./strategies/jwt.strategy";
 import { LocalStrategy } from "src/auth/strategies/local.strategy";
+import { forwardRef } from "@nestjs/common/utils";
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { LocalStrategy } from "src/auth/strategies/local.strategy";
       signOptions: { expiresIn: jwtConstants.expiresIn },
     }),
     ImagesModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
   ],
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],

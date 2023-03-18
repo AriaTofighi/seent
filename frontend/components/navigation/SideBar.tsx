@@ -25,6 +25,8 @@ import ChatIcon from "@mui/icons-material/Chat";
 import UserAvatar from "../users/UserAvatar";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAPI } from "../../hooks/useAPI";
+import useSocketEvent from "../../hooks/useSocketEvent";
+import { mutate } from "swr";
 
 const SideBar = () => {
   const theme = useTheme();
@@ -35,9 +37,10 @@ const SideBar = () => {
   const [mode, setMode] = useState(MODES.SIGN_IN);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
-  const { data: messageNotifications } = useAPI<any[]>(
-    `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
-  );
+  const { data: messageNotifications, mutate: mutateMessageNotifications } =
+    useAPI<any[]>(
+      `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
+    );
 
   const onSignUp = () => {
     setMode(MODES.SIGN_UP);
@@ -48,6 +51,10 @@ const SideBar = () => {
     setMode(MODES.SIGN_IN);
     setAuthDialogOpen(true);
   };
+
+  useSocketEvent("newPostEngagement", () => {
+    mutate(`users/${user?.userId}`);
+  });
 
   const content = (
     <Box sx={styles.root}>

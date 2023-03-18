@@ -92,7 +92,6 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
   async remove(@Param("id") userId: string, @User() user: UserEntity) {
-    console.log(user);
     // Return an 400 status code on the next line to test the controller
     return "";
 

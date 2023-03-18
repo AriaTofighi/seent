@@ -4,6 +4,7 @@ import { Box } from "@mui/system";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
+import { useAppSocket } from "../../contexts/SocketContext";
 import { useUser } from "../../contexts/UserContext";
 import { useImageUpload } from "../../hooks/useImageUpload";
 import { DEFAULT_POST_DIALOG_STATE } from "../../hooks/usePostDialog";
@@ -24,6 +25,7 @@ const PostDialog = ({
   mutatePostList,
 }: Props) => {
   const { user } = useUser();
+  const { socket } = useAppSocket();
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const {
     image,
@@ -50,6 +52,11 @@ const PostDialog = ({
       formData.append("parentPostId", parentPost.postId);
     }
     await createPost(formData);
+    if (parentPost) {
+      socket?.emit("postEngagement", {
+        recipientId: parentPost.authorId,
+      });
+    }
     mutatePostList();
     mutate(`users/${user.userId}`);
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
