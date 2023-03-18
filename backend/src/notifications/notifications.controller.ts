@@ -49,6 +49,7 @@ export class NotificationsController {
     });
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query() query: FindNotificationsQueryDto) {
     const {
