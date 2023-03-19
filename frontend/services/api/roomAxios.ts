@@ -25,3 +25,12 @@ export const deleteRoom = async (roomId: string) => {
     console.log(error);
   }
 };
+
+export const deleteRoomUser = async (roomUserId: string) => {
+  try {
+    const response = await axios.delete(`room-users/${roomUserId}`);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};

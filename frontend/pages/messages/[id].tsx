@@ -1,8 +1,8 @@
 import SendIcon from "@mui/icons-material/Send";
-import { Button, IconButton, Typography } from "@mui/material";
+import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../components/controls/TextInput";
 import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
@@ -22,11 +22,15 @@ import OptionsIcon from "@mui/icons-material/MoreVert";
 import UserAvatar from "../../components/users/UserAvatar";
 import { useRoomInfo } from "../../hooks/useRoomInfo";
 import { markNotificationsRead } from "../../services/api/notificationAxios";
+import useMenu from "../../hooks/useMenu";
+import { deleteRoomUser } from "../../services/api/roomAxios";
 
 const Room = () => {
   const router = useRouter();
   const { id } = router.query;
   const { user } = useUser();
+  const { anchorEl, handleClick, handleClose, open } = useMenu();
+
   const {
     data: room,
     loading: roomLoading,
@@ -73,15 +77,6 @@ const Room = () => {
     refreshNotifications();
   };
 
-  useSocketEvent("newMessage", onNewMessage);
-
-  useEffect(() => {
-    (async () => {
-      if (!room) return;
-      refreshNotifications();
-    })();
-  }, [room]);
-
   const refreshNotifications = async () => {
     await mutateRoomNotifications();
     mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
@@ -92,6 +87,22 @@ const Room = () => {
     mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
     mutateRoomNotifications();
   };
+
+  useSocketEvent("newMessage", onNewMessage);
+
+  const handleLeaveConversation = async () => {
+    await deleteRoomUser(roomUserId);
+    await mutateRoom();
+    await mutate(`rooms?userId=${user?.userId}`);
+    router.push("/messages");
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (!room) return;
+      refreshNotifications();
+    })();
+  }, [room]);
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 
@@ -130,9 +141,14 @@ const Room = () => {
                 {title}
               </Typography>
             </Box>
-            <IconButton onClick={() => alert("More options")}>
+            <IconButton onClick={handleClick}>
               <OptionsIcon />
             </IconButton>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <MenuItem onClick={handleLeaveConversation}>
+                Leave conversation
+              </MenuItem>
+            </Menu>
           </Header>
           <Box
             component="form"
@@ -142,7 +158,7 @@ const Room = () => {
           >
             <MessageList
               getMessagesKey={getMessagesKey}
-              isGroupChat={room.roomUsers.length > 2}
+              isGroupChat={room.roomUsers?.length > 2}
             />
             <Box sx={styles.messageInputContainer as Styles}>
               <TextInput

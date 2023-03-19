@@ -10,9 +10,9 @@ export const useRoomInfo = (room: any) => {
   const name = getName(room, user, latestMessage);
   const body = latestMessage?.body ?? "";
   const previewUser =
-    room.roomUsers.length > 2
+    room.roomUsers?.length > 2
       ? latestMessage?.user
-      : room.roomUsers.find((u: any) => u.userId !== user?.userId).user;
+      : room.roomUsers?.find((u: any) => u.userId !== user?.userId)?.user;
   const userId = previewUser?.userId;
   const username = previewUser?.username;
   const avatarUrl = previewUser?.images?.[0]?.url;
@@ -20,7 +20,7 @@ export const useRoomInfo = (room: any) => {
   return { latestMessage, name, body, userId, avatarUrl, username };
 };
 const getName = (room: any, user: any, latestMessage: any) => {
-  const isGroupChat = room.roomUsers.length > 2;
+  const isGroupChat = room.roomUsers?.length > 2;
   const latestMessageIsFromUser = latestMessage?.user?.userId === user?.userId;
   if (latestMessageIsFromUser) {
     return "You: ";

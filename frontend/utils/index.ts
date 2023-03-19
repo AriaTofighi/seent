@@ -87,7 +87,7 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
 export const getLatestMessage = (room: any) => {
   let latestMessage: any;
 
-  room.roomUsers.forEach((roomUser: any) => {
+  room.roomUsers?.forEach((roomUser: any) => {
     roomUser.messages.forEach((message: any) => {
       if (
         !latestMessage ||

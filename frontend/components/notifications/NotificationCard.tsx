@@ -35,7 +35,7 @@ const NotificationCard = ({ message, url, sender, createdAt, post }: any) => {
                 overflow: "hidden",
               }}
             >
-              {message}: {post.body}
+              {message}: {post?.body}
             </Typography>
             <Typography variant="caption">
               {formatDateTime(createdAt)}

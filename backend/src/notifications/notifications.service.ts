@@ -51,6 +51,16 @@ export class NotificationsService {
       include: this._include,
     };
 
+    // If roomId is null, then type should also not be MESSAGE.
+    if (where.roomId === null) {
+      queryArgs.where = {
+        ...queryArgs.where,
+        type: {
+          not: "MESSAGE",
+        },
+      };
+    }
+
     let result: PaginatedResult<Notification> | Notification[];
 
     if (page !== undefined) {
