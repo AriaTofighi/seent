@@ -113,13 +113,13 @@ model Notification {
   notificationId String           @id @default(uuid())
   type           NotificationType
   recipientId    String
-  recipient      User?            @relation(name: "notificationRecipient", fields: [recipientId], references: [userId])
+  recipient      User?            @relation(name: "notificationRecipient", fields: [recipientId], references: [userId], onDelete: Cascade)
   senderId       String
-  sender         User?            @relation(name: "notificationSender", fields: [senderId], references: [userId])
+  sender         User?            @relation(name: "notificationSender", fields: [senderId], references: [userId], onDelete: Cascade)
   postId         String?
-  post           Post?            @relation(fields: [postId], references: [postId])
+  post           Post?            @relation(fields: [postId], references: [postId], onDelete: Cascade)
   roomId         String?
-  room           Room?            @relation(fields: [roomId], references: [roomId])
+  room           Room?            @relation(fields: [roomId], references: [roomId], onDelete: Cascade)
   read           Boolean          @default(false)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
