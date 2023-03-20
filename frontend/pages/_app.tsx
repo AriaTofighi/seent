@@ -29,35 +29,28 @@ type AppPropsWithLayout = AppProps & {
 };
 
 function MyApp({ Component, pageProps }: AppPropsWithLayout) {
-  const systemDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const [mode, setMode] = useState<PaletteMode>(
-    // systemDarkMode ? "dark" : "light"
-    "dark"
-  );
   const getLayout = Component.getLayout ?? ((page) => page);
 
   const componentWithLayout = getLayout(<Component {...pageProps} />);
 
   return (
-    <ThemeProvider theme={getTheme(mode)}>
-      <StyledEngineProvider injectFirst>
-        <CssBaseline />
-        <SWRConfig value={swrConfig}>
-          <GoogleOAuthProvider
-            clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
-          >
-            <UserProvider>
-              <SocketProvider>
-                <NavProvider>
-                  <RouteGuard>{componentWithLayout}</RouteGuard>
-                  <ToastContainer autoClose={2000} />
-                </NavProvider>
-              </SocketProvider>
-            </UserProvider>
-          </GoogleOAuthProvider>
-        </SWRConfig>
-      </StyledEngineProvider>
-    </ThemeProvider>
+    <SWRConfig value={swrConfig}>
+      <GoogleOAuthProvider
+        clientId={`${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}`}
+      >
+        <UserProvider>
+          <StyledEngineProvider injectFirst>
+            <CssBaseline />
+            <SocketProvider>
+              <NavProvider>
+                <RouteGuard>{componentWithLayout}</RouteGuard>
+                <ToastContainer autoClose={2000} />
+              </NavProvider>
+            </SocketProvider>
+          </StyledEngineProvider>
+        </UserProvider>
+      </GoogleOAuthProvider>
+    </SWRConfig>
   );
 }
 
