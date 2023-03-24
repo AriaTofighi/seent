@@ -117,6 +117,9 @@ export class PostsController {
             },
           },
         });
+        orClause.push({
+          authorId: user.userId,
+        });
       }
     }
 
