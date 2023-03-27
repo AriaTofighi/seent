@@ -89,8 +89,10 @@ const Room = () => {
     ) as string[];
     if (notificationIds && notificationIds.length > 0) {
       await markNotificationsRead(notificationIds, true);
+      mutate(
+        `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
+      );
     }
-    mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
   };
 
   useSocketEvent("newMessage", onNewMessage);
