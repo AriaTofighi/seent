@@ -15,10 +15,8 @@ const styles: Styles = {
     gap: 2,
   },
   editBtn: {
-    position: "absolute",
-    right: 0,
-    top: 0,
-    m: 2,
+    m: 1,
+    mb: 2,
     color: "primary.main",
     display: "flex",
     gap: 1,

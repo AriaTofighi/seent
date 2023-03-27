@@ -163,14 +163,16 @@ const Profile: NextPageWithLayout = () => {
               )}
 
               {!userIsOwner && (
-                <Button
-                  sx={styles.editBtn}
-                  variant="outlined"
-                  onClick={onFriendButtonClick}
-                >
-                  <PersonAddIcon />
-                  {getFriendshipText()}
-                </Button>
+                <Stack direction="row" justifyContent="flex-end">
+                  <Button
+                    sx={styles.editBtn}
+                    variant="outlined"
+                    onClick={onFriendButtonClick}
+                  >
+                    <PersonAddIcon />
+                    {getFriendshipText()}
+                  </Button>
+                </Stack>
               )}
 
               <Box sx={styles.profileHeader}>
