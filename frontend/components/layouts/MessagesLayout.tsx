@@ -22,9 +22,11 @@ const MessagesLayout = ({ children }: Props) => {
   const [createRoomOpen, setCreateRoomOpen] = useState(false);
   const { user } = useUser();
   const { socket } = useAppSocket();
-  const { data: rooms, mutate: mutateRooms } = useAPI<any[]>(
-    `rooms?userId=${user?.userId}`
-  );
+  const {
+    data: rooms,
+    mutate: mutateRooms,
+    loading: roomsLoading,
+  } = useAPI<any[]>(`rooms?userId=${user?.userId}`);
   const { data: notifications } = useAPI<any[]>(
     `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
   );
@@ -92,6 +94,7 @@ const MessagesLayout = ({ children }: Props) => {
       <Box sx={styles.root}>
         {showRoomList && (
           <Box sx={styles.roomList}>
+            {roomsLoading && <Box p={2.5}>Loading...</Box>}
             {sortRoomsByLatestMessage(roomsWithUnreadNotifications)?.map(
               (room) => (
                 <RoomMenuItem key={room.roomId} room={room} />
