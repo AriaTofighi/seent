@@ -13,12 +13,11 @@ import {
   Styles,
 } from "../types";
 import { infiniteSWRToFlat } from "../utils";
-import { mutate } from "swr";
 import NotificationCard from "../components/notifications/NotificationCard";
 import Loader from "../components/UI/Loader";
 
 const Notifications: NextPageWithLayout = () => {
-  const { user } = useUser();
+  const { user, mutate: mutateUser } = useUser();
   const [markedAsRead, setMarkedAsRead] = useState(false);
 
   const getNotificationsKey = (index: number) =>
@@ -45,9 +44,13 @@ const Notifications: NextPageWithLayout = () => {
 
     switch (type) {
       case "LIKE":
-        return `${sender.username} liked your post`;
+        return `${sender.username} liked your post:`;
       case "REPLY":
-        return `${sender.username} replied to your post`;
+        return `${sender.username} replied to your post:`;
+      case "FRIEND_REQUEST":
+        return `${sender.username} sent you a friend request.`;
+      case "FRIEND_ACCEPT":
+        return `${sender.username} accepted your friend request.`;
       default:
         return "";
     }
@@ -61,6 +64,10 @@ const Notifications: NextPageWithLayout = () => {
         return `/posts/${postId}`;
       case "REPLY":
         return `/posts/${postId}`;
+      case "FRIEND_REQUEST":
+        return `/${notification.sender.username}`;
+      case "FRIEND_ACCEPT":
+        return `/${notification.sender.username}`;
       default:
         return "";
     }
@@ -73,7 +80,7 @@ const Notifications: NextPageWithLayout = () => {
         (notification) => notification.notificationId
       );
       await markNotificationsRead(notificationIds, true);
-      await mutate(`users/${user.userId}`);
+      await mutateUser();
       await mutateNotifications();
       setMarkedAsRead(true);
     })();

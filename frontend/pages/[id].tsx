@@ -29,10 +29,13 @@ import {
   deleteFriendship,
   updateFriendship,
 } from "../services/api/friendshipAxios";
+import { useAppSocket } from "../contexts/SocketContext";
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
   const { user } = useUser();
+  const { socket } = useAppSocket();
+
   const {
     data: userRes,
     error: userErr,
@@ -82,11 +85,14 @@ const Profile: NextPageWithLayout = () => {
   };
 
   const onAcceptFriendRequest = async () => {
-    if (!friendshipRes) return;
+    if (!profileUser || !friendshipRes) return;
     await updateFriendship(friendshipRes.friendshipId, {
       status: FriendshipStatus.ACCEPTED as keyof typeof FriendshipStatus,
     });
     mutateFriendship();
+    socket?.emit("friendAccept", {
+      recipientId: profileUser.userId,
+    });
   };
 
   const onSendFriendRequest = async () => {
@@ -97,6 +103,9 @@ const Profile: NextPageWithLayout = () => {
       status: FriendshipStatus.PENDING as keyof typeof FriendshipStatus,
     });
     mutateFriendship();
+    socket?.emit("friendRequest", {
+      recipientId: profileUser.userId,
+    });
   };
 
   const onUnfriend = async () => {

@@ -147,6 +147,8 @@ enum NotificationType {
   LIKE
   REPLY
   MESSAGE
+  FRIEND_REQUEST
+  FRIEND_ACCEPT
 }
 
 enum Role {

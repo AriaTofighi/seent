@@ -32,7 +32,7 @@ const SideBar = () => {
   const theme = useTheme();
   const mobileMode = useMediaQuery(theme.breakpoints.down("md"));
   const tabletMode = useMediaQuery(theme.breakpoints.down("xl"));
-  const { user, logout } = useUser();
+  const { user, logout, mutate: mutateUser } = useUser();
   const { open, setOpen } = useNav();
   const [mode, setMode] = useState(MODES.SIGN_IN);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
@@ -53,11 +53,19 @@ const SideBar = () => {
   };
 
   useSocketEvent("newPostEngagement", () => {
-    mutate(`users/${user?.userId}`);
+    mutateUser();
   });
 
   useSocketEvent("newMessage", () => {
     mutateMessageNotifications();
+  });
+
+  useSocketEvent("newFriendRequest", () => {
+    mutateUser();
+  });
+
+  useSocketEvent("newFriendAccept", () => {
+    mutateUser();
   });
 
   const content = (
