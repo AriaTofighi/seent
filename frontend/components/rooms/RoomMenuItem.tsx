@@ -17,8 +17,9 @@ const RoomMenuItem = ({
   room,
   ...rest
 }: Props & Omit<MenuItemProps, "children">) => {
-  const styles = getStyles(room);
-  const { user } = useUser();
+  const { user, paletteMode } = useUser();
+  const darkMode = paletteMode === "dark";
+  const styles = getStyles(room, darkMode);
   const { latestMessage, name, body, userId, avatarUrl } = useRoomInfo(room);
 
   return (
@@ -52,7 +53,10 @@ const RoomMenuItem = ({
   );
 };
 
-const getStyles: (room: any) => Styles = (room) => ({
+const getStyles: (room: any, darkMode: boolean) => Styles = (
+  room,
+  darkMode
+) => ({
   root: {
     borderBottom: "1px solid",
     borderColor: "divider",
@@ -60,13 +64,18 @@ const getStyles: (room: any) => Styles = (room) => ({
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
-    bgcolor: room.notification ? "#0a1f28" : "transparent",
+    bgcolor: room.notification
+      ? darkMode
+        ? "#0a1f28"
+        : "#d8d8d8"
+      : "transparent",
     // opacity: room.notification ? 0.75 : "none",
   },
   nowrap: {
     whiteSspace: "nowrap",
     overflow: "hidden",
     textOverflow: "ellipsis",
+    fontWeight: room.notification ? "bold" : "normal",
   },
 });
 

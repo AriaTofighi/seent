@@ -51,7 +51,6 @@ export class MessagesGateway {
         userSocket.emit("newMessage");
       }
     }
-    this.server.to(`room-${roomId}`).emit("newMessage");
   }
 
   @SubscribeMessage("newRoom")

@@ -37,7 +37,7 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogContent>
         <Box sx={styles.root}>
-          <Typography variant="h4" mb={3}>
+          <Typography variant="h4" mb={3} color="text.primary">
             {signInMode ? "Sign in" : "Sign up"}
           </Typography>
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
@@ -52,7 +52,9 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
           </Box>
           <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
             <Box sx={{ flexGrow: 1, height: 2, bgcolor: "divider" }} />
-            <Box sx={{ mx: 2 }}>or</Box>
+            <Box sx={{ mx: 2 }} color="text.primary">
+              or
+            </Box>
             <Box sx={{ flexGrow: 1, height: 2, bgcolor: "divider" }} />
           </Box>
           {signInMode ? (
@@ -65,7 +67,7 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
             variant="text"
             onClick={() => setMode(signInMode ? MODES.SIGN_UP : MODES.SIGN_IN)}
           >
-            <Typography variant="body2">
+            <Typography variant="body2" color="text.secondary">
               {signInMode
                 ? "Don't have an account? Sign up"
                 : "Have an account? Sign in"}

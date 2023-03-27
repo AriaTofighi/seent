@@ -2,7 +2,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../components/controls/TextInput";
 import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
@@ -12,7 +12,7 @@ import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import { createMessage } from "../../services/api/messageAxios";
-import { Styles, ThemedStyles } from "../../types";
+import { NotificationEntity, Styles, ThemedStyles } from "../../types";
 import { mutate } from "swr";
 import { getDisplayedRoomTitle } from "../../utils";
 import { useAppSocket } from "../../contexts/SocketContext";
@@ -38,9 +38,15 @@ const Room = () => {
     mutate: mutateRoom,
   } = useAPI<any>(id ? `rooms/${id}` : null);
 
+  const [shouldGetNotis, setShouldGetNotis] = useState(false);
+
   const { data: roomNotifications, mutate: mutateRoomNotifications } = useAPI<
     any[]
-  >(`notifications?roomId=${id}&read=false&recipientId=${user?.userId}`);
+  >(
+    shouldGetNotis
+      ? `notifications?roomId=${id}&read=false&recipientId=${user?.userId}`
+      : null
+  );
 
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { message: "" },
@@ -74,18 +80,17 @@ const Room = () => {
   const onNewMessage = async () => {
     mutateRoom();
     mutate(getMessagesKey());
-    refreshNotifications();
   };
 
   const refreshNotifications = async () => {
-    await mutateRoomNotifications();
     mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
     const notificationIds = roomNotifications?.map(
-      (n: any) => n.notificationId
+      (n: NotificationEntity) => n.notificationId
     ) as string[];
-    await markNotificationsRead(notificationIds, true);
+    if (notificationIds && notificationIds.length > 0) {
+      await markNotificationsRead(notificationIds, true);
+    }
     mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
-    mutateRoomNotifications();
   };
 
   useSocketEvent("newMessage", onNewMessage);
@@ -98,11 +103,19 @@ const Room = () => {
   };
 
   useEffect(() => {
+    refreshNotifications();
+  }, [roomNotifications]);
+
+  useEffect(() => {
     (async () => {
       if (!room) return;
-      refreshNotifications();
+      if (shouldGetNotis) {
+        await mutateRoomNotifications();
+      } else {
+        setShouldGetNotis(true);
+      }
     })();
-  }, [room]);
+  }, [room, shouldGetNotis]);
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 
