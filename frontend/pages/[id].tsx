@@ -1,10 +1,18 @@
-import { Avatar, Button, Fade, Icon, Stack, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  Fade,
+  Icon,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import TopAppBar from "../components/navigation/TopAppBar";
-import PostsList from "../components/posts/PostList";
 import PostListSorting from "../components/posts/PostListSorting";
 import EditProfileDialog from "../components/profile/EditProfileDialog";
 import Title from "../components/UI/Title";
@@ -30,18 +38,26 @@ import {
   updateFriendship,
 } from "../services/api/friendshipAxios";
 import { useAppSocket } from "../contexts/SocketContext";
+import PostList from "../components/posts/PostList";
+
+const TABS = ["posts", "replies"];
 
 const Profile: NextPageWithLayout = () => {
   const { query } = useRouter();
+  const router = useRouter();
+  const { t = TABS[0] } = query;
+  const value = TABS.indexOf(t as string);
   const { user } = useUser();
   const { socket } = useAppSocket();
+  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
+  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
 
   const {
     data: userRes,
     error: userErr,
     mutate: mutateUser,
     loading: userLoading,
-  } = useAPI<UserEntity[]>(query ? `users?username=${query.id}` : null);
+  } = useAPI<UserEntity[]>(query?.id ? `users?username=${query.id}` : null);
 
   const profileUser = userRes?.[0];
   const userIsOwner = profileUser?.userId === user?.userId;
@@ -61,14 +77,20 @@ const Profile: NextPageWithLayout = () => {
       : null
   );
 
-  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
-  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
-
   const getPostsKey = (index: number) =>
     profileUser
       ? `posts?page=${
           index + 1
         }&isChild=false&orderBy=${sortMode}&perPage=10&authorId=${
+          profileUser.userId
+        }`
+      : null;
+
+  const getPostRepliesKey = (index: number) =>
+    profileUser
+      ? `posts?page=${
+          index + 1
+        }&isChild=true&orderBy=${sortMode}&perPage=10&authorId=${
           profileUser.userId
         }`
       : null;
@@ -79,9 +101,10 @@ const Profile: NextPageWithLayout = () => {
     loading: postsLoading,
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
-  const posts = infiniteSWRToFlat(postsRes);
+  const { error: postRepliesErr, loading: postRepliesLoading } =
+    useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
 
-  const loading = userLoading || postsLoading || !profileUser;
+  const posts = infiniteSWRToFlat(postsRes);
 
   const onSaveProfile = () => {
     mutateUser();
@@ -151,7 +174,26 @@ const Profile: NextPageWithLayout = () => {
     return "Add Friend";
   };
 
-  if (userErr || postsErr) {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
+    const tab = TABS[newValue];
+    if (tab === TABS[0]) {
+      router.push(`/${query.id}`);
+    } else {
+      router.push(`/${query.id}?t=${tab}`);
+    }
+  };
+
+  const loading =
+    userLoading ||
+    (t === "posts" && postsLoading) ||
+    (t === "replies" && postRepliesLoading) ||
+    !profileUser;
+
+  if (
+    userErr ||
+    (t === "posts" && postsErr) ||
+    (t === "replies" && postRepliesErr)
+  ) {
     return <Box>Error loading data</Box>;
   }
 
@@ -216,9 +258,7 @@ const Profile: NextPageWithLayout = () => {
                 <Stack sx={styles.profileStats}>
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography fontWeight={600}>{posts.length}</Typography>
-                    <Typography variant="subtitle2">
-                      {posts.length === 1 ? "Post" : "Posts"}
-                    </Typography>
+                    <Typography variant="subtitle2">Posts & Replies</Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography fontWeight={600}>{reactionCount}</Typography>
@@ -231,10 +271,19 @@ const Profile: NextPageWithLayout = () => {
             </Box>
           </Fade>
 
-          <PostsList
-            getPostsKey={getPostsKey}
-            repliesMode={profileUser.userId !== user?.userId}
-          />
+          <Tabs value={value} onChange={handleChange} sx={{ display: "flex" }}>
+            {TABS.map((tab, index) => (
+              <Tab key={index} label={tab} sx={{ flex: 1 }} />
+            ))}
+          </Tabs>
+          {t === "posts" ? (
+            <PostList
+              getPostsKey={getPostsKey}
+              repliesMode={profileUser.userId !== user?.userId}
+            />
+          ) : (
+            <PostList getPostsKey={getPostRepliesKey} repliesMode />
+          )}
 
           <EditProfileDialog
             open={showEditProfileDialog}

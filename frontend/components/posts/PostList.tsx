@@ -6,11 +6,7 @@ import { PaginatedResult, PostEntity, Styles } from "../../types";
 import { infiniteSWRToFlat } from "../../utils";
 import FloatingButton from "../UI/FloatingButton";
 import PostCard from "./PostCard";
-import PostLoader from "../UI/Loader";
 import Loader from "../UI/Loader";
-// import { BottomScrollListener } from "react-bottom-scroll-listener";
-// import { debounce } from "lodash";
-// import { useCallback } from "react";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
@@ -40,17 +36,9 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
     return <LinearProgress />;
   }
 
-  // const increaseSize = () => setSize((size) => size + 1);
-
-  // const debouncedLoadMoreItems = debounce((increaseSize), 1000, {
-  //   leading: true,
-  //   trailing: false,
-  // });
-
   return (
     <>
       {!loading && (
-        // <BottomScrollListener onBottom={debouncedLoadMoreItems} offset={200}>
         <>
           <Box sx={styles.posts}>
             {noResults && <Typography p={2}>No results</Typography>}
@@ -87,7 +75,6 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
             </>
           )}
         </>
-        // </BottomScrollListener>
       )}
     </>
   );
