@@ -9,12 +9,13 @@ import {
   Menu,
   MenuItem,
 } from "@mui/material";
-import { deletePost } from "../../services/api/postAxios";
+import { deletePost, updatedPost } from "../../services/api/postAxios";
 import { stopPropagation } from "../../utils";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useMenu from "../../hooks/useMenu";
 import UserAvatar from "../users/UserAvatar";
+import PostPrivacyMenu from "./PostPrivacyMenu";
 
 const PostCardHeader = ({
   postId,
@@ -23,8 +24,16 @@ const PostCardHeader = ({
   showActions,
   avatar,
   mutatePosts,
+  isPublic,
 }: any) => {
   const { anchorEl, handleClick, handleClose, open } = useMenu();
+  const {
+    anchorEl: anchorElPrivacy,
+    handleClick: handleClickPrivacy,
+    handleClose: handleClosePrivacy,
+    open: openPrivacy,
+  } = useMenu();
+
   const router = useRouter();
 
   const handleShowMenu = (event: MouseEvent<HTMLButtonElement>) => {
@@ -44,6 +53,18 @@ const PostCardHeader = ({
     if (router.asPath.startsWith("posts/")) {
       router.push("/feed");
     }
+  };
+
+  const handleShowSelectPrivacy = (event: React.SyntheticEvent) => {
+    stopPropagation(event as MouseEvent);
+    handleClickPrivacy(event as any);
+  };
+
+  const handleSelectPrivacy = async (privacyMode: string) => {
+    await updatedPost(postId, { isPublic: privacyMode === "public" });
+    await mutatePosts();
+    handleClosePrivacy();
+    handleClose();
   };
 
   return (
@@ -66,8 +87,17 @@ const PostCardHeader = ({
         </Box>
       </Stack>
       <Menu anchorEl={anchorEl} open={open} onClose={handleCloseMenu}>
+        <MenuItem onClick={handleShowSelectPrivacy}>{`Set visibility (${
+          isPublic ? "Everyone" : "Friends Only"
+        })`}</MenuItem>
         <MenuItem onClick={handleDeletePost}>Delete</MenuItem>
       </Menu>
+      <PostPrivacyMenu
+        anchorEl={anchorElPrivacy}
+        open={openPrivacy}
+        handleClose={handleClosePrivacy}
+        handleMenuItemClick={handleSelectPrivacy}
+      />
     </>
   );
 };

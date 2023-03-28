@@ -16,6 +16,7 @@ import { DefaultValueType } from "./PostDialog";
 import { useState } from "react";
 import { Styles } from "../../types";
 import useMenu from "../../hooks/useMenu";
+import PostPrivacyMenu from "./PostPrivacyMenu";
 
 type Props = {
   setValue: UseFormSetValue<DefaultValueType>;
@@ -81,7 +82,10 @@ const PostDialogActions = ({
           pickerStyle={styles.emojiPicker as KeyValuePair}
         />
       )}
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+      <PostPrivacyMenu
+        {...{ anchorEl, handleClose, open, handleMenuItemClick }}
+      />
+      {/* <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <Typography p={1.5}>Who should see this post?</Typography>
         <MenuItem onClick={() => handleMenuItemClick("public")}>
           Everyone
@@ -89,7 +93,7 @@ const PostDialogActions = ({
         <MenuItem onClick={() => handleMenuItemClick("friends")}>
           Friends
         </MenuItem>
-      </Menu>
+      </Menu> */}
     </>
   );
 };

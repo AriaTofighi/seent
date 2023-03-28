@@ -126,6 +126,7 @@ const PostCard = ({
               postId={postId}
               avatar={post.author.images[0]?.url}
               mutatePosts={mutateAllPosts}
+              isPublic={post.isPublic}
             />
             <PostCardBody
               body={post?.body}
