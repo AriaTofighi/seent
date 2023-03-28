@@ -18,13 +18,9 @@ const UserAvatar = ({ userId, username, avatarUrl, AvatarProps }: Props) => {
   const avatarContent = (
     <>
       <Avatar src={avatarUrl} {...AvatarProps} />
-      {userIsOnline ? (
+      {userIsOnline && (
         <Tooltip title="Online" placement="top" enterDelay={400}>
           <Box sx={{ ...styles.status, ...styles.onlineStatus } as object} />
-        </Tooltip>
-      ) : (
-        <Tooltip title="Offline" placement="top" enterDelay={400}>
-          <Box sx={{ ...styles.status, ...styles.offlineStatus } as object} />
         </Tooltip>
       )}
     </>

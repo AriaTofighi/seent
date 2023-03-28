@@ -83,7 +83,8 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   useEffect(() => {
-    const isDarkMode = localStorage.getItem("paletteMode") === "dark";
+    const storageValue = localStorage.getItem("paletteMode");
+    const isDarkMode = !storageValue || storageValue === "dark";
     if (isDarkMode) {
       setPaletteMode("dark");
     } else {

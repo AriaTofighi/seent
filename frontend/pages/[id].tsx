@@ -161,18 +161,18 @@ const Profile: NextPageWithLayout = () => {
         <>
           <Fade in timeout={700}>
             <Box sx={styles.profileHeaderContainer}>
-              {userIsOwner && (
-                <Button
-                  sx={styles.editBtn}
-                  variant="outlined"
-                  onClick={() => setShowEditProfileDialog(true)}
-                >
-                  Edit
-                </Button>
-              )}
+              <Stack direction="row" justifyContent="flex-end">
+                {userIsOwner && (
+                  <Button
+                    sx={styles.editBtn}
+                    variant="outlined"
+                    onClick={() => setShowEditProfileDialog(true)}
+                  >
+                    Edit
+                  </Button>
+                )}
 
-              {!userIsOwner && (
-                <Stack direction="row" justifyContent="flex-end">
+                {!userIsOwner && user && (
                   <Button
                     sx={styles.editBtn}
                     variant="outlined"
@@ -181,8 +181,8 @@ const Profile: NextPageWithLayout = () => {
                     <PersonAddIcon />
                     {getFriendshipText()}
                   </Button>
-                </Stack>
-              )}
+                )}
+              </Stack>
 
               <Box sx={styles.profileHeader}>
                 <UserAvatar
