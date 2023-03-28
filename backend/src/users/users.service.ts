@@ -65,6 +65,16 @@ export class UsersService {
     return result;
   }
 
+  async getUserPostsReactionsCount(userId: string) {
+    const result = await this.prisma.$queryRaw`
+      SELECT COUNT(*) FROM "Reaction" WHERE "postId" IN (
+        SELECT "postId" FROM "Post" WHERE "authorId" = ${userId}
+      )
+    `;
+
+    return result[0].count;
+  }
+
   async create(data: Prisma.UserCreateInput) {
     return await this.prisma.user.create({
       data,

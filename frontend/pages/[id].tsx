@@ -46,6 +46,10 @@ const Profile: NextPageWithLayout = () => {
   const profileUser = userRes?.[0];
   const userIsOwner = profileUser?.userId === user?.userId;
 
+  const { data: reactionCount } = useAPI<number>(
+    profileUser ? `users/${profileUser.userId}/posts/reactions/count` : null
+  );
+
   const {
     data: friendshipRes,
     error: friendshipErr,
@@ -217,11 +221,9 @@ const Profile: NextPageWithLayout = () => {
                     </Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>
-                      {profileUser._count?.reactions}
-                    </Typography>
+                    <Typography fontWeight={600}>{reactionCount}</Typography>
                     <Typography variant="subtitle2">
-                      {profileUser._count?.reactions === 1 ? "Like" : "Likes"}
+                      {reactionCount === 1 ? "Like" : "Likes"}
                     </Typography>
                   </Stack>
                 </Stack>

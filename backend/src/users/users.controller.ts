@@ -58,6 +58,11 @@ export class UsersController {
     }
   }
 
+  @Get(":id/posts/reactions/count")
+  async getUserPostsReactionsCount(@Param("id") userId: string) {
+    return this.usersService.getUserPostsReactionsCount(userId);
+  }
+
   @Get(":id")
   async findOne(@Param("id") userId: string) {
     const user = await this.usersService.findOne({ userId });
