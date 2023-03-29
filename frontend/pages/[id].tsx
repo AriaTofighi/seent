@@ -101,10 +101,14 @@ const Profile: NextPageWithLayout = () => {
     loading: postsLoading,
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
-  const { error: postRepliesErr, loading: postRepliesLoading } =
-    useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
+  const {
+    data: postRepliesRes,
+    error: postRepliesErr,
+    loading: postRepliesLoading,
+  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
 
   const posts = infiniteSWRToFlat(postsRes);
+  const postReplies = infiniteSWRToFlat(postRepliesRes);
 
   const onSaveProfile = () => {
     mutateUser();
@@ -257,8 +261,16 @@ const Profile: NextPageWithLayout = () => {
               <Stack sx={styles.profileStatsContainer}>
                 <Stack sx={styles.profileStats}>
                   <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>{posts.length}</Typography>
-                    <Typography variant="subtitle2">Posts & Replies</Typography>
+                    <Typography fontWeight={600}>
+                      {postsRes?.[0].meta.total}
+                    </Typography>
+                    <Typography variant="subtitle2">Posts</Typography>
+                  </Stack>
+                  <Stack sx={{ flexDirection: "column" }}>
+                    <Typography fontWeight={600}>
+                      {postRepliesRes?.[0].meta.total}
+                    </Typography>
+                    <Typography variant="subtitle2">Replies</Typography>
                   </Stack>
                   <Stack sx={{ flexDirection: "column" }}>
                     <Typography fontWeight={600}>{reactionCount}</Typography>
