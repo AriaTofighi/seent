@@ -6,7 +6,6 @@ import {
   Delete,
   Query,
   UseGuards,
-  Req,
   UnauthorizedException,
   Param,
 } from "@nestjs/common";
@@ -15,6 +14,9 @@ import { CreateNotificationDto } from "./dto/create-notification.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindNotificationsQueryDto } from "./dto/find-notifications-query.dto";
 import { Patch } from "@nestjs/common/decorators";
+import { JwtPayload } from "utils/types";
+import { User } from "src/users/decorators/user.decorator";
+import { Notification } from "@prisma/client";
 
 @Controller("/api/notifications")
 export class NotificationsController {
@@ -22,8 +24,16 @@ export class NotificationsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  create(@Body() notification: CreateNotificationDto) {
+  create(
+    @Body() notification: CreateNotificationDto,
+    @User() user: JwtPayload
+  ) {
     const { type, roomId, postId, senderId, recipientId } = notification;
+
+    if (user.userId !== senderId) {
+      throw new UnauthorizedException();
+    }
+
     return this.notificationsService.create({
       type,
       room: {
@@ -51,7 +61,7 @@ export class NotificationsController {
 
   @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() query: FindNotificationsQueryDto) {
+  findAll(@Query() query: FindNotificationsQueryDto, @User() user: JwtPayload) {
     const {
       notificationId,
       roomId,
@@ -63,6 +73,11 @@ export class NotificationsController {
       page,
       perPage,
     } = query;
+
+    if (recipientId !== user.userId) {
+      throw new UnauthorizedException();
+    }
+
     return this.notificationsService.findMany({
       page,
       perPage,
@@ -88,22 +103,37 @@ export class NotificationsController {
     updateManyRead: {
       notificationIds: string[];
       read: boolean;
-    }
+    },
+    @User() user: JwtPayload
   ) {
-    return this.notificationsService.updateManyRead(
-      updateManyRead.notificationIds,
-      true
-    );
+    const { notificationIds } = updateManyRead;
+
+    const notifications = (await this.notificationsService.findMany({
+      where: {
+        notificationId: {
+          in: notificationIds,
+        },
+        recipientId: user.userId,
+      },
+    })) as Notification[];
+
+    for (const notification of notifications) {
+      if (notification.recipientId !== user.userId) {
+        throw new UnauthorizedException();
+      }
+    }
+
+    return this.notificationsService.updateManyRead(notificationIds, true);
   }
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") notificationId: string, @Req() req: any) {
+  async remove(@Param("id") notificationId: string, @User() user: JwtPayload) {
     const notification = await this.notificationsService.findOne({
       notificationId,
     });
 
-    if (req.user.userId !== notification.senderId) {
+    if (user.userId !== notification.senderId) {
       throw new UnauthorizedException();
     }
 

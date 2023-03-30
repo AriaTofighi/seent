@@ -2,17 +2,16 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
-  Delete,
   Get,
   Param,
   Patch,
   Query,
-  Req,
   UnauthorizedException,
   UseGuards,
   UseInterceptors,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
+import { JwtPayload } from "utils/types";
 import { User } from "./decorators/user.decorator";
 import { FindUsersQueryDto } from "./dto/find-users-query.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
@@ -75,16 +74,17 @@ export class UsersController {
   async update(
     @Param("id") userId: string,
     @Body() updateUserDto: UpdateUserDto,
-    @Req() req
+    @User() user: JwtPayload
   ) {
-    if (req.user.userId !== userId) {
+    if (user.userId !== userId) {
       throw new UnauthorizedException();
     }
 
-    const user = await this.usersService.findOne({
+    const userFound = await this.usersService.findOne({
       username: updateUserDto.username,
     });
-    if (user && user.userId !== userId) {
+
+    if (userFound && userFound.userId !== userId) {
       throw new UnauthorizedException({ message: "Username already in use" });
     }
 
@@ -92,18 +92,5 @@ export class UsersController {
       where: { userId },
       data: updateUserDto,
     });
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Delete(":id")
-  async remove(@Param("id") userId: string, @User() user: UserEntity) {
-    // Return an 400 status code on the next line to test the controller
-    return "";
-
-    // if (user.userId !== userId) {
-    //   throw new UnauthorizedException();
-    // }
-
-    // return this.usersService.delete({ userId });
   }
 }

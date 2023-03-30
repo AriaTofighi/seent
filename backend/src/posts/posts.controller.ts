@@ -13,6 +13,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { Post } from "@nestjs/common/decorators";
+import { UnauthorizedException } from "@nestjs/common/exceptions";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import {
   ImageType,
@@ -24,6 +25,8 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { ImagesService } from "src/images/images.service";
 import { NotificationsService } from "src/notifications/notifications.service";
+import { User } from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { FindPostsQueryDto } from "./dto/find-posts-query.dto";
 import { UpdatePostDto } from "./dto/update-post.dto";
@@ -42,10 +45,18 @@ export class PostsController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FilesInterceptor("images"))
   @Post()
-  async create(@UploadedFiles() images, @Body() post: CreatePostDto) {
+  async create(
+    @UploadedFiles() images,
+    @Body() post: CreatePostDto,
+    @User() user: JwtPayload
+  ) {
     delete post.images;
+
+    if (user.userId !== post.authorId) {
+      throw new UnauthorizedException();
+    }
+
     const newPost = await this.postsService.create(post);
-    console.log(post);
 
     if (images[0]) {
       const uploadedImage: any = await this.fileUploadService.upload(images[0]);
@@ -132,9 +143,16 @@ export class PostsController {
   @Patch(":id")
   async update(
     @Param("id") postId: string,
-    @Body() updatePostDto: UpdatePostDto
+    @Body() updatePostDto: UpdatePostDto,
+    @User() user: JwtPayload
   ) {
     const { body, isPublic } = updatePostDto;
+    const post = await this.postsService.findOne({ postId });
+
+    if (user.userId !== post.authorId) {
+      throw new UnauthorizedException();
+    }
+
     return this.postsService.update({
       where: { postId },
       data: { body, isPublic },
@@ -143,7 +161,13 @@ export class PostsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") postId: string, @Req() req) {
+  async remove(@Param("id") postId: string, @User() user: JwtPayload) {
+    const post = await this.postsService.findOne({ postId });
+
+    if (post.authorId !== user.userId) {
+      throw new UnauthorizedException();
+    }
+
     const images = await this.imagesService.findMany({
       where: { postId: postId },
     });

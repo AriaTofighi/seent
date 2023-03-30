@@ -5,6 +5,9 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindMessagesQueryDto } from "./dto/find-messages-query.dto";
 import { NotificationsService } from "src/notifications/notifications.service";
 import { NotificationType } from "@prisma/client";
+import { User } from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
+import { UnauthorizedException } from "@nestjs/common/exceptions";
 
 @Controller("/api/messages")
 export class MessagesController {
@@ -15,13 +18,21 @@ export class MessagesController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() message: CreateMessageDto) {
+  async create(@Body() message: CreateMessageDto, @User() user: JwtPayload) {
     const { roomUserId, body } = message;
 
     const newMessage = await this.messagesService.create({
       roomUser: { connect: { roomUserId } },
       body,
     });
+
+    if (
+      !newMessage.roomUser.room.roomUsers.some(
+        (roomUser) => roomUser.userId === user.userId
+      )
+    ) {
+      throw new UnauthorizedException();
+    }
 
     for (const user of newMessage.roomUser.room.roomUsers) {
       if (user.userId !== newMessage.roomUser.userId) {
@@ -50,16 +61,32 @@ export class MessagesController {
     return newMessage;
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get()
-  findAll(@Query() query: FindMessagesQueryDto) {
-    const { messageId, body, roomUserId, roomId, page, perPage } = query;
+  async findAll(
+    @Query() query: FindMessagesQueryDto,
+    @User() user: JwtPayload
+  ) {
+    const { roomId, page, perPage } = query;
+
+    const messages = (await this.messagesService.findMany({
+      where: { roomUser: { roomId } },
+    })) as any[];
+
+    if (
+      !messages.some((message) =>
+        message.roomUser.room.roomUsers.some(
+          (roomUser) => roomUser.userId === user.userId
+        )
+      )
+    ) {
+      throw new UnauthorizedException();
+    }
+
     return this.messagesService.findMany({
       page,
       perPage,
       where: {
-        messageId,
-        body,
-        roomUserId,
         roomUser: {
           roomId,
         },
@@ -69,20 +96,4 @@ export class MessagesController {
       },
     });
   }
-
-  //   @UseGuards(JwtAuthGuard)
-  //   @Delete(":id")
-  //   async remove(@Param("id") messageId: string, @Req() req: any) {
-  //     const message = await this.messagesService.findOne({
-  //       messageId,
-  //     });
-
-  //     if (req.user.userId !== message.messageUser.userId) {
-  //       throw new UnauthorizedException();
-  //     }
-
-  //     return this.messagesService.delete({
-  //       messageId,
-  //     });
-  //   }
 }

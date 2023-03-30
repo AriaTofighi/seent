@@ -1,13 +1,11 @@
 import { ImagesService } from "./images.service";
 import {
   Controller,
-  Get,
   Body,
   Patch,
   Param,
   Delete,
   UseGuards,
-  Req,
   UnauthorizedException,
   UploadedFile,
   UseInterceptors,
@@ -19,6 +17,8 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { ImageType, Prisma } from "@prisma/client";
+import { JwtPayload } from "utils/types";
+import { User } from "src/users/decorators/user.decorator";
 
 @Controller("api/images")
 export class ImagesController {
@@ -32,11 +32,16 @@ export class ImagesController {
   @Post()
   async create(
     @UploadedFile() imageFile: Express.Multer.File,
-    @Body() image: CreateImageDto
+    @Body() image: CreateImageDto,
+    @User() user: JwtPayload
   ) {
     if (image.type === ImageType.USER_AVATAR) {
       if (!image.userId || image.postId) {
         throw new BadRequestException();
+      }
+
+      if (image.userId !== user.userId) {
+        throw new UnauthorizedException();
       }
 
       const userAvatars = await this.imagesService.findMany({
@@ -56,16 +61,20 @@ export class ImagesController {
     return await this.imagesService.create(newImage);
   }
 
-  @Get(":id")
-  async findOne(@Param("id") imageId: string) {
-    const image = await this.imagesService.findOne({ imageId });
-    return image;
-  }
-
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor("image"))
   @Patch(":id")
-  async update(@UploadedFile() imageFile, @Param("id") imageId: string) {
+  async update(
+    @UploadedFile() imageFile,
+    @Param("id") imageId: string,
+    @User() user: JwtPayload
+  ) {
+    const userId = await this.imagesService.getRelatedEntityUserId(imageId);
+
+    if (user.userId !== userId) {
+      throw new UnauthorizedException();
+    }
+
     const uploadedImage: any = await this.fileUploadService.upload(imageFile);
     const newImage: Prisma.ImageUpdateInput = {
       url: uploadedImage.Location,
@@ -78,10 +87,10 @@ export class ImagesController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") imageId: string, @Req() req) {
-    const userId = this.imagesService.getRelatedEntityUserId(imageId);
+  async remove(@Param("id") imageId: string, @User() user: JwtPayload) {
+    const userId = await this.imagesService.getRelatedEntityUserId(imageId);
 
-    if (req.user.userId !== userId) {
+    if (user.userId !== userId) {
       throw new UnauthorizedException();
     }
 

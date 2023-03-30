@@ -27,6 +27,16 @@ export class MessagesService {
             },
           },
         },
+        room: {
+          select: {
+            roomId: true,
+            roomUsers: {
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
       },
     },
   };

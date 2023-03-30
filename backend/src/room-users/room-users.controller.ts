@@ -1,20 +1,13 @@
-import { DeleteRoomUserDto } from "./dto/delete-room-user-dto";
 import {
   Controller,
-  Get,
-  Post,
-  Body,
   Delete,
-  Query,
   UseGuards,
   Req,
   UnauthorizedException,
   Param,
 } from "@nestjs/common";
 import { RoomUsersService } from "./room-users.service";
-import { CreateRoomUserDto } from "./dto/create-room-user.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
-import { FindRoomUsersQueryDto } from "./dto/find-room-users-query.dto";
 import { RoomsService } from "src/rooms/rooms.service";
 
 @Controller("/api/room-users")
@@ -23,23 +16,6 @@ export class RoomUsersController {
     private readonly roomUsersService: RoomUsersService,
     private readonly roomsService: RoomsService
   ) {}
-
-  @UseGuards(JwtAuthGuard)
-  @Post()
-  create(@Body() roomUser: CreateRoomUserDto) {
-    return this.roomUsersService.create(roomUser);
-  }
-
-  @UseGuards(JwtAuthGuard)
-  @Get()
-  findAll(@Query() query: FindRoomUsersQueryDto) {
-    const { roomUserId, roomId, userId, isOwner, page, perPage } = query;
-    return this.roomUsersService.findMany({
-      page,
-      perPage,
-      where: { roomUserId, roomId, userId, isOwner },
-    });
-  }
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")

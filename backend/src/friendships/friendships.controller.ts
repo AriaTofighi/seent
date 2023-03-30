@@ -7,13 +7,15 @@ import {
   Param,
   Patch,
   Query,
-  Req,
   UseGuards,
 } from "@nestjs/common";
 import { Post } from "@nestjs/common/decorators";
+import { UnauthorizedException } from "@nestjs/common/exceptions";
 import { NotificationType } from "@prisma/client";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { NotificationsService } from "src/notifications/notifications.service";
+import { User } from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
 import { CreateFriendshipDto } from "./dto/create-friendship.dto";
 import { FindFriendshipsQueryDto } from "./dto/find-friendships-query.dto";
 import { UpdateFriendshipDto } from "./dto/update-friendship.dto";
@@ -28,7 +30,14 @@ export class FriendshipsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() friendship: CreateFriendshipDto) {
+  async create(
+    @Body() friendship: CreateFriendshipDto,
+    @User() user: JwtPayload
+  ) {
+    if (friendship.senderId !== user.userId) {
+      throw new UnauthorizedException();
+    }
+
     const newFriendship = await this.friendshipsService.create(friendship);
 
     await this.notificationsService.create({
@@ -105,9 +114,16 @@ export class FriendshipsController {
   @Patch(":id")
   async update(
     @Param("id") friendshipId: string,
-    @Body() updateFriendshipDto: UpdateFriendshipDto
+    @Body() updateFriendshipDto: UpdateFriendshipDto,
+    @User() user: JwtPayload
   ) {
     const { status } = updateFriendshipDto;
+
+    const friendship = await this.friendshipsService.findOne({ friendshipId });
+
+    if (friendship.recipientId !== user.userId) {
+      throw new UnauthorizedException();
+    }
 
     const updatedFriendship = await this.friendshipsService.update({
       where: { friendshipId },
@@ -135,7 +151,13 @@ export class FriendshipsController {
 
   @UseGuards(JwtAuthGuard)
   @Delete(":id")
-  async remove(@Param("id") friendshipId: string, @Req() req) {
+  async remove(@Param("id") friendshipId: string, @User() user: JwtPayload) {
+    const friendship = await this.friendshipsService.findOne({ friendshipId });
+
+    if (friendship.senderId !== user.userId) {
+      throw new UnauthorizedException();
+    }
+
     return this.friendshipsService.delete({ friendshipId });
   }
 }

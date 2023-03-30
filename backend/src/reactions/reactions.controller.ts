@@ -15,6 +15,8 @@ import { CreateReactionDto } from "./dto/create-reaction.dto";
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth.guard";
 import { FindReactionsQueryDto } from "./dto/find-reactions-query.dto";
 import { NotificationsService } from "src/notifications/notifications.service";
+import { User } from "src/users/decorators/user.decorator";
+import { JwtPayload } from "utils/types";
 
 @Controller("/api/reactions")
 export class ReactionsController {
@@ -25,7 +27,11 @@ export class ReactionsController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Body() reaction: CreateReactionDto) {
+  async create(@Body() reaction: CreateReactionDto, @User() user: JwtPayload) {
+    if (user.userId !== reaction.userId) {
+      throw new UnauthorizedException();
+    }
+
     const createdReaction = await this.reactionsService.create(reaction);
     const reactionWithPostUser = await this.reactionsService.findOne({
       reactionId: createdReaction.reactionId,
@@ -56,6 +62,7 @@ export class ReactionsController {
   @Get()
   findAll(@Query() query: FindReactionsQueryDto) {
     const { postId, type, userId, page, perPage } = query;
+
     return this.reactionsService.findMany({
       page,
       perPage,
