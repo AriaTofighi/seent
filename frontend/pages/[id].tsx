@@ -1,44 +1,34 @@
-import {
-  Avatar,
-  Button,
-  Fade,
-  Icon,
-  Stack,
-  Tab,
-  Tabs,
-  Typography,
-} from "@mui/material";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import { Button, Fade, Stack, Tab, Tabs, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
+import Title from "../components/UI/Title";
 import { getMainLayout } from "../components/layouts/MainLayout";
 import TopAppBar from "../components/navigation/TopAppBar";
+import PostList from "../components/posts/PostList";
 import PostListSorting from "../components/posts/PostListSorting";
 import EditProfileDialog from "../components/profile/EditProfileDialog";
-import Title from "../components/UI/Title";
+import UserAvatar from "../components/users/UserAvatar";
+import { useAppSocket } from "../contexts/SocketContext";
 import { useUser } from "../contexts/UserContext";
 import { useAPI } from "../hooks/useAPI";
 import useInfiniteAPI from "../hooks/useInfiniteAPI";
-import {
-  FriendshipEntity,
-  FriendshipStatus,
-  NextPageWithLayout,
-  PaginatedResult,
-  PostEntity,
-  POSTS_SORT_MODES,
-  UserEntity,
-} from "../types";
-import { infiniteSWRToFlat } from "../utils";
-import styles from "../styles/[id].styles";
-import UserAvatar from "../components/users/UserAvatar";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import {
   createFriendship,
   deleteFriendship,
   updateFriendship,
 } from "../services/api/friendshipAxios";
-import { useAppSocket } from "../contexts/SocketContext";
-import PostList from "../components/posts/PostList";
+import styles from "../styles/[id].styles";
+import {
+  FriendshipEntity,
+  FriendshipStatus,
+  NextPageWithLayout,
+  POSTS_SORT_MODES,
+  PaginatedResult,
+  PostEntity,
+  UserEntity,
+} from "../types";
 
 const TABS = ["posts", "replies"];
 
@@ -106,9 +96,6 @@ const Profile: NextPageWithLayout = () => {
     error: postRepliesErr,
     loading: postRepliesLoading,
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
-
-  const posts = infiniteSWRToFlat(postsRes);
-  const postReplies = infiniteSWRToFlat(postRepliesRes);
 
   const onSaveProfile = () => {
     mutateUser();

@@ -14,6 +14,7 @@ const SearchBar = () => {
   const tab = router.query?.t;
 
   const onSubmit = (data: typeof defaultValues) => {
+    if (!data.search) return;
     if (tab) {
       router.push(`/search/${data.search}?t=${tab}`);
     } else {
@@ -42,6 +43,10 @@ const SearchBar = () => {
               control={control}
               fullWidth
               variant="standard"
+              required={false}
+              InputProps={{
+                autoComplete: "off",
+              }}
             />
           </form>
         </Toolbar>

@@ -84,7 +84,7 @@ const Notifications: NextPageWithLayout = () => {
       await mutateNotifications();
       setMarkedAsRead(true);
     })();
-  }, [notificationsList]);
+  }, [notificationsList, markedAsRead]);
 
   return (
     <>

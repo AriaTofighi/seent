@@ -6,6 +6,10 @@ const styles: Styles = {
     borderColor: "divider",
     p: 3,
     position: "relative",
+    display: "flex",
+    flexDirection: "column",
+    gap: 2,
+    justifyContent: "center",
   },
   profileHeader: {
     display: "flex",
