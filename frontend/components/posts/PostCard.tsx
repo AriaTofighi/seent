@@ -80,7 +80,7 @@ const PostCard = ({
     depth <= MAX_POST_DEPTH_PER_PAGE;
   const showViewFullPost =
     childPostsLength > 0 && depth > MAX_POST_DEPTH_PER_PAGE;
-  const userReaction = post?.reactions.find(
+  const userReaction = post?.reactions?.find(
     (r: ReactionEntity) => r.userId === user?.userId
   );
 
