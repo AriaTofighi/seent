@@ -148,7 +148,10 @@ export class FriendshipsController {
   async remove(@Param("id") friendshipId: string, @User() user: JwtPayload) {
     const friendship = await this.friendshipsService.findOne({ friendshipId });
 
-    if (friendship.senderId !== user.userId) {
+    if (
+      friendship.senderId !== user.userId &&
+      friendship.recipientId !== user.userId
+    ) {
       throw new UnauthorizedException();
     }
 
