@@ -94,7 +94,8 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto, @Req() req) {
-    const orClause = await this.getOrClause(req);
+    const user = await this.getUser(req);
+    const orClause = await this.getOrClause(user);
 
     const {
       authorId,
@@ -113,7 +114,7 @@ export class PostsController {
         postId,
         parentPostId,
         body: { contains: search, mode: "insensitive" },
-        OR: orClause.length > 0 ? orClause : undefined,
+        OR: orClause,
       },
       orderBy,
       page,
@@ -121,12 +122,22 @@ export class PostsController {
       isChild,
     });
 
+    let posts;
+    if (result instanceof Array) {
+      posts = result;
+    } else {
+      posts = result.data;
+    }
+
+    await this.postsService.authorizeParentPosts(posts, user);
+
     return result;
   }
 
   @Get(":id")
   async findOne(@Param("id") postId: string, @Req() req) {
-    const orClause = await this.getOrClause(req);
+    const user = await this.getUser(req);
+    const orClause = await this.getOrClause(user);
     const posts = (await this.postsService.findMany({
       where: {
         postId,
@@ -136,6 +147,9 @@ export class PostsController {
     if (posts.length != 1) {
       throw new NotFoundException("Post not found");
     }
+
+    await this.postsService.authorizeParentPosts(posts, user);
+
     return posts[0];
   }
 
@@ -179,43 +193,48 @@ export class PostsController {
     return this.postsService.delete({ postId });
   }
 
-  private async getOrClause(req: any) {
-    const orClause = [];
-    orClause.push({ isPublic: true });
-
+  private async getUser(req: any) {
     if (req.headers.authorization) {
       const token = req.headers.authorization.replace("Bearer ", "");
       const user = await this.authService.validateToken(token);
+      return user;
+    } else {
+      return null;
+    }
+  }
 
-      if (user) {
-        orClause.push({
-          author: {
-            receivedFriendships: {
-              some: {
-                status: "ACCEPTED",
-                sender: {
-                  userId: user.userId,
-                },
+  private async getOrClause(user: any) {
+    const orClause = [];
+    orClause.push({ isPublic: true });
+
+    if (user) {
+      orClause.push({
+        author: {
+          receivedFriendships: {
+            some: {
+              status: "ACCEPTED",
+              sender: {
+                userId: user.userId,
               },
             },
           },
-        });
-        orClause.push({
-          author: {
-            sentFriendships: {
-              some: {
-                status: "ACCEPTED",
-                recipient: {
-                  userId: user.userId,
-                },
+        },
+      });
+      orClause.push({
+        author: {
+          sentFriendships: {
+            some: {
+              status: "ACCEPTED",
+              recipient: {
+                userId: user.userId,
               },
             },
           },
-        });
-        orClause.push({
-          authorId: user.userId,
-        });
-      }
+        },
+      });
+      orClause.push({
+        authorId: user.userId,
+      });
     }
 
     return orClause;

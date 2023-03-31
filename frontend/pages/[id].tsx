@@ -276,10 +276,7 @@ const Profile: NextPageWithLayout = () => {
             ))}
           </Tabs>
           {t === "posts" ? (
-            <PostList
-              getPostsKey={getPostsKey}
-              repliesMode={profileUser.userId !== user?.userId}
-            />
+            <PostList getPostsKey={getPostsKey} repliesMode={false} />
           ) : (
             <PostList getPostsKey={getPostRepliesKey} repliesMode />
           )}

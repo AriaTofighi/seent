@@ -1,13 +1,16 @@
-import { Prisma, Post, ImageType } from "@prisma/client";
+import { Prisma, Post, ImageType, FriendshipStatus } from "@prisma/client";
 import { PrismaService } from "../orm/prisma.service";
 import { PostFindManyParams } from "./posts.types";
 import { Injectable } from "@nestjs/common";
 import { createPaginator } from "utils/paginationUtils";
-import { PaginatedResult } from "utils/types";
+import { FriendshipsService } from "src/friendships/friendships.service";
 
 @Injectable()
 export class PostsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly friendshipsService: FriendshipsService
+  ) {}
 
   private readonly POST_INCLUDES: Prisma.PostInclude = {
     author: {
@@ -126,7 +129,7 @@ export class PostsService {
       include: this.POST_INCLUDES,
     };
 
-    let result: PaginatedResult<Post> | Post[];
+    let result;
     if (page) {
       const paginate = createPaginator({ perPage: perPage });
       result = await paginate<Post, Prisma.PostFindManyArgs>(
@@ -234,5 +237,24 @@ export class PostsService {
       calcedWhere: where,
       calcedOrderBy,
     };
+  }
+
+  async authorizeParentPosts(posts: any[], user) {
+    for (const post in posts) {
+      if (posts[post].parentPost) {
+        const parentPost = posts[post].parentPost;
+        const publicPost = parentPost.isPublic;
+        const friendshipFound = await this.friendshipsService.findOneByPair(
+          parentPost.author.userId,
+          user.userId
+        );
+        const acceptedFriendship =
+          friendshipFound?.status === FriendshipStatus.ACCEPTED;
+        const parentPostAuthorIsUser = parentPost.author.userId === user.userId;
+        if (!(publicPost || acceptedFriendship || parentPostAuthorIsUser)) {
+          posts[post].parentPost = "Unauthorized";
+        }
+      }
+    }
   }
 }

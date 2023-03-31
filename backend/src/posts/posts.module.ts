@@ -7,6 +7,7 @@ import { ImagesModule } from "./../images/images.module";
 import { FileUploadService } from "src/file-upload/file-upload.service";
 import { NotificationsModule } from "src/notifications/notifications.module";
 import { AuthModule } from "src/auth/auth.module";
+import { FriendshipsModule } from "src/friendships/friendships.module";
 
 @Module({
   controllers: [PostsController],
@@ -17,6 +18,7 @@ import { AuthModule } from "src/auth/auth.module";
     forwardRef(() => ImagesModule),
     NotificationsModule,
     forwardRef(() => AuthModule),
+    FriendshipsModule,
   ],
 })
 export class PostsModule {}

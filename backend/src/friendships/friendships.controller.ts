@@ -63,16 +63,10 @@ export class FriendshipsController {
     @Query("userIdOne") userIdOne: string,
     @Query("userIdTwo") userIdTwo: string
   ) {
-    const friendship = await this.friendshipsService.findOne({
-      OR: [
-        {
-          AND: [{ senderId: userIdOne }, { recipientId: userIdTwo }],
-        },
-        {
-          AND: [{ senderId: userIdTwo }, { recipientId: userIdOne }],
-        },
-      ],
-    });
+    const friendship = await this.friendshipsService.findOneByPair(
+      userIdOne,
+      userIdTwo
+    );
 
     if (!friendship) {
       throw new NotFoundException("Friendship not found");

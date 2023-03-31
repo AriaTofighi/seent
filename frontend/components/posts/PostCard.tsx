@@ -1,4 +1,4 @@
-import { Button } from "@mui/material";
+import { Alert, Button } from "@mui/material";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -133,20 +133,33 @@ const PostCard = ({
             <PostCardBody
               body={post?.body}
               image={post?.images[0]}
-              replyAuthor={post?.parentPost?.author.name}
+              // @ts-ignore
+              replyAuthor={post?.parentPost?.author?.name}
             />
             {nestParent && (
-              <Box
-                sx={{
-                  mt: 2,
-                  mb: 1,
-                  borderLeft: 1,
-                  borderRight: 1,
-                  borderColor: "divider",
-                }}
-              >
-                <PostCard post={post.parentPost} showActions={false} />
-              </Box>
+              <>
+                {post?.parentPost === "Unauthorized" ? (
+                  <Alert sx={{ my: 2 }} severity="info">
+                    You cannot view the parent post as it has been set to
+                    friends only by the author.
+                  </Alert>
+                ) : (
+                  <Box
+                    sx={{
+                      mt: 2,
+                      mb: 1,
+                      borderLeft: 1,
+                      borderRight: 1,
+                      borderColor: "divider",
+                    }}
+                  >
+                    <PostCard
+                      post={post.parentPost as any}
+                      showActions={false}
+                    />
+                  </Box>
+                )}
+              </>
             )}
             <PostCardFooter
               postDate={formattedDate}

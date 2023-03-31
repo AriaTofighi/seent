@@ -108,7 +108,7 @@ export type PostEntity = {
   reactions: ReactionEntity[];
   author: UserEntity;
   images: ImageEntity[];
-  parentPost: PostEntity;
+  parentPost: PostEntity | string;
   _count: PostCounts;
 };
 

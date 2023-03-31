@@ -32,6 +32,21 @@ export class FriendshipsService {
     return friendship;
   }
 
+  async findOneByPair(userIdOne: string, userIdTwo: string) {
+    const friendship = await this.findOne({
+      OR: [
+        {
+          AND: [{ senderId: userIdOne }, { recipientId: userIdTwo }],
+        },
+        {
+          AND: [{ senderId: userIdTwo }, { recipientId: userIdOne }],
+        },
+      ],
+    });
+
+    return friendship;
+  }
+
   async findMany(params: FriendshipFindManyParams) {
     const { where, orderBy } = params;
 

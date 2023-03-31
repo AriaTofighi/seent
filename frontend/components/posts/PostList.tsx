@@ -7,6 +7,9 @@ import { infiniteSWRToFlat } from "../../utils";
 import FloatingButton from "../UI/FloatingButton";
 import PostCard from "./PostCard";
 import Loader from "../UI/Loader";
+import { useRouter } from "next/router";
+import { userInfo } from "os";
+import { useUser } from "../../contexts/UserContext";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
   ssr: false,
@@ -18,6 +21,11 @@ type Props = {
 };
 
 const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
+  const router = useRouter();
+  const { user } = useUser();
+  const { query } = router;
+  const ownProfile = query.id === user?.username;
+
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
     usePostDialog();
   const {
@@ -61,7 +69,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
             onClick={() => setSize(size + 1)}
             loading={loading}
           />
-          {!repliesMode && (
+          {!repliesMode && ownProfile && (
             <>
               <FloatingButton onClick={onNewPost} />
               <PostDialog
