@@ -45,6 +45,7 @@ type Props = {
   showActions?: boolean;
   mutatePost?: () => void;
   mutatePostList?: () => void;
+  nestParent?: boolean;
 };
 
 const PostCard = ({
@@ -54,6 +55,7 @@ const PostCard = ({
   depth = 0,
   expandable = false,
   showActions = true,
+  nestParent = false,
 }: Props) => {
   const postId = post?.postId;
   const { user } = useUser();
@@ -133,6 +135,19 @@ const PostCard = ({
               image={post?.images[0]}
               replyAuthor={post?.parentPost?.author.name}
             />
+            {nestParent && (
+              <Box
+                sx={{
+                  mt: 2,
+                  mb: 1,
+                  borderLeft: 1,
+                  borderRight: 1,
+                  borderColor: "divider",
+                }}
+              >
+                <PostCard post={post.parentPost} showActions={false} />
+              </Box>
+            )}
             <PostCardFooter
               postDate={formattedDate}
               userReaction={userReaction}

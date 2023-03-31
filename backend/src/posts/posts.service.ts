@@ -9,7 +9,7 @@ import { PaginatedResult } from "utils/types";
 export class PostsService {
   constructor(private prisma: PrismaService) {}
 
-  private readonly POST_INCLUDES = {
+  private readonly POST_INCLUDES: Prisma.PostInclude = {
     author: {
       select: {
         name: true,
@@ -36,9 +36,38 @@ export class PostsService {
         author: {
           select: {
             name: true,
+            username: true,
+            userId: true,
+            images: {
+              where: {
+                type: ImageType.USER_AVATAR,
+              },
+              select: {
+                imageId: true,
+                url: true,
+              },
+            },
           },
         },
         postId: true,
+        body: true,
+        authorId: true,
+        createdAt: true,
+        images: {
+          select: {
+            imageId: true,
+            url: true,
+            type: true,
+          },
+        },
+        isPublic: true,
+        parentPostId: true,
+        reactions: {
+          select: {
+            userId: true,
+            type: true,
+          },
+        },
       },
     },
     reactions: {

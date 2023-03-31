@@ -65,22 +65,12 @@ const PostDetails: NextPageWithLayout = () => {
     <>
       <Title title={`Post - ${post?.author?.name}`} />
       <Box>
-        <TopAppBar title="Post">
-          <Stack width="100%" direction="row" justifyContent="flex-end">
-            {post?.parentPost && (
-              <Button
-                sx={{ textTransform: "none", m: 0 }}
-                onClick={() => router.push(`/posts/${post.parentPostId}`)}
-              >
-                View parent post
-              </Button>
-            )}
-          </Stack>
-        </TopAppBar>
+        <TopAppBar title="Post" />
         <PostCard
           post={post}
           mutatePost={mutatePost}
           mutatePostList={mutateReplies}
+          nestParent={Boolean(post.parentPostId)}
         />
         <Header>
           <Typography variant="h5">Replies</Typography>

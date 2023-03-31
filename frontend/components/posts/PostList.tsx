@@ -50,6 +50,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
                     post={{ ...rest, postId }}
                     key={postId}
                     mutatePostList={mutatePosts}
+                    nestParent={repliesMode}
                   />
                 );
               }
