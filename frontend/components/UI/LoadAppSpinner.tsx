@@ -1,7 +1,7 @@
 import { Box } from "@mui/material";
 import { useTheme } from "@mui/system";
 import React, { CSSProperties } from "react";
-import { GridLoader } from "react-spinners";
+import { HashLoader } from "react-spinners";
 
 const LoadAppSpinner = ({ loading = true }: Props) => {
   const theme = useTheme();
@@ -15,7 +15,7 @@ const LoadAppSpinner = ({ loading = true }: Props) => {
         justifyContent: "center",
       }}
     >
-      <GridLoader
+      <HashLoader
         color={theme.palette.primary.main}
         loading={loading}
         size={50}

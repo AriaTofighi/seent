@@ -50,6 +50,8 @@ const UserContext = createContext<typeof defaultContext>(defaultContext);
 
 export const useUser = () => useContext(UserContext);
 
+const fakeLoadTime = 1000;
+
 export const UserProvider = ({ children }: Props) => {
   const [tokenData, setTokenData] = useState<any>();
   const [user, setUserState] = useState<UserEntity>();
@@ -62,7 +64,7 @@ export const UserProvider = ({ children }: Props) => {
   const fakeLoadToCompletion = () => {
     setTimeout(() => {
       setLoading(false);
-    }, 200);
+    }, fakeLoadTime);
   };
 
   const setUser = (t: string) => {
@@ -115,7 +117,7 @@ export const UserProvider = ({ children }: Props) => {
   useEffect(() => {
     if (!userRes) return;
     setUserState(userRes);
-    setLoading(false);
+    fakeLoadToCompletion();
   }, [userRes]);
 
   return (

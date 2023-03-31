@@ -18,8 +18,8 @@ type Props = {
 };
 
 const LoginForm = ({ onClose }: Props) => {
-  const { setUser, user } = useUser();
-  const { control, reset, handleSubmit } = useForm({ defaultValues });
+  const { setUser } = useUser();
+  const { control, handleSubmit } = useForm({ defaultValues });
   const router = useRouter();
 
   const handleSignIn = async (formData: any) => {

@@ -1,10 +1,8 @@
 import { Button, Dialog, DialogContent, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { GoogleLogin } from "@react-oauth/google";
-import React, { useState } from "react";
 import { useUser } from "../../contexts/UserContext";
 import { signInGoogle } from "../../services/api/authAxios";
-import { Styles } from "../../types";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
 
@@ -36,7 +34,13 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth={"xs"}>
       <DialogContent>
-        <Box sx={styles.root}>
+        <Box
+          sx={{
+            boxShadow: "",
+            borderRadius: 4,
+            color: "secondary.light",
+          }}
+        >
           <Typography variant="h4" mb={3} color="text.primary">
             {signInMode ? "Sign in" : "Sign up"}
           </Typography>
@@ -63,7 +67,11 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
             <RegisterForm onClose={onClose} />
           )}
           <Button
-            sx={styles.modeBtn}
+            sx={{
+              width: "fit-content",
+              textTransform: "initial",
+              mt: 1,
+            }}
             variant="text"
             onClick={() => setMode(signInMode ? MODES.SIGN_UP : MODES.SIGN_IN)}
           >
@@ -77,19 +85,6 @@ const AuthDialog = ({ open, onClose, mode, setMode }: Props) => {
       </DialogContent>
     </Dialog>
   );
-};
-
-const styles: Styles = {
-  root: {
-    boxShadow: "",
-    borderRadius: 4,
-    color: "secondary.light",
-  },
-  modeBtn: {
-    width: "fit-content",
-    textTransform: "initial",
-    mt: 1,
-  },
 };
 
 export default AuthDialog;
