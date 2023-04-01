@@ -20,7 +20,7 @@ const Feed: NextPageWithLayout = () => {
         <PostListSorting setMode={setSortMode} />
       </TopAppBar>
       <Box sx={styles.root}>
-        <PostList getPostsKey={getPostsKey} />
+        <PostList getPostsKey={getPostsKey} feedMode />
       </Box>
     </>
   );

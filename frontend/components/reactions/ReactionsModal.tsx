@@ -1,6 +1,3 @@
-import { Avatar, Box, Typography } from "@mui/material";
-import React from "react";
-import { ReactionEntity } from "../../types";
 import Modal from "../UI/Modal";
 import UserCard from "../users/UserCard";
 

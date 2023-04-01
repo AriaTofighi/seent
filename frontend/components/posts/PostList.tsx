@@ -8,7 +8,6 @@ import FloatingButton from "../UI/FloatingButton";
 import PostCard from "./PostCard";
 import Loader from "../UI/Loader";
 import { useRouter } from "next/router";
-import { userInfo } from "os";
 import { useUser } from "../../contexts/UserContext";
 
 const PostDialog = dynamic(() => import("./PostDialog"), {
@@ -18,12 +17,18 @@ const PostDialog = dynamic(() => import("./PostDialog"), {
 type Props = {
   getPostsKey: (index: number) => string | null;
   repliesMode?: boolean;
+  feedMode?: boolean;
 };
 
-const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
+const PostList = ({
+  getPostsKey,
+  feedMode = false,
+  repliesMode = false,
+}: Props) => {
   const router = useRouter();
   const { user } = useUser();
   const { query } = router;
+
   const ownProfile = query.id === user?.username;
 
   const { onNewPost, postDialog, setPostDialog, onCloseDialog } =
@@ -69,7 +74,7 @@ const PostList = ({ getPostsKey, repliesMode = false }: Props) => {
             onClick={() => setSize(size + 1)}
             loading={loading}
           />
-          {!repliesMode && ownProfile && (
+          {(ownProfile || feedMode) && (
             <>
               <FloatingButton onClick={onNewPost} />
               <PostDialog

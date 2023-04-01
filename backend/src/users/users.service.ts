@@ -99,4 +99,10 @@ export class UsersService {
       where,
     });
   }
+
+  async count(where: Prisma.UserWhereInput) {
+    return this.prisma.user.count({
+      where,
+    });
+  }
 }

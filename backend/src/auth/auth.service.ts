@@ -112,11 +112,22 @@ export class AuthService {
     });
 
     if (!user) {
+      const nameWithoutSpaces = name.replace(/\s/g, "");
+      let username = nameWithoutSpaces;
+
+      while (
+        await this.usersService.findOne({
+          username,
+        })
+      ) {
+        username = nameWithoutSpaces + this.generateShortString(6);
+      }
+
       user = await this.usersService.create({
         email,
         name,
         birthday: new Date(),
-        username: name + randomUUID(),
+        username,
         password: "google",
         images: {
           create: [
@@ -146,5 +157,15 @@ export class AuthService {
       ...user,
       accessToken: this.jwtService.sign(userToSign),
     };
+  }
+
+  generateShortString(length: number) {
+    const chars =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 }
