@@ -23,16 +23,16 @@ const lmColours = {
 
 const dmColours = {
   primary: {
-    main: "#6A8CA3",
-    light: "#4F6C89",
-    dark: "#435B72",
+    main: "#333333", // black
+    light: "#4D4D4D", // dark grey
+    dark: "#1A1A1A", // very dark grey
   },
   secondary: {
-    main: "#3C5165",
+    main: "#4D4D4D", // dark grey
     light: "#F9F8F8",
   },
   background: {
-    default: "#0C2733",
+    default: "#111111", // very dark grey
   },
   text: {
     primary: "#F9F8F8",
