@@ -76,20 +76,6 @@ const PostDialog = ({
   return (
     <Modal open={open} onClose={onClose} fullWidth>
       <Box>
-        {/* <Stack
-          direction="row"
-          justifyContent="flex-end"
-          alignItems="flex-start"
-        >
-          <IconButton
-            onClick={onClose}
-            size="small"
-            edge="start"
-            sx={{ p: 0.5 }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Stack> */}
         {parentPost?.body ? (
           <Box
             sx={{

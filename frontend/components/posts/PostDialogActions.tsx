@@ -41,7 +41,10 @@ const PostDialogActions = ({
     setValue("body", body + emojiObject.emoji);
   };
 
-  const handleMenuItemClick = (privacyMode: string) => {
+  const handleMenuItemClick = (
+    event: React.SyntheticEvent,
+    privacyMode: string
+  ) => {
     handleSelectPrivacy(privacyMode);
     handleClose();
   };
@@ -85,15 +88,6 @@ const PostDialogActions = ({
       <PostPrivacyMenu
         {...{ anchorEl, handleClose, open, handleMenuItemClick }}
       />
-      {/* <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
-        <Typography p={1.5}>Who should see this post?</Typography>
-        <MenuItem onClick={() => handleMenuItemClick("public")}>
-          Everyone
-        </MenuItem>
-        <MenuItem onClick={() => handleMenuItemClick("friends")}>
-          Friends
-        </MenuItem>
-      </Menu> */}
     </>
   );
 };

@@ -3,12 +3,10 @@ import { ReactElement } from "react";
 import { Styles } from "../../types";
 import SearchSideBar from "../navigation/SearchSideBar";
 import SideBar from "../navigation/SideBar";
-import { SystemStyleObject } from "@mui/system";
 
 const styles: Styles = {
   container: {
     display: "flex",
-    // maxWidth: 1600,
     margin: "auto",
     justifyContent: "center",
   },
