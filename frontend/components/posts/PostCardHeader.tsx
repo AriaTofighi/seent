@@ -1,8 +1,7 @@
-import React, { MouseEvent, MouseEventHandler, useState } from "react";
+import React, { MouseEvent } from "react";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import {
   Stack,
-  Avatar,
   Typography,
   Box,
   IconButton,
@@ -12,7 +11,6 @@ import {
 import { deletePost, updatedPost } from "../../services/api/postAxios";
 import { stopPropagation } from "../../utils";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import useMenu from "../../hooks/useMenu";
 import UserAvatar from "../users/UserAvatar";
 import PostPrivacyMenu from "./PostPrivacyMenu";
@@ -41,9 +39,20 @@ const PostCardHeader = ({
     handleClick(event);
   };
 
-  const handleCloseMenu = (event: MouseEvent<HTMLButtonElement>) => {
-    stopPropagation(event);
+  const handleCloseMenu = (event: React.SyntheticEvent) => {
+    stopPropagation(event as MouseEvent);
     handleClose();
+  };
+
+  const handleShowSelectPrivacy = (event: React.SyntheticEvent) => {
+    stopPropagation(event as MouseEvent);
+    handleClickPrivacy(event as any);
+  };
+
+  const handleClosePrivacyMenu = (event: React.SyntheticEvent) => {
+    stopPropagation(event as MouseEvent);
+    handleCloseMenu(event);
+    handleClosePrivacy();
   };
 
   const handleDeletePost = async (event: React.SyntheticEvent) => {
@@ -55,16 +64,15 @@ const PostCardHeader = ({
     }
   };
 
-  const handleShowSelectPrivacy = (event: React.SyntheticEvent) => {
+  const handleSelectPrivacy = async (
+    event: React.SyntheticEvent,
+    privacyMode: string
+  ) => {
     stopPropagation(event as MouseEvent);
-    handleClickPrivacy(event as any);
-  };
-
-  const handleSelectPrivacy = async (privacyMode: string) => {
     await updatedPost(postId, { isPublic: privacyMode === "public" });
     await mutatePosts();
-    handleClosePrivacy();
-    handleClose();
+    handleCloseMenu(event);
+    handleClosePrivacyMenu(event);
   };
 
   return (
@@ -95,7 +103,7 @@ const PostCardHeader = ({
       <PostPrivacyMenu
         anchorEl={anchorElPrivacy}
         open={openPrivacy}
-        handleClose={handleClosePrivacy}
+        handleClose={handleClosePrivacyMenu}
         handleMenuItemClick={handleSelectPrivacy}
       />
     </>

@@ -1,12 +1,14 @@
 import { Menu, Typography, MenuItem } from "@mui/material";
 import React from "react";
-import useMenu from "../../hooks/useMenu";
 
 type Props = {
   anchorEl: any;
-  handleClose: () => void;
+  handleClose: (event: React.SyntheticEvent) => void;
   open: boolean;
-  handleMenuItemClick: (privacyMode: string) => void;
+  handleMenuItemClick: (
+    event: React.SyntheticEvent,
+    privacyMode: string
+  ) => void;
 };
 
 const PostPrivacyMenu = ({
@@ -26,10 +28,10 @@ const PostPrivacyMenu = ({
       }}
     >
       <Typography p={1.5}>Who should see this post?</Typography>
-      <MenuItem onClick={() => handleMenuItemClick("public")}>
+      <MenuItem onClick={(event) => handleMenuItemClick(event, "public")}>
         Everyone
       </MenuItem>
-      <MenuItem onClick={() => handleMenuItemClick("friends")}>
+      <MenuItem onClick={(event) => handleMenuItemClick(event, "friends")}>
         Friends Only
       </MenuItem>
     </Menu>
