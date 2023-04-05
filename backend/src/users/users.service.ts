@@ -65,6 +65,34 @@ export class UsersService {
     return result;
   }
 
+  async getUserFriends(userId: string) {
+    const result = await this.prisma.user.findMany({
+      where: {
+        OR: [
+          {
+            receivedFriendships: {
+              some: {
+                senderId: userId,
+                status: "ACCEPTED",
+              },
+            },
+          },
+          {
+            sentFriendships: {
+              some: {
+                recipientId: userId,
+                status: "ACCEPTED",
+              },
+            },
+          },
+        ],
+      },
+      include: this._include,
+    });
+
+    return result.map((u) => new UserEntity(u));
+  }
+
   async getUserPostsReactionsCount(userId: string) {
     const result = await this.prisma.$queryRaw`
       SELECT COUNT(*) FROM "Reaction" WHERE "postId" IN (

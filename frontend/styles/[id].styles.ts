@@ -39,8 +39,9 @@ const styles: Styles = {
     flexDirection: "row",
     justifyContent: "space-between",
     mt: 2,
-    width: "70%",
+    width: "90%",
     flexWrap: "wrap",
+    alignItems: "center",
   },
 };
 

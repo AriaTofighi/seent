@@ -104,6 +104,7 @@ const PostDialog = ({
             multiline
             rows={4}
             InputLabelProps={{ required: false }}
+            required={!Boolean(image)}
           />
           <PostDialogActions
             setValue={setValue}

@@ -62,6 +62,11 @@ export class UsersController {
     return this.usersService.getUserPostsReactionsCount(userId);
   }
 
+  @Get(":id/friends")
+  async getUserFriends(@Param("id") userId: string) {
+    return this.usersService.getUserFriends(userId);
+  }
+
   @Get(":id")
   async findOne(@Param("id") userId: string) {
     const user = await this.usersService.findOne({ userId });

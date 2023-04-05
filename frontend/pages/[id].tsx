@@ -29,6 +29,7 @@ import {
   PostEntity,
   UserEntity,
 } from "../types";
+import UserListModal from "../components/users/UserListDialog";
 
 const TABS = ["posts", "replies"];
 
@@ -41,6 +42,7 @@ const Profile: NextPageWithLayout = () => {
   const { socket } = useAppSocket();
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
+  const [showFriendsDialog, setShowFriendsDialog] = useState(false);
 
   const {
     data: userRes,
@@ -65,6 +67,10 @@ const Profile: NextPageWithLayout = () => {
     !userIsOwner && user && profileUser
       ? `friendships/pair?userIdOne=${user?.userId}&userIdTwo=${profileUser?.userId}`
       : null
+  );
+
+  const { data: friends } = useAPI<UserEntity[]>(
+    profileUser ? `users/${profileUser?.userId}/friends` : null
   );
 
   const getPostsKey = (index: number) =>
@@ -265,6 +271,27 @@ const Profile: NextPageWithLayout = () => {
                       {reactionCount === 1 ? "Like" : "Likes"}
                     </Typography>
                   </Stack>
+                  <Stack sx={{ flexDirection: "column" }}>
+                    <Button
+                      variant="outlined"
+                      onClick={() => setShowFriendsDialog(true)}
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "flex-start",
+                        color: "text.primary",
+                        textTransform: "none",
+                        m: 0,
+                      }}
+                    >
+                      <Typography fontWeight={600}>
+                        {friends?.length}
+                      </Typography>
+                      <Typography variant="subtitle2">
+                        {friends?.length === 1 ? "Friend" : "Friends"}
+                      </Typography>
+                    </Button>
+                  </Stack>
                 </Stack>
               </Stack>
             </Box>
@@ -285,6 +312,12 @@ const Profile: NextPageWithLayout = () => {
             open={showEditProfileDialog}
             setOpen={setShowEditProfileDialog}
             onSave={onSaveProfile}
+          />
+
+          <UserListModal
+            open={showFriendsDialog}
+            setOpen={setShowFriendsDialog}
+            users={friends}
           />
         </>
       ) : (

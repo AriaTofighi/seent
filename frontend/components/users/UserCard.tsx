@@ -5,14 +5,15 @@ import StyledCard from "../UI/StyledCard";
 
 type Props = {
   user: UserEntity;
+  onClick?: () => void;
 };
 
-const UserCard = ({ user }: Props) => {
+const UserCard = ({ user, onClick }: Props) => {
   const avatar = user.images?.[0]?.url;
 
   return (
     <Link href={`/${user.username}`}>
-      <a>
+      <a onClick={onClick}>
         <StyledCard variant="outlined">
           <Stack spacing={2} direction="row" alignItems="center">
             <Avatar src={avatar} />

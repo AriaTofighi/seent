@@ -100,14 +100,6 @@ const getTheme = (mode: PaletteMode) => {
           },
         },
       },
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            // textTransform: "none",
-            // color: lightMode ? lmColours.primary.main : dmColours.text.primary,
-          },
-        },
-      },
     },
     palette: {
       mode,
