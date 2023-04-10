@@ -1,5 +1,12 @@
 import CloseIcon from "@mui/icons-material/Close";
-import { Button, Dialog, IconButton, Stack, Typography } from "@mui/material";
+import {
+  Button,
+  CircularProgress,
+  Dialog,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -26,6 +33,7 @@ const PostDialog = ({
 }: Props) => {
   const { user } = useUser();
   const { socket } = useAppSocket();
+  const [submittingPost, setSubmittingPost] = useState(false);
   const [privacyMode, setPrivacyMode] = useState(PRIVACY_MODES.PUBLIC);
   const {
     image,
@@ -35,27 +43,36 @@ const PostDialog = ({
     handleBrowse,
     fileInputRef,
   } = useImageUpload();
-  const { control, reset, handleSubmit, setValue, getValues } =
+  const { control, reset, handleSubmit, setValue, getValues, trigger } =
     useForm<DefaultValueType>({
       defaultValues,
     });
 
   const handleSubmitPost = async (formValues: DefaultValueType) => {
     if (!user) return;
-    const { body } = formValues;
+    setSubmittingPost(true);
+
+    const { body: rawBody } = formValues;
+    const body = rawBody.trim();
+
+    const formDataVals = {
+      body,
+      authorId: user.userId,
+      isPublic: String(privacyMode === PRIVACY_MODES.PUBLIC),
+      images: image as Blob,
+    };
+
+    type FormDataVals = typeof formDataVals;
+
     const formData = new FormData();
-    formData.append("images", image as Blob);
-    formData.append("body", body);
-    formData.append("authorId", user.userId);
-    formData.append(
-      "isPublic",
-      privacyMode === PRIVACY_MODES.PUBLIC
-        ? (true as unknown as string)
-        : (false as unknown as string)
-    );
+    Object.keys(formDataVals).forEach((key) => {
+      formData.append(key, formDataVals[key as keyof FormDataVals]);
+    });
+
     if (parentPost) {
       formData.append("parentPostId", parentPost.postId);
     }
+
     await createPost(formData);
     if (parentPost) {
       socket?.emit("postEngagement", {
@@ -65,12 +82,25 @@ const PostDialog = ({
     mutatePostList();
     mutate(`users/${user.userId}`);
     setPostDialog(DEFAULT_POST_DIALOG_STATE);
+    setSubmittingPost(false);
     setImage(undefined);
     reset();
   };
 
   const handleSelectPrivacy = (privacyMode: string) => {
     setPrivacyMode(privacyMode);
+  };
+
+  const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await handleImageChange(e);
+    await trigger("body");
+  };
+
+  const validateBody = (value: string) => {
+    if (!value.trim() && !Boolean(image)) {
+      return "Please write something or upload an image";
+    }
+    return true;
   };
 
   return (
@@ -92,7 +122,11 @@ const PostDialog = ({
           <Typography variant="h5">What's on your mind?</Typography>
         )}
 
-        <form onSubmit={handleSubmit(handleSubmitPost)}>
+        <Box
+          component="form"
+          onSubmit={handleSubmit(handleSubmitPost)}
+          sx={{ position: "relative" }}
+        >
           <TextInput
             name="body"
             label=""
@@ -104,7 +138,10 @@ const PostDialog = ({
             multiline
             rows={4}
             InputLabelProps={{ required: false }}
-            required={!Boolean(image)}
+            required={false}
+            rules={{
+              validate: validateBody,
+            }}
           />
           <PostDialogActions
             setValue={setValue}
@@ -124,11 +161,21 @@ const PostDialog = ({
               />
             </Box>
           )}
-          <Button variant="contained" type="submit" fullWidth>
-            Post
+          <Button
+            variant="contained"
+            type="submit"
+            sx={{ display: "flex", alignItems: "center", gap: 2 }}
+            disabled={submittingPost}
+            fullWidth
+          >
+            {submittingPost ? (
+              <CircularProgress color="secondary" size={24} />
+            ) : (
+              "Post"
+            )}
           </Button>
-          <FileUpload innerRef={fileInputRef} onChange={handleImageChange} />
-        </form>
+          <FileUpload innerRef={fileInputRef} onChange={onImageChange} />
+        </Box>
       </Box>
     </Modal>
   );

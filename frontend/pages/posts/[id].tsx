@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material";
+import { Button, LinearProgress, Stack, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -58,7 +58,7 @@ const PostDetails: NextPageWithLayout = () => {
   }
 
   if (postLoading || repliesLoading || !post) {
-    return <Box p={2.5}>Loading...</Box>;
+    return <LinearProgress />;
   }
 
   return (

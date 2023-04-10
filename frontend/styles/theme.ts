@@ -4,35 +4,35 @@ import { grey } from "@mui/material/colors";
 
 const lmColours = {
   primary: {
-    main: "#D1E8E2",
-    light: "#EBF8F3",
-    dark: "#AED1CC",
+    main: "#E5E5E5",
+    light: "#F5F5F5",
+    dark: "#B1B1B1",
   },
   secondary: {
-    main: "#B8D1C7",
-    light: "#E8F8F3",
+    main: "#F5F5F5",
+    light: "#FFFFFF",
   },
   background: {
-    default: "#F9F8F8",
+    default: "#FFFFFF",
   },
   text: {
-    primary: "#0C2733",
-    secondary: "#A6A6A6",
+    primary: "#000000",
+    secondary: "#757575",
   },
 };
 
 const dmColours = {
   primary: {
-    main: "#333333", // black
-    light: "#4D4D4D", // dark grey
-    dark: "#1A1A1A", // very dark grey
+    main: "#333333",
+    light: "#4D4D4D",
+    dark: "#1A1A1A",
   },
   secondary: {
-    main: "#4D4D4D", // dark grey
+    main: "#4D4D4D",
     light: "#F9F8F8",
   },
   background: {
-    default: "#111111", // very dark grey
+    default: "#111111",
   },
   text: {
     primary: "#F9F8F8",
@@ -97,6 +97,13 @@ const getTheme = (mode: PaletteMode) => {
               ? lmColours.background.default
               : dmColours.background.default,
             backgroundImage: "none",
+          },
+        },
+      },
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            color: lightMode ? lmColours.text.primary : dmColours.text.primary,
           },
         },
       },

@@ -1,4 +1,10 @@
-import { Avatar, Button, Typography } from "@mui/material";
+import {
+  Avatar,
+  Button,
+  CircularProgress,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -54,18 +60,14 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
       maxWidth="xs"
     >
       {usersLoading ? (
-        <Box>Loading...</Box>
+        <Stack alignItems="center" width="100%" my={3}>
+          <CircularProgress />
+        </Stack>
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{ display: "flex", gap: 12, flexDirection: "column" }}
         >
-          {/* <TextInput
-            label="Room title"
-            name="title"
-            control={control}
-            fullWidth
-          /> */}
           {/* @ts-ignore */}
           <AutoComplete
             label="Add user(s)"

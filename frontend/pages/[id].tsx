@@ -1,5 +1,13 @@
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import { Button, Fade, Stack, Tab, Tabs, Typography } from "@mui/material";
+import {
+  Button,
+  Fade,
+  LinearProgress,
+  Stack,
+  Tab,
+  Tabs,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useState } from "react";
@@ -321,7 +329,7 @@ const Profile: NextPageWithLayout = () => {
           />
         </>
       ) : (
-        <Box p={2}>Loading...</Box>
+        <LinearProgress />
       )}
     </>
   );

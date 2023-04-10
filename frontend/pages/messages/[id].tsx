@@ -1,5 +1,11 @@
 import SendIcon from "@mui/icons-material/Send";
-import { IconButton, Menu, MenuItem, Typography } from "@mui/material";
+import {
+  CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
@@ -124,7 +130,17 @@ const Room = () => {
   return (
     <>
       {roomLoading ? (
-        <Box p={2.5}>Loading...</Box>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
       ) : (
         <>
           <Title title={title} />
@@ -211,6 +227,7 @@ const styles: ThemedStyles = {
     display: "flex",
     alignItems: "center",
     gap: 2,
+    mt: 1,
   },
   messageInput: {
     height: 40,

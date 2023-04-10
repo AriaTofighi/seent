@@ -1,5 +1,11 @@
 import AddIcon from "@mui/icons-material/Add";
-import { Box, IconButton, Theme, useMediaQuery } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  LinearProgress,
+  Theme,
+  useMediaQuery,
+} from "@mui/material";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { mutate } from "swr";
@@ -94,7 +100,7 @@ const MessagesLayout = ({ children }: Props) => {
       <Box sx={styles.root}>
         {showRoomList && (
           <Box sx={styles.roomList}>
-            {roomsLoading && <Box p={2.5}>Loading...</Box>}
+            {roomsLoading && <LinearProgress />}
             {sortRoomsByLatestMessage(roomsWithUnreadNotifications)?.map(
               (room) => (
                 <RoomMenuItem key={room.roomId} room={room} />

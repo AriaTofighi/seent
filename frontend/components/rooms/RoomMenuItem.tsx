@@ -64,12 +64,7 @@ const getStyles: (room: any, darkMode: boolean) => Styles = (
     alignItems: "center",
     flexDirection: "row",
     width: "100%",
-    bgcolor: room.notification
-      ? darkMode
-        ? "#0a1f28"
-        : "#d8d8d8"
-      : "transparent",
-    // opacity: room.notification ? 0.75 : "none",
+    bgcolor: room.notification ? "primary.main" : "transparent",
   },
   nowrap: {
     whiteSspace: "nowrap",

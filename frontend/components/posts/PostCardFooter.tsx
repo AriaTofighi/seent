@@ -157,7 +157,6 @@ const PostCardFooter = ({
                 textTransform: "none",
                 py: 0.5,
               }}
-              variant="text"
             >
               Likes
             </Button>

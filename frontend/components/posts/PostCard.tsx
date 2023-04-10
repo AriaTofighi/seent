@@ -1,4 +1,4 @@
-import { Alert, Button } from "@mui/material";
+import { Alert, Button, CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -110,7 +110,11 @@ const PostCard = ({
   }, [childPostsLength]);
 
   if (!post || !post.images) {
-    return <Box>Loading...</Box>;
+    return (
+      <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+        <CircularProgress sx={{ m: 8 }} />
+      </Box>
+    );
   }
 
   return (
@@ -191,6 +195,14 @@ const PostCard = ({
             <Box>Error loading replies</Box>
           ) : (
             <>
+              {nestedRepliesLoading && (
+                <Box
+                  p={4}
+                  sx={{ display: "flex", alignItems: "center", gap: 2 }}
+                >
+                  <CircularProgress size={32} />
+                </Box>
+              )}
               {nestedReplies.map((p: PostEntity, index) => (
                 <Box sx={{ display: "flex", width: "100%" }} key={index}>
                   <Box

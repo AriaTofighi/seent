@@ -1,9 +1,10 @@
 import { Box } from "@mui/system";
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useAPI } from "../../hooks/useAPI";
 import useScrollToBottom from "../../hooks/useScrollToBottom";
 import { MessageEntity, Styles } from "../../types";
 import Message from "./Message";
+import { LinearProgress } from "@mui/material";
 
 type Props = {
   getMessagesKey: () => string;
@@ -17,7 +18,7 @@ const MessageList = ({ getMessagesKey, isGroupChat }: Props) => {
 
   useScrollToBottom(boxRef, messages);
 
-  if (messagesLoading) return <Box p={2.5}>Loading...</Box>;
+  if (messagesLoading) return <LinearProgress sx={{ m: -1.5 }} />;
 
   return (
     <Box sx={styles.root} ref={boxRef}>

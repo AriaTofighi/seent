@@ -17,7 +17,7 @@ const Messages: NextPageWithLayout = () => {
       {breakpoint && (
         <Box sx={styles.root}>
           <Typography variant="body1" textAlign="center">
-            Send messages to your friends, in private or group conversations.
+            Send messages to people, in private or group conversations.
           </Typography>
         </Box>
       )}
