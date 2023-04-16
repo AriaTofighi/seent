@@ -8,7 +8,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Box } from "@mui/system";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { mutate } from "swr";
 import { useAppSocket } from "../../contexts/SocketContext";
@@ -93,7 +93,6 @@ const PostDialog = ({
 
   const onImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     await handleImageChange(e);
-    await trigger("body");
   };
 
   const validateBody = (value: string) => {
@@ -102,6 +101,11 @@ const PostDialog = ({
     }
     return true;
   };
+
+  useEffect(() => {
+    if (!image) return;
+    trigger("body");
+  }, [image, trigger]);
 
   return (
     <Modal open={open} onClose={onClose} fullWidth>

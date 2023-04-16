@@ -16,25 +16,38 @@ const styles: Styles = {
     ml: 1,
     position: "absolute",
     zIndex: 1,
-    bgcolor: "background.default",
+    bgcolor: "primary.dark",
     borderRadius: 1,
     p: 0.5,
+    "&:hover": {
+      bgcolor: "secondary.dark",
+    },
   },
 };
 
 const ImagePreview = ({ onClose, src, alt }: Props) => {
   return (
-    <Box>
+    <Box
+      sx={{
+        maxWidth: "100%",
+        border: "1px solid black",
+        borderRadius: 1,
+        bgcolor: "black",
+      }}
+    >
       <IconButton sx={styles.closeBtn} onClick={onClose}>
         <CloseIcon />
       </IconButton>
-      <Image
-        src={src as string}
-        width="250"
-        height="200"
-        alt={alt}
-        layout="fixed"
-      />
+      <Box
+        sx={{ position: "relative", maxWidth: "100%", width: 400, height: 280 }}
+      >
+        <Image
+          src={src as string}
+          layout="fill"
+          objectFit="contain"
+          alt={alt}
+        />
+      </Box>
     </Box>
   );
 };

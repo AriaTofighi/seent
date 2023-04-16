@@ -13,6 +13,7 @@ export const useImageUpload = () => {
     const base64 = await fileToBase64(file);
     setImage(file);
     setImagePreview(base64);
+    event.target.value = "";
   };
 
   const handleBrowse = () => {
