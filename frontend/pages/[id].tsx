@@ -42,10 +42,10 @@ import UserListModal from "../components/users/UserListDialog";
 const TABS = ["posts", "replies"];
 
 const Profile: NextPageWithLayout = () => {
-  const { query } = useRouter();
   const router = useRouter();
+  const { query } = router;
   const { t = TABS[0] } = query;
-  const value = TABS.indexOf(t as string);
+  const tabIndex = TABS.indexOf(t as string);
   const { user } = useUser();
   const { socket } = useAppSocket();
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
@@ -53,13 +53,13 @@ const Profile: NextPageWithLayout = () => {
   const [showFriendsDialog, setShowFriendsDialog] = useState(false);
 
   const {
-    data: userRes,
-    error: userErr,
+    data: userData,
+    error: userError,
     mutate: mutateUser,
     loading: userLoading,
   } = useAPI<UserEntity[]>(query?.id ? `users?username=${query.id}` : null);
 
-  const profileUser = userRes?.[0];
+  const profileUser = userData?.[0];
   const userIsOwner = profileUser?.userId === user?.userId;
 
   const { data: reactionCount } = useAPI<number>(
@@ -67,8 +67,8 @@ const Profile: NextPageWithLayout = () => {
   );
 
   const {
-    data: friendshipRes,
-    error: friendshipErr,
+    data: friendshipData,
+    error: friendshipError,
     mutate: mutateFriendship,
     loading: friendshipLoading,
   } = useAPI<FriendshipEntity>(
@@ -101,13 +101,13 @@ const Profile: NextPageWithLayout = () => {
 
   const {
     data: postsRes,
-    error: postsErr,
+    error: postsError,
     loading: postsLoading,
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
 
   const {
     data: postRepliesRes,
-    error: postRepliesErr,
+    error: postRepliesError,
     loading: postRepliesLoading,
   } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
 
@@ -117,8 +117,8 @@ const Profile: NextPageWithLayout = () => {
   };
 
   const onAcceptFriendRequest = async () => {
-    if (!profileUser || !friendshipRes) return;
-    await updateFriendship(friendshipRes.friendshipId, {
+    if (!profileUser || !friendshipData) return;
+    await updateFriendship(friendshipData.friendshipId, {
       status: FriendshipStatus.ACCEPTED as keyof typeof FriendshipStatus,
     });
     mutateFriendship();
@@ -141,19 +141,19 @@ const Profile: NextPageWithLayout = () => {
   };
 
   const onUnfriend = async () => {
-    if (!friendshipRes) return;
-    await deleteFriendship(friendshipRes.friendshipId);
+    if (!friendshipData) return;
+    await deleteFriendship(friendshipData.friendshipId);
     mutateFriendship(undefined);
   };
 
   const onFriendButtonClick = () => {
-    if (friendshipRes?.status === (FriendshipStatus.PENDING as any)) {
-      if (friendshipRes?.recipientId === user?.userId) {
+    if (friendshipData?.status === (FriendshipStatus.PENDING as any)) {
+      if (friendshipData?.recipientId === user?.userId) {
         onAcceptFriendRequest();
       } else {
         onUnfriend();
       }
-    } else if (friendshipRes?.status === (FriendshipStatus.ACCEPTED as any)) {
+    } else if (friendshipData?.status === (FriendshipStatus.ACCEPTED as any)) {
       onUnfriend();
     } else {
       onSendFriendRequest();
@@ -162,18 +162,18 @@ const Profile: NextPageWithLayout = () => {
 
   const getFriendshipText = () => {
     if (
-      friendshipRes?.status === (FriendshipStatus.PENDING as any) &&
-      friendshipRes?.recipientId === user?.userId
+      friendshipData?.status === (FriendshipStatus.PENDING as any) &&
+      friendshipData?.recipientId === user?.userId
     ) {
       return "Accept Request";
     }
     if (
-      friendshipRes?.status === (FriendshipStatus.PENDING as any) &&
-      friendshipRes?.senderId === user?.userId
+      friendshipData?.status === (FriendshipStatus.PENDING as any) &&
+      friendshipData?.senderId === user?.userId
     ) {
       return "Cancel Request";
     }
-    if (friendshipRes?.status === (FriendshipStatus.ACCEPTED as any)) {
+    if (friendshipData?.status === (FriendshipStatus.ACCEPTED as any)) {
       return "Unfriend";
     }
     return "Add Friend";
@@ -194,13 +194,155 @@ const Profile: NextPageWithLayout = () => {
     (t === "replies" && postRepliesLoading) ||
     !profileUser;
 
-  if (
-    userErr ||
-    (t === "posts" && postsErr) ||
-    (t === "replies" && postRepliesErr)
-  ) {
-    return <Box>Error loading data</Box>;
-  }
+  const renderContent = () => {
+    if (
+      userError ||
+      (t === "posts" && postsError) ||
+      (t === "replies" && postRepliesError)
+    ) {
+      return <Box p={2}>Error loading data</Box>;
+    }
+
+    if (loading) {
+      return <LinearProgress />;
+    }
+
+    return (
+      <>
+        {!loading ? (
+          <>
+            <Fade in timeout={700}>
+              <Box sx={styles.profileHeaderContainer}>
+                <Stack direction="row" justifyContent="flex-end">
+                  {userIsOwner && (
+                    <Button
+                      sx={styles.editBtn}
+                      variant="outlined"
+                      onClick={() => setShowEditProfileDialog(true)}
+                    >
+                      Edit
+                    </Button>
+                  )}
+
+                  {!userIsOwner && user && (
+                    <Button
+                      sx={styles.editBtn}
+                      variant="outlined"
+                      onClick={onFriendButtonClick}
+                    >
+                      <PersonAddIcon />
+                      {getFriendshipText()}
+                    </Button>
+                  )}
+                </Stack>
+
+                <Box sx={styles.profileHeader}>
+                  <UserAvatar
+                    userId={profileUser.userId}
+                    username={profileUser.username}
+                    avatarUrl={profileUser.images?.[0]?.url}
+                    AvatarProps={{ sx: styles.avatar }}
+                  />
+                  <Stack
+                    sx={{
+                      justifyContent: "center",
+                      alignItems: "center",
+                      mb: 1,
+                    }}
+                  >
+                    <Typography variant="h4">{profileUser?.name}</Typography>
+                    <Typography variant="subtitle2" color="text.secondary">
+                      {`@${profileUser.username}`}{" "}
+                      {profileUser.location && ` | ${profileUser.location}`}
+                      {profileUser.gender && ` | ${profileUser.gender}`}
+                    </Typography>
+                    {profileUser.bio && (
+                      <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
+                        {profileUser.bio}
+                      </Typography>
+                    )}
+                  </Stack>
+                </Box>
+
+                <Stack sx={styles.profileStatsContainer}>
+                  <Stack sx={styles.profileStats}>
+                    <Stack sx={{ flexDirection: "column" }}>
+                      <Typography fontWeight={600}>
+                        {postsRes?.[0].meta.total}
+                      </Typography>
+                      <Typography variant="subtitle2">Posts</Typography>
+                    </Stack>
+                    <Stack sx={{ flexDirection: "column" }}>
+                      <Typography fontWeight={600}>
+                        {postRepliesRes?.[0].meta.total}
+                      </Typography>
+                      <Typography variant="subtitle2">Replies</Typography>
+                    </Stack>
+                    <Stack sx={{ flexDirection: "column" }}>
+                      <Typography fontWeight={600}>{reactionCount}</Typography>
+                      <Typography variant="subtitle2">
+                        {reactionCount === 1 ? "Like" : "Likes"}
+                      </Typography>
+                    </Stack>
+                    <Stack sx={{ flexDirection: "column" }}>
+                      <Button
+                        variant="outlined"
+                        onClick={() => setShowFriendsDialog(true)}
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          color: "text.primary",
+                          textTransform: "none",
+                          m: 0,
+                        }}
+                      >
+                        <Typography fontWeight={600}>
+                          {friends?.length}
+                        </Typography>
+                        <Typography variant="subtitle2">
+                          {friends?.length === 1 ? "Friend" : "Friends"}
+                        </Typography>
+                      </Button>
+                    </Stack>
+                  </Stack>
+                </Stack>
+              </Box>
+            </Fade>
+
+            <Tabs
+              value={tabIndex}
+              onChange={handleChange}
+              sx={{ display: "flex" }}
+            >
+              {TABS.map((tab, index) => (
+                <Tab key={index} label={tab} sx={{ flex: 1 }} />
+              ))}
+            </Tabs>
+            {t === "posts" ? (
+              <PostList getPostsKey={getPostsKey} repliesMode={false} />
+            ) : (
+              <PostList getPostsKey={getPostRepliesKey} repliesMode />
+            )}
+
+            <EditProfileDialog
+              open={showEditProfileDialog}
+              setOpen={setShowEditProfileDialog}
+              onSave={onSaveProfile}
+            />
+
+            <UserListModal
+              open={showFriendsDialog}
+              setOpen={setShowFriendsDialog}
+              users={friends}
+            />
+          </>
+        ) : (
+          <LinearProgress />
+        )}
+      </>
+    );
+  };
 
   return (
     <>
@@ -208,129 +350,7 @@ const Profile: NextPageWithLayout = () => {
       <TopAppBar title="Profile">
         <PostListSorting setMode={setSortMode} />
       </TopAppBar>
-      {!loading ? (
-        <>
-          <Fade in timeout={700}>
-            <Box sx={styles.profileHeaderContainer}>
-              <Stack direction="row" justifyContent="flex-end">
-                {userIsOwner && (
-                  <Button
-                    sx={styles.editBtn}
-                    variant="outlined"
-                    onClick={() => setShowEditProfileDialog(true)}
-                  >
-                    Edit
-                  </Button>
-                )}
-
-                {!userIsOwner && user && (
-                  <Button
-                    sx={styles.editBtn}
-                    variant="outlined"
-                    onClick={onFriendButtonClick}
-                  >
-                    <PersonAddIcon />
-                    {getFriendshipText()}
-                  </Button>
-                )}
-              </Stack>
-
-              <Box sx={styles.profileHeader}>
-                <UserAvatar
-                  userId={profileUser.userId}
-                  username={profileUser.username}
-                  avatarUrl={profileUser.images?.[0]?.url}
-                  AvatarProps={{ sx: styles.avatar }}
-                />
-                <Stack
-                  sx={{ justifyContent: "center", alignItems: "center", mb: 1 }}
-                >
-                  <Typography variant="h4">{profileUser?.name}</Typography>
-                  <Typography variant="subtitle2" color="text.secondary">
-                    {`@${profileUser.username}`}{" "}
-                    {profileUser.location && ` | ${profileUser.location}`}
-                    {profileUser.gender && ` | ${profileUser.gender}`}
-                  </Typography>
-                  {profileUser.bio && (
-                    <Typography variant="body2" sx={{ mt: 2, mb: 1 }}>
-                      {profileUser.bio}
-                    </Typography>
-                  )}
-                </Stack>
-              </Box>
-
-              <Stack sx={styles.profileStatsContainer}>
-                <Stack sx={styles.profileStats}>
-                  <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>
-                      {postsRes?.[0].meta.total}
-                    </Typography>
-                    <Typography variant="subtitle2">Posts</Typography>
-                  </Stack>
-                  <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>
-                      {postRepliesRes?.[0].meta.total}
-                    </Typography>
-                    <Typography variant="subtitle2">Replies</Typography>
-                  </Stack>
-                  <Stack sx={{ flexDirection: "column" }}>
-                    <Typography fontWeight={600}>{reactionCount}</Typography>
-                    <Typography variant="subtitle2">
-                      {reactionCount === 1 ? "Like" : "Likes"}
-                    </Typography>
-                  </Stack>
-                  <Stack sx={{ flexDirection: "column" }}>
-                    <Button
-                      variant="outlined"
-                      onClick={() => setShowFriendsDialog(true)}
-                      sx={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "flex-start",
-                        color: "text.primary",
-                        textTransform: "none",
-                        m: 0,
-                      }}
-                    >
-                      <Typography fontWeight={600}>
-                        {friends?.length}
-                      </Typography>
-                      <Typography variant="subtitle2">
-                        {friends?.length === 1 ? "Friend" : "Friends"}
-                      </Typography>
-                    </Button>
-                  </Stack>
-                </Stack>
-              </Stack>
-            </Box>
-          </Fade>
-
-          <Tabs value={value} onChange={handleChange} sx={{ display: "flex" }}>
-            {TABS.map((tab, index) => (
-              <Tab key={index} label={tab} sx={{ flex: 1 }} />
-            ))}
-          </Tabs>
-          {t === "posts" ? (
-            <PostList getPostsKey={getPostsKey} repliesMode={false} />
-          ) : (
-            <PostList getPostsKey={getPostRepliesKey} repliesMode />
-          )}
-
-          <EditProfileDialog
-            open={showEditProfileDialog}
-            setOpen={setShowEditProfileDialog}
-            onSave={onSaveProfile}
-          />
-
-          <UserListModal
-            open={showFriendsDialog}
-            setOpen={setShowFriendsDialog}
-            users={friends}
-          />
-        </>
-      ) : (
-        <LinearProgress />
-      )}
+      {renderContent()}
     </>
   );
 };

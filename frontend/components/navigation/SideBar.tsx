@@ -82,7 +82,7 @@ const SideBar = () => {
           <UserAvatar
             userId={user.userId}
             username={user.username}
-            avatarUrl={user.images[0]?.url}
+            avatarUrl={user.images?.[0]?.url}
             AvatarProps={{ sx: styles.avatar }}
           />
         </Box>

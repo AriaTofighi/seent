@@ -26,4 +26,8 @@ export class FindPostsQueryDto extends FindManyQuery {
   @IsString()
   @IsOptional()
   search?: string;
+
+  @IsString()
+  @IsOptional()
+  tags?: string;
 }

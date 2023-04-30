@@ -56,7 +56,11 @@ export class PostsController {
       throw new UnauthorizedException();
     }
 
-    const newPost = await this.postsService.create(post);
+    const { tags: tagsJSON, ...rawPost } = post;
+
+    const tags = tagsJSON ? JSON.parse(tagsJSON) : undefined;
+
+    const newPost = await this.postsService.create(rawPost);
 
     if (images[0]) {
       const uploadedImage: any = await this.fileUploadService.upload(images[0]);
@@ -66,6 +70,25 @@ export class PostsController {
         url: uploadedImage.Location,
       };
       await this.imagesService.create(image);
+    }
+
+    if (tags) {
+      await this.postsService.update({
+        where: {
+          postId: newPost.postId,
+        },
+        data: {
+          postTags: {
+            create: tags.map((tag) => ({
+              tag: {
+                connect: {
+                  tagId: tag,
+                },
+              },
+            })),
+          },
+        },
+      });
     }
 
     if (newPost.parentPostId) {
@@ -94,8 +117,8 @@ export class PostsController {
 
   @Get()
   async findMany(@Query() query: FindPostsQueryDto, @Req() req) {
-    const user = await this.getUser(req);
-    const orClause = await this.getOrClause(user);
+    const user = await this.authService.getUser(req);
+    const orClause = await this.buildOrClause(user);
 
     const {
       authorId,
@@ -106,7 +129,10 @@ export class PostsController {
       perPage,
       orderBy,
       search,
+      tags,
     } = query;
+
+    const tagsArray = tags ? tags.split(",") : undefined;
 
     const result = await this.postsService.findMany({
       where: {
@@ -115,6 +141,19 @@ export class PostsController {
         parentPostId,
         body: { contains: search, mode: "insensitive" },
         OR: orClause,
+        // Redo this logic except for PostTags, not Tags
+        // tags: tagsArray
+        //       ? {
+        //           some: {
+        //             name: {
+        //               in: tagsArray,
+        //             },
+        //           },
+        //         }
+        //       : undefined,
+        postTags: tagsArray
+          ? { some: { tag: { name: { in: tagsArray } } } }
+          : undefined,
       },
       orderBy,
       page,
@@ -136,8 +175,8 @@ export class PostsController {
 
   @Get(":id")
   async findOne(@Param("id") postId: string, @Req() req) {
-    const user = await this.getUser(req);
-    const orClause = await this.getOrClause(user);
+    const user = await this.authService.getUser(req);
+    const orClause = await this.buildOrClause(user);
     const posts = (await this.postsService.findMany({
       where: {
         postId,
@@ -193,17 +232,7 @@ export class PostsController {
     return this.postsService.delete({ postId });
   }
 
-  private async getUser(req: any) {
-    if (req.headers.authorization) {
-      const token = req.headers.authorization.replace("Bearer ", "");
-      const user = await this.authService.validateToken(token);
-      return user;
-    } else {
-      return null;
-    }
-  }
-
-  private async getOrClause(user: any) {
+  private async buildOrClause(user: any) {
     const orClause = [];
     orClause.push({ isPublic: true });
 

@@ -10,7 +10,7 @@ export const uploadUserImage = async (convertedFile: any, userId: string) => {
     toast.success("Uploaded photo successfully");
     return response.data;
   } catch (error) {
-    // console.log(error);
+    console.log(error);
     toast.error("Error uploading photo");
   }
 };
@@ -22,6 +22,8 @@ export const updateUser = async (userId: string, user: any) => {
     return response.data;
   } catch (error: any) {
     console.log(error);
-    toast.error(error.response.data.message);
+    if (error.response.data.message[0].includes("username should not")) {
+      toast.error("Username should not contain spaces");
+    }
   }
 };

@@ -31,6 +31,7 @@ model User {
   sentFriendships     Friendship[]   @relation(name: "friendshipSender")
   notifications       Notification[] @relation(name: "notificationRecipient")
   sentNotifications   Notification[] @relation(name: "notificationSender")
+  tags                Tag[]
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt
 }
@@ -47,6 +48,7 @@ model Post {
   reactions     Reaction[]
   images        Image[]
   notifications Notification[]
+  postTags      PostTag[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 }
@@ -136,6 +138,28 @@ model Friendship {
   updatedAt    DateTime         @updatedAt
 
   @@unique([recipientId, senderId])
+}
+
+model Tag {
+  tagId     String    @id @default(uuid())
+  name      String    @unique
+  creator   User?     @relation(fields: [creatorId], references: [userId])
+  creatorId String
+  postTags  PostTag[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model PostTag {
+  postTagId String   @id @default(uuid())
+  postId    String
+  post      Post?    @relation(fields: [postId], references: [postId])
+  tagId     String
+  tag       Tag?     @relation(fields: [tagId], references: [tagId])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([postId, tagId])
 }
 
 enum FriendshipStatus {

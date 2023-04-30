@@ -25,7 +25,15 @@ function RouteGuard({ children }: Props) {
   }, [user, loading]);
 
   function authCheck(url: string) {
-    if (!loading) setAuthorized(true);
+    if (
+      (url.includes("/notifications") ||
+        url.includes("/messages" || url.includes("/settings"))) &&
+      !user
+    ) {
+      router.push("/sign-in");
+    } else if (!loading) {
+      setAuthorized(true);
+    }
   }
 
   return <>{authorized ? children : <LoadAppSpinner />}</>;

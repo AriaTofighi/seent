@@ -176,6 +176,7 @@ const PostCard = ({
               childPostsCount={post._count?.childPosts ?? 0}
               isMainPost={isMainPost}
               postAuthorId={post.authorId}
+              tags={post.postTags}
             />
           </Box>
         </Link>

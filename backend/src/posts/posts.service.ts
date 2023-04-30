@@ -99,6 +99,16 @@ export class PostsService {
         type: true,
       },
     },
+    postTags: {
+      select: {
+        tag: {
+          select: {
+            tagId: true,
+            name: true,
+          },
+        },
+      },
+    },
   };
 
   async findOne(postWhereUniqueInput: Prisma.PostWhereUniqueInput) {

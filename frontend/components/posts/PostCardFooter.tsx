@@ -4,6 +4,7 @@ import ReplyIcon from "@mui/icons-material/Reply";
 import {
   Box,
   Button,
+  Chip,
   IconButton,
   Stack,
   Tooltip,
@@ -38,6 +39,7 @@ type Props = {
   childPostsCount: number;
   isMainPost: boolean;
   postAuthorId: string;
+  tags: any[];
 };
 
 const PostCardFooter = ({
@@ -51,6 +53,7 @@ const PostCardFooter = ({
   childPostsCount,
   isMainPost,
   postAuthorId,
+  tags,
 }: Props) => {
   const { user } = useUser();
   const [showReactions, setShowReactions] = useState(false);
@@ -88,16 +91,31 @@ const PostCardFooter = ({
   const reactionCount = allReactions.length;
 
   return (
-    <Stack direction="column" gap={1}>
+    <Stack direction="column" gap={0.5}>
+      {tags?.length > 0 && (
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+            flexWrap: "wrap",
+            mt: 1,
+            ml: -0.5,
+          }}
+        >
+          {tags?.map((t) => (
+            <Chip key={t.tag.tagId} label={t.tag.name} />
+          ))}
+        </Box>
+      )}
+
       <Stack
         direction="row"
         justifyContent="space-between"
         alignItems="flex-end"
-        mt={0.5}
+        sx={{ height: 30 }}
       >
-        <Box>
-          <Typography variant="caption">{postDate}</Typography>
-        </Box>
+        <Typography variant="caption">{postDate}</Typography>
         {showActions && (
           <Stack
             direction="row"

@@ -1,6 +1,7 @@
 import CloseIcon from "@mui/icons-material/Close";
 import {
   Button,
+  Chip,
   CircularProgress,
   Dialog,
   IconButton,
@@ -43,10 +44,11 @@ const PostDialog = ({
     handleBrowse,
     fileInputRef,
   } = useImageUpload();
-  const { control, reset, handleSubmit, setValue, getValues, trigger } =
+  const { control, reset, handleSubmit, setValue, getValues, trigger, watch } =
     useForm<DefaultValueType>({
       defaultValues,
     });
+  const tags = watch("tags");
 
   const handleSubmitPost = async (formValues: DefaultValueType) => {
     if (!user) return;
@@ -60,13 +62,29 @@ const PostDialog = ({
       authorId: user.userId,
       isPublic: String(privacyMode === PRIVACY_MODES.PUBLIC),
       images: image as Blob,
+      tags: tags.map((tag: any) => tag.tagId),
     };
 
     type FormDataVals = typeof formDataVals;
 
     const formData = new FormData();
     Object.keys(formDataVals).forEach((key) => {
-      formData.append(key, formDataVals[key as keyof FormDataVals]);
+      const value = formDataVals[key as keyof FormDataVals];
+
+      // Special handling for 'tags' key.
+      if (key === "tags" && Array.isArray(value)) {
+        // If 'value' is an array of strings, convert it to a JSON string.
+        formData.append(key, JSON.stringify(value));
+      } else if (key === "images" && Array.isArray(value)) {
+        // If 'value' is an array of Blobs (images), append each Blob individually.
+        value.forEach((item, index) => {
+          if (item instanceof Blob) {
+            formData.append(`${key}[${index}]`, item);
+          }
+        });
+      } else {
+        formData.append(key, value as string | Blob);
+      }
     });
 
     if (parentPost) {
@@ -147,12 +165,31 @@ const PostDialog = ({
               validate: validateBody,
             }}
           />
+          {tags.length > 0 && (
+            <Box sx={{ py: 1, display: "flex", gap: 1 }}>
+              {tags.map((tag: any) => (
+                <Chip
+                  key={tag.tagId}
+                  label={tag.name}
+                  onDelete={() => {
+                    setValue(
+                      "tags",
+                      watch("tags").filter((t: any) => t.tagId !== tag.tagId)
+                    );
+                  }}
+                />
+              ))}
+            </Box>
+          )}
+
           <PostDialogActions
             setValue={setValue}
             getValues={getValues}
             handleBrowse={handleBrowse}
             handleSelectPrivacy={handleSelectPrivacy}
             privacyMode={privacyMode}
+            control={control}
+            watch={watch}
           />
           {imagePreview && (
             <Box sx={styles.images}>
@@ -212,10 +249,12 @@ const styles: Styles = {
 
 export type DefaultValueType = {
   body: string;
+  tags: any[];
 };
 
 const defaultValues = {
   body: "",
+  tags: [],
 };
 
 const PRIVACY_MODES = {

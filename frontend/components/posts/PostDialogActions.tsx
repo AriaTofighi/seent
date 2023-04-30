@@ -1,12 +1,4 @@
-import {
-  Box,
-  Stack,
-  Tooltip,
-  IconButton,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
+import { Box, Stack, Tooltip, IconButton, Typography } from "@mui/material";
 import EmojiPicker, { IEmojiData } from "emoji-picker-react";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import ImageIcon from "@mui/icons-material/Image";
@@ -17,6 +9,8 @@ import { useState } from "react";
 import { Styles } from "../../types";
 import useMenu from "../../hooks/useMenu";
 import PostPrivacyMenu from "./PostPrivacyMenu";
+import TagIcon from "@mui/icons-material/Tag";
+import AddTagsMenu from "../tags/AddTagsMenu";
 
 type Props = {
   setValue: UseFormSetValue<DefaultValueType>;
@@ -24,6 +18,8 @@ type Props = {
   handleBrowse: () => void;
   handleSelectPrivacy: (privacyMode: string) => void;
   privacyMode: string;
+  control: any;
+  watch: any;
 };
 
 const PostDialogActions = ({
@@ -32,9 +28,17 @@ const PostDialogActions = ({
   handleBrowse,
   handleSelectPrivacy,
   privacyMode,
+  control,
+  watch,
 }: Props) => {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const { anchorEl, handleClick, handleClose, open } = useMenu();
+  const {
+    anchorEl: tagsAnchorEl,
+    handleClick: tagsHandleClick,
+    handleClose: tagsHandleClose,
+    open: tagsOpen,
+  } = useMenu();
 
   const onEmojiClick = (_event: any, emojiObject: IEmojiData) => {
     const body = getValues("body");
@@ -67,6 +71,11 @@ const PostDialogActions = ({
               <ImageIcon />
             </IconButton>
           </Tooltip>
+          <Tooltip title="Tags">
+            <IconButton onClick={tagsHandleClick}>
+              <TagIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title="Privacy">
             <IconButton onClick={handleClick}>
               <ShieldIcon />
@@ -85,6 +94,17 @@ const PostDialogActions = ({
           pickerStyle={styles.emojiPicker as KeyValuePair}
         />
       )}
+      <AddTagsMenu
+        {...{
+          anchorEl: tagsAnchorEl,
+          handleClose: tagsHandleClose,
+          open: tagsOpen,
+          setValue,
+          getValues,
+          control,
+          watch,
+        }}
+      />
       <PostPrivacyMenu
         {...{ anchorEl, handleClose, open, handleMenuItemClick }}
       />

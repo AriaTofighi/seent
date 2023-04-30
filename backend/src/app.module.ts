@@ -11,12 +11,13 @@ import { FriendshipsModule } from "./friendships/friendships.module";
 import { NotificationsModule } from "./notifications/notifications.module";
 import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 import { APP_GUARD } from "@nestjs/core";
+import { TagsModule } from "./tags/tags.module";
 
 @Module({
   imports: [
     ThrottlerModule.forRoot({
       ttl: 15,
-      limit: 15,
+      limit: 25,
     }),
     UsersModule,
     PostsModule,
@@ -28,6 +29,7 @@ import { APP_GUARD } from "@nestjs/core";
     SocketModule,
     FriendshipsModule,
     NotificationsModule,
+    TagsModule,
   ],
   providers: [
     {

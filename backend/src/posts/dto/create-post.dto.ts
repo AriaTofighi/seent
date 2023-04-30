@@ -1,8 +1,7 @@
-import { Prisma } from "@prisma/client";
 import { IsOptional, IsString, IsUUID } from "class-validator";
 import { ToBoolean } from "utils/validators";
 
-export class CreatePostDto implements Prisma.PostCreateInput {
+export class CreatePostDto {
   @IsUUID()
   authorId: string;
 
@@ -18,4 +17,7 @@ export class CreatePostDto implements Prisma.PostCreateInput {
 
   @IsOptional()
   images: any;
+
+  @IsOptional()
+  tags: string;
 }

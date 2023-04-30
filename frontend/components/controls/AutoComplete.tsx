@@ -7,6 +7,11 @@ import {
 import React from "react";
 import { Controller } from "react-hook-form";
 
+type CustomAutocompleteProps = Omit<
+  AutocompleteProps<any, true, true, true>,
+  "renderInput"
+>;
+
 type Props = {
   control: any;
   name: string;
@@ -26,7 +31,7 @@ const AutoComplete = ({
   getOptionLabel,
   TextFieldProps,
   ...rest
-}: Props & AutocompleteProps<any, true, true, true>) => {
+}: Props & CustomAutocompleteProps) => {
   return (
     <Controller
       render={({

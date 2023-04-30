@@ -68,9 +68,8 @@ const CreateRoomModal = ({ open, setOpen, mutateRooms }: Props) => {
           onSubmit={handleSubmit(onSubmit)}
           style={{ display: "flex", gap: 12, flexDirection: "column" }}
         >
-          {/* @ts-ignore */}
           <AutoComplete
-            label="Add user(s)"
+            label="Add people"
             name="users"
             control={control}
             disablePortal={false}

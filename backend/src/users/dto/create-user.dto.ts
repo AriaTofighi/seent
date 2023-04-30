@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { Transform } from "class-transformer";
 import {
   IsDate,
   IsEmail,
@@ -6,6 +7,7 @@ import {
   IsOptional,
   IsString,
   Length,
+  NotContains,
 } from "class-validator";
 
 export class CreateUserDto implements Prisma.UserCreateInput {
@@ -16,6 +18,10 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   name: string;
 
   @IsString()
+  @IsNotEmpty()
+  @NotContains(" ")
+  @Transform(({ value }) => value?.trim())
+  @Length(3, 25)
   username: string;
 
   @IsNotEmpty()

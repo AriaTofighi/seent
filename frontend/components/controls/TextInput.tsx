@@ -1,4 +1,4 @@
-import { TextField, Theme } from "@mui/material";
+import { TextField, TextFieldProps, Theme } from "@mui/material";
 import React from "react";
 import { Controller } from "react-hook-form";
 import { Styles } from "../../types";
@@ -11,14 +11,19 @@ type Props = {
   [rest: string]: any;
 };
 
-const TextInput = ({ control, name, rules, ...rest }: Props) => {
+const TextInput = ({
+  control,
+  name,
+  rules,
+  ...rest
+}: Props & TextFieldProps) => {
   return (
     <Controller
       render={({ field, fieldState }) => (
         <TextField
           required
           type="standard"
-          variant="outlined"
+          variant={{ ...rest }.variant ? { ...rest }.variant : "outlined"}
           size="medium"
           error={Boolean(fieldState.error)}
           helperText={fieldState.error ? fieldState.error.message : ""}

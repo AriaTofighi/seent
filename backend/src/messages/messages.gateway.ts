@@ -76,27 +76,25 @@ export class MessagesGateway {
   @SubscribeMessage("postEngagement")
   async handlePostReply(client: AuthenticatedSocket, payload: any) {
     const { recipientId } = payload;
-    const userSocket = this.sessionManager.getUserSocket(recipientId);
-    if (userSocket) {
-      userSocket.emit("newPostEngagement");
-    }
+    await this.emitEventToUser(recipientId, "newPostEngagement");
   }
 
   @SubscribeMessage("friendRequest")
   async handleFriendRequest(client: AuthenticatedSocket, payload: any) {
     const { recipientId } = payload;
-    const userSocket = this.sessionManager.getUserSocket(recipientId);
-    if (userSocket) {
-      userSocket.emit("newFriendRequest");
-    }
+    await this.emitEventToUser(recipientId, "newFriendRequest");
   }
 
   @SubscribeMessage("friendAccept")
   async handleFriendAccept(client: AuthenticatedSocket, payload: any) {
     const { recipientId } = payload;
+    await this.emitEventToUser(recipientId, "newFriendAccept");
+  }
+
+  private async emitEventToUser(recipientId: string, eventName: string) {
     const userSocket = this.sessionManager.getUserSocket(recipientId);
     if (userSocket) {
-      userSocket.emit("newFriendAccept");
+      userSocket.emit(eventName);
     }
   }
 }

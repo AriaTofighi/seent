@@ -168,4 +168,14 @@ export class AuthService {
     }
     return result;
   }
+
+  async getUser(req: any) {
+    if (req.headers.authorization) {
+      const token = req.headers.authorization.replace("Bearer ", "");
+      const user = await this.validateToken(token);
+      return user;
+    } else {
+      return null;
+    }
+  }
 }

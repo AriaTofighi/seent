@@ -58,7 +58,7 @@ export const NotificationType = {
 };
 
 type ImageTypeKeys = keyof typeof ImageType;
-type ImageTypeValues = typeof ImageType[ImageTypeKeys];
+type ImageTypeValues = (typeof ImageType)[ImageTypeKeys];
 
 type PostCounts = {
   childPosts: number;
@@ -109,6 +109,7 @@ export type PostEntity = {
   author: UserEntity;
   images: ImageEntity[];
   parentPost: PostEntity | string;
+  postTags: PostTag[];
   _count: PostCounts;
 };
 
@@ -169,6 +170,22 @@ export type FriendshipEntity = {
   recipientId: string;
   senderId: string;
   status: typeof FriendshipStatus;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type TagEntity = {
+  tagId: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export type PostTag = {
+  postId: string;
+  tagId: string;
+  post: PostEntity;
+  tag: TagEntity;
   createdAt: Date;
   updatedAt: Date;
 };
