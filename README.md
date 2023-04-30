@@ -1,6 +1,6 @@
 # seent
 
-Seent, a social network for thoughts.
+Seent, a social network.
 
 # Frontend Dev
 
