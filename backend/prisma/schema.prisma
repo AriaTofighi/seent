@@ -153,9 +153,9 @@ model Tag {
 model PostTag {
   postTagId String   @id @default(uuid())
   postId    String
-  post      Post?    @relation(fields: [postId], references: [postId])
+  post      Post?    @relation(fields: [postId], references: [postId], onDelete: Cascade)
   tagId     String
-  tag       Tag?     @relation(fields: [tagId], references: [tagId])
+  tag       Tag?     @relation(fields: [tagId], references: [tagId], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
