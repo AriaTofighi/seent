@@ -49,7 +49,7 @@ export const ImageType = {
 export const FriendshipStatus = {
   PENDING: "PENDING",
   ACCEPTED: "ACCEPTED",
-};
+} as const;
 
 export const NotificationType = {
   LIKE: "LIKE",
@@ -169,7 +169,7 @@ export type FriendshipEntity = {
   friendshipId: string;
   recipientId: string;
   senderId: string;
-  status: typeof FriendshipStatus;
+  status: keyof typeof FriendshipStatus;
   createdAt: Date;
   updatedAt: Date;
 };

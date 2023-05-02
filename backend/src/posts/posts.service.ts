@@ -1,4 +1,10 @@
-import { Prisma, Post, ImageType, FriendshipStatus } from "@prisma/client";
+import {
+  Prisma,
+  Post,
+  ImageType,
+  FriendshipStatus,
+  User,
+} from "@prisma/client";
 import { PrismaService } from "../orm/prisma.service";
 import { PostFindManyParams } from "./posts.types";
 import { Injectable } from "@nestjs/common";
@@ -249,18 +255,19 @@ export class PostsService {
     };
   }
 
-  async authorizeParentPosts(posts: any[], user) {
+  async authorizeParentPosts(posts: any[], user: User | undefined) {
     for (const post in posts) {
       if (posts[post].parentPost) {
         const parentPost = posts[post].parentPost;
         const publicPost = parentPost.isPublic;
         const friendshipFound = await this.friendshipsService.findOneByPair(
           parentPost.author.userId,
-          user.userId
+          user?.userId
         );
         const acceptedFriendship =
           friendshipFound?.status === FriendshipStatus.ACCEPTED;
-        const parentPostAuthorIsUser = parentPost.author.userId === user.userId;
+        const parentPostAuthorIsUser =
+          parentPost.author.userId === user?.userId;
         if (!(publicPost || acceptedFriendship || parentPostAuthorIsUser)) {
           posts[post].parentPost = "Unauthorized";
         }

@@ -2,8 +2,6 @@ import { Styles } from "../types";
 
 const styles: Styles = {
   profileHeaderContainer: {
-    borderBottom: "1px solid",
-    borderColor: "divider",
     p: 3,
     position: "relative",
     display: "flex",
@@ -19,8 +17,6 @@ const styles: Styles = {
     gap: 2,
   },
   editBtn: {
-    m: 1,
-    mb: 2,
     color: "primary.main",
     display: "flex",
     gap: 1,
@@ -34,11 +30,21 @@ const styles: Styles = {
     width: "100%",
     justifyContent: "center",
     flexDirection: "row",
+    borderBottom: "1px solid",
+    borderColor: "divider",
+  },
+  profileStatItem: {
+    borderRight: "1px solid",
+    borderColor: "divider",
+    paddingRight: 2,
+    "&:last-child": {
+      borderRight: "none",
+    },
   },
   profileStats: {
     flexDirection: "row",
     justifyContent: "space-between",
-    mt: 2,
+    my: 2,
     width: "90%",
     flexWrap: "wrap",
     alignItems: "center",
