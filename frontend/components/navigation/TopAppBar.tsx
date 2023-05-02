@@ -29,7 +29,9 @@ const TopAppBar = ({ children, title }: Props) => {
             <MenuIcon />
           </IconButton>
         )}
-        <Typography variant="h5">{title ?? ""}</Typography>
+        <Typography variant="h5" sx={{ width: "100%" }}>
+          {title ?? ""}
+        </Typography>
         {children}
       </Toolbar>
     </AppBar>

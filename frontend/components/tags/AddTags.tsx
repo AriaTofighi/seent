@@ -67,7 +67,7 @@ const AddTags = ({ setValue, getValues, control, watch }: Props) => {
           display: "flex",
           gap: 1,
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: "flex-end",
         }}
         onSubmit={handleSubmit(onSubmit)}
       >

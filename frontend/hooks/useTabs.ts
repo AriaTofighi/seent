@@ -25,10 +25,32 @@ export const useTabs = (
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     const tab = tabs[newValue];
     if (tab === defaultTab) {
-      router.push(basePath);
+      updateQuery("");
     } else {
-      router.push(`${basePath}?t=${tab}`);
+      updateQuery(tab);
     }
+  };
+
+  const updateQuery = (tab: string) => {
+    const currentQuery = router.query;
+
+    const newQuery = {
+      ...currentQuery,
+      t: tab || undefined,
+    };
+
+    if (!tab) {
+      delete newQuery.t;
+    }
+
+    router.replace(
+      {
+        pathname: router.pathname,
+        query: newQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
   };
 
   return {

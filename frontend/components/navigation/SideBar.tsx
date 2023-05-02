@@ -26,7 +26,7 @@ import UserAvatar from "../users/UserAvatar";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import { useAPI } from "../../hooks/useAPI";
 import useSocketEvent from "../../hooks/useSocketEvent";
-import { mutate } from "swr";
+import TagIcon from "@mui/icons-material/Tag";
 
 const SideBar = () => {
   const theme = useTheme();
@@ -93,6 +93,9 @@ const SideBar = () => {
       </MenuItem>
       {user && (
         <>
+          <MenuItem icon={<TagIcon />} href={`/tags`}>
+            Tags
+          </MenuItem>
           <MenuItem
             icon={
               <Badge
@@ -107,7 +110,6 @@ const SideBar = () => {
           >
             Notifications
           </MenuItem>
-
           <MenuItem
             icon={
               <Badge

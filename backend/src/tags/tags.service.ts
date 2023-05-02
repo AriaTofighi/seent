@@ -8,11 +8,20 @@ import { TagFindManyParams } from "./tags.types";
 export class TagsService {
   constructor(private prisma: PrismaService) {}
 
+  private readonly _include: Prisma.TagInclude = {
+    _count: {
+      select: {
+        postTags: true,
+      },
+    },
+  };
+
   async findMany(params: TagFindManyParams) {
     const { where, orderBy, page, perPage } = params;
     const queryArgs = {
       where: where,
       orderBy: orderBy,
+      include: this._include,
     };
 
     let result;

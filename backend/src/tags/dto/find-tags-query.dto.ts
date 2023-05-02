@@ -8,5 +8,9 @@ export class FindTagsQueryDto extends FindManyQuery {
 
   @IsString()
   @IsOptional()
+  sortOrder?: string;
+
+  @IsString()
+  @IsOptional()
   search?: string;
 }

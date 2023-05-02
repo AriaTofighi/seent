@@ -8,6 +8,7 @@ import Title from "../components/UI/Title";
 import { NextPageWithLayout, POSTS_SORT_MODES, Styles } from "../types";
 import { useTabs } from "../hooks/useTabs";
 import { useUser } from "../contexts/UserContext";
+import { useRouter } from "next/router";
 
 const TABS = ["all", "friends"];
 
@@ -15,30 +16,50 @@ const Feed: NextPageWithLayout = () => {
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
   const { handleChange, tabIndex } = useTabs(TABS, TABS[0], "feed");
   const { user } = useUser();
+  const { query } = useRouter();
+  const { tags } = query;
 
   const getPostsKey = (index: number) =>
-    `posts?isChild=false&page=${index + 1}&perPage=10&orderBy=${sortMode}`;
+    `posts?page=${index + 1}&perPage=10${
+      !Boolean(tags) ? "&isChild=false" : ""
+    }&orderBy=${sortMode}${Boolean(tags) ? `&tags=${tags}` : ""}`;
 
   const getFriendsOnlyPostsKey = (index: number) =>
-    `posts?isChild=false&page=${
-      index + 1
-    }&perPage=10&orderBy=${sortMode}&friendsOnly=true`;
+    `posts?page=${index + 1}&perPage=10${
+      !Boolean(tags) ? "&isChild=false" : ""
+    }&orderBy=${sortMode}&friendsOnly=true${
+      Boolean(tags) ? `&tags=${tags}` : ""
+    }`;
 
   const renderTab = (index: number) => {
     switch (index) {
       case 0:
-        return <PostList getPostsKey={getPostsKey} feedMode />;
+        return (
+          <PostList
+            getPostsKey={getPostsKey}
+            repliesMode={Boolean(tags)}
+            feedMode
+          />
+        );
       case 1:
-        return <PostList getPostsKey={getFriendsOnlyPostsKey} feedMode />;
+        return (
+          <PostList
+            getPostsKey={getFriendsOnlyPostsKey}
+            repliesMode={Boolean(tags)}
+            feedMode
+          />
+        );
       default:
         return null;
     }
   };
 
+  const formattedTags = (tags as string)?.replace(/,/g, ", ");
+
   return (
     <>
       <Title title="Feed" />
-      <TopAppBar title="Feed">
+      <TopAppBar title={tags ? `Tags - ${formattedTags}` : "Feed"}>
         <PostListSorting setMode={setSortMode} />
       </TopAppBar>
       <Box sx={styles.root}>

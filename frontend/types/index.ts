@@ -177,6 +177,9 @@ export type FriendshipEntity = {
 export type TagEntity = {
   tagId: string;
   name: string;
+  _count: {
+    postTags: number;
+  };
   createdAt: Date;
   updatedAt: Date;
 };

@@ -140,7 +140,7 @@ const PostCard = ({
               // @ts-ignore
               replyAuthor={post?.parentPost?.author?.name}
             />
-            {nestParent && (
+            {nestParent && post?.parentPost && (
               <>
                 {post?.parentPost === "Unauthorized" ? (
                   <Alert sx={{ my: 2 }} severity="info">

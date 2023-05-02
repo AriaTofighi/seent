@@ -16,7 +16,7 @@ export class TagssController {
 
   @Get()
   async findMany(@Query() query: FindTagsQueryDto) {
-    const { sortBy, search, page, perPage } = query;
+    const { sortBy, sortOrder, search, page, perPage } = query;
 
     const result = await this.tagsService.findMany({
       where: {
@@ -25,8 +25,16 @@ export class TagssController {
         },
       },
       orderBy: {
-        postTags: sortBy === "popular" ? { _count: "desc" } : undefined,
-        createdAt: sortBy === "new" ? "desc" : undefined,
+        postTags:
+          sortBy === "posts"
+            ? { _count: sortOrder === "desc" ? "desc" : "asc" }
+            : undefined,
+        createdAt:
+          sortBy === "createdAt"
+            ? sortOrder === "desc"
+              ? "desc"
+              : "asc"
+            : undefined,
       },
       page: page,
       perPage: perPage,

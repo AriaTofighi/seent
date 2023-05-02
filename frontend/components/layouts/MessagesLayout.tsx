@@ -101,6 +101,9 @@ const MessagesLayout = ({ children }: Props) => {
         {showRoomList && (
           <Box sx={styles.roomList}>
             {roomsLoading && <LinearProgress />}
+            {rooms?.length === 0 && (
+              <Box sx={{ p: 2 }}>You are not in any conversations yet.</Box>
+            )}
             {sortRoomsByLatestMessage(roomsWithUnreadNotifications)?.map(
               (room) => (
                 <RoomMenuItem key={room.roomId} room={room} />
