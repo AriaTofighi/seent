@@ -18,6 +18,7 @@ import { FilesInterceptor } from "@nestjs/platform-express";
 import {
   ImageType,
   NotificationType,
+  Prisma,
   Post as PrismaPost,
 } from "@prisma/client";
 import { AuthService } from "src/auth/auth.service";
@@ -118,7 +119,6 @@ export class PostsController {
   @Get()
   async findMany(@Query() query: FindPostsQueryDto, @Req() req) {
     const user = await this.authService.getUser(req);
-    const orClause = await this.buildOrClause(user);
 
     const {
       authorId,
@@ -130,44 +130,58 @@ export class PostsController {
       orderBy,
       search,
       tags,
+      friendsOnly,
     } = query;
 
     const tagsArray = tags ? tags.split(",") : undefined;
 
+    const where: Prisma.PostWhereInput = {
+      authorId,
+      postId,
+      parentPostId,
+      body: { contains: search, mode: "insensitive" },
+      postTags: this.buildPostTagsCondition(tagsArray),
+      ...(friendsOnly &&
+        user &&
+        user?.userId && {
+          author: {
+            OR: [
+              {
+                receivedFriendships: {
+                  some: {
+                    status: "ACCEPTED",
+                    sender: {
+                      userId: user.userId,
+                    },
+                  },
+                },
+              },
+              {
+                sentFriendships: {
+                  some: {
+                    status: "ACCEPTED",
+                    recipient: {
+                      userId: user.userId,
+                    },
+                  },
+                },
+              },
+            ],
+          },
+        }),
+    };
+
+    where.OR = await this.buildOrClause(user);
+
     const result = await this.postsService.findMany({
-      where: {
-        authorId,
-        postId,
-        parentPostId,
-        body: { contains: search, mode: "insensitive" },
-        OR: orClause,
-        // Redo this logic except for PostTags, not Tags
-        // tags: tagsArray
-        //       ? {
-        //           some: {
-        //             name: {
-        //               in: tagsArray,
-        //             },
-        //           },
-        //         }
-        //       : undefined,
-        postTags: tagsArray
-          ? { some: { tag: { name: { in: tagsArray } } } }
-          : undefined,
-      },
+      where,
       orderBy,
       page,
       perPage,
       isChild,
     });
 
-    let posts;
-    if (result instanceof Array) {
-      posts = result;
-    } else {
-      posts = result.data;
-    }
-
+    const posts = Array.isArray(result) ? result : result.data;
     await this.postsService.authorizeParentPosts(posts, user);
 
     return result;
@@ -233,39 +247,49 @@ export class PostsController {
   }
 
   private async buildOrClause(user: any) {
-    const orClause = [];
-    orClause.push({ isPublic: true });
+    const orConditions = [];
+    orConditions.push({ isPublic: true });
 
     if (user) {
-      orClause.push({
-        author: {
-          receivedFriendships: {
-            some: {
-              status: "ACCEPTED",
-              sender: {
-                userId: user.userId,
-              },
-            },
-          },
-        },
-      });
-      orClause.push({
-        author: {
-          sentFriendships: {
-            some: {
-              status: "ACCEPTED",
-              recipient: {
-                userId: user.userId,
-              },
-            },
-          },
-        },
-      });
-      orClause.push({
-        authorId: user.userId,
-      });
+      orConditions.push(
+        { author: this.buildAuthorReceivedFriendshipsCondition(user) },
+        { author: this.buildAuthorSentFriendshipsCondition(user) },
+        { authorId: user.userId }
+      );
     }
 
-    return orClause;
+    return orConditions;
+  }
+
+  private buildPostTagsCondition(tagsArray: string[] | undefined) {
+    return tagsArray
+      ? { some: { tag: { name: { in: tagsArray } } } }
+      : undefined;
+  }
+
+  private buildAuthorReceivedFriendshipsCondition(user: any) {
+    return {
+      receivedFriendships: {
+        some: {
+          status: "ACCEPTED",
+          sender: {
+            userId: user.userId,
+          },
+        },
+      },
+    };
+  }
+
+  private buildAuthorSentFriendshipsCondition(user: any) {
+    return {
+      sentFriendships: {
+        some: {
+          status: "ACCEPTED",
+          recipient: {
+            userId: user.userId,
+          },
+        },
+      },
+    };
   }
 }

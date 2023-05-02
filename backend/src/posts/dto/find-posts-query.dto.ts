@@ -30,4 +30,8 @@ export class FindPostsQueryDto extends FindManyQuery {
   @IsString()
   @IsOptional()
   tags?: string;
+
+  @ToBoolean()
+  @IsOptional()
+  friendsOnly?: boolean;
 }

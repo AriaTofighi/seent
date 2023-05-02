@@ -1,17 +1,33 @@
 import { useRouter } from "next/router";
+import { useState, useEffect } from "react";
 
-export const useTabs = (tabs: string[]) => {
+export const useTabs = (
+  tabs: string[],
+  defaultTab: string = tabs[0],
+  basePath: string = ""
+) => {
   const router = useRouter();
-  const { query } = router;
-  const { t = tabs[0] } = query;
-  const tabIndex = tabs.indexOf(t as string);
+  const [tabIndex, setTabIndex] = useState(tabs.indexOf(defaultTab));
+
+  useEffect(() => {
+    const currentTab = router.query.t as string;
+    if (!currentTab && tabIndex !== tabs.indexOf(defaultTab)) {
+      setTabIndex(tabs.indexOf(defaultTab));
+    } else if (
+      currentTab &&
+      tabs.indexOf(currentTab) !== -1 &&
+      tabs.indexOf(currentTab) !== tabIndex
+    ) {
+      setTabIndex(tabs.indexOf(currentTab));
+    }
+  }, [router.query.t]);
 
   const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     const tab = tabs[newValue];
-    if (tab === tabs[0]) {
-      router.push(`/${query.id}`);
+    if (tab === defaultTab) {
+      router.push(basePath);
     } else {
-      router.push(`/${query.id}?t=${tab}`);
+      router.push(`${basePath}?t=${tab}`);
     }
   };
 
