@@ -30,12 +30,12 @@ const TABS = ["posts", "replies"];
 const Profile: NextPageWithLayout = () => {
   const router = useRouter();
   const { query } = router;
-  const { t = TABS[0] } = query;
+  const { t = TABS[0], id } = query;
   const { user } = useUser();
   const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
   const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
   const [showFriendsDialog, setShowFriendsDialog] = useState(false);
-  const { handleChange, tabIndex } = useTabs(TABS, TABS[0], t as string);
+  const { handleChange, tabIndex } = useTabs(TABS, TABS[0], id as string);
 
   const {
     data: userData,
