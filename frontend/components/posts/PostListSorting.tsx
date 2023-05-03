@@ -80,7 +80,7 @@ const PostListSorting = ({ setMode }: Props) => {
 
   return (
     <>
-      <Stack direction="row" justifyContent="flex-end" width="100%">
+      <Stack direction="row" justifyContent="flex-end">
         <IconButton onClick={handleClick}>
           <SortIcon />
         </IconButton>

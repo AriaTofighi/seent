@@ -128,16 +128,11 @@ export class PostsService {
 
   async findMany(params: PostFindManyParams) {
     const { where, orderBy, page, perPage, isChild } = params;
-    const { calcedWhere, calcedOrderBy } = this.getFilters(where, orderBy);
-    if (isChild !== undefined) {
-      if (isChild) {
-        calcedWhere.parentPostId = {
-          not: null,
-        };
-      } else {
-        calcedWhere.parentPostId = null;
-      }
-    }
+    const { calcedWhere, calcedOrderBy } = this.getFilters(
+      where,
+      orderBy,
+      isChild
+    );
 
     const queryArgs = {
       where: calcedWhere,
@@ -145,17 +140,10 @@ export class PostsService {
       include: this.POST_INCLUDES,
     };
 
-    let result;
-    if (page) {
-      const paginate = createPaginator({ perPage: perPage });
-      result = await paginate<Post, Prisma.PostFindManyArgs>(
-        this.prisma.post,
-        queryArgs,
-        { page: page }
-      );
-    } else {
-      result = await this.prisma.post.findMany(queryArgs);
-    }
+    const result = page
+      ? await this.paginateResults(queryArgs, page, perPage)
+      : await this.prisma.post.findMany(queryArgs);
+
     return result;
   }
 
@@ -207,69 +195,110 @@ export class PostsService {
 
   getFilters(
     where: Prisma.PostWhereInput,
-    orderBy: string
+    orderBy: string,
+    isChild: boolean | undefined
   ): {
     calcedOrderBy: Prisma.Enumerable<Prisma.PostOrderByWithRelationInput>;
     calcedWhere: Prisma.PostWhereInput;
   } {
-    const calcedOrderBy = [];
-    if (orderBy) {
-      if (orderBy === "new") {
-        calcedOrderBy.push({ createdAt: "desc" });
-      } else if (orderBy === "old") {
-        calcedOrderBy.push({ createdAt: "asc" });
-      } else if (orderBy.startsWith("top")) {
-        calcedOrderBy.push({
-          reactions: {
-            _count: "desc",
-          },
-        });
-        const startDate = new Date();
-        const now = new Date();
-        let daysAgo = 0;
-        if (orderBy !== "top-all") {
-          if (orderBy === "top-day") {
-            daysAgo = 1;
-          } else if (orderBy === "top-week") {
-            daysAgo = 6;
-          } else if (orderBy === "top-month") {
-            daysAgo = 29;
-          } else if (orderBy === "top-year") {
-            daysAgo = 364;
-          }
-
-          startDate.setDate(startDate.getDate() - daysAgo);
-          where.createdAt = {
-            gte: startDate,
-            lte: now,
-          };
-        }
-      }
-    }
-    // Needed to prevent duplicate entities in result
-    calcedOrderBy.push({ postId: "asc" });
+    const calcedOrderBy = this.calculateOrderBy(orderBy, where);
+    const calcedWhere = this.calculateWhere(where, isChild);
 
     return {
-      calcedWhere: where,
+      calcedWhere,
       calcedOrderBy,
     };
   }
 
+  calculateOrderBy(orderBy: string, where: Prisma.PostWhereInput) {
+    const calcedOrderBy = [];
+    if (!orderBy) return calcedOrderBy;
+
+    switch (orderBy) {
+      case "new":
+        calcedOrderBy.push({ createdAt: "desc" });
+        break;
+      case "old":
+        calcedOrderBy.push({ createdAt: "asc" });
+        break;
+      default:
+        if (orderBy.startsWith("top")) {
+          calcedOrderBy.push({
+            reactions: {
+              _count: "desc",
+            },
+          });
+          if (orderBy !== "top-all") {
+            this.adjustWhereForTopOrder(orderBy, where);
+          }
+        }
+        break;
+    }
+
+    calcedOrderBy.push({ postId: "asc" });
+    return calcedOrderBy;
+  }
+
+  adjustWhereForTopOrder(orderBy: string, where: Prisma.PostWhereInput) {
+    const startDate = new Date();
+    const now = new Date();
+    const daysAgoLookup = {
+      "top-day": 1,
+      "top-week": 7,
+      "top-month": 30,
+      "top-year": 365,
+    };
+
+    const daysAgo = daysAgoLookup[orderBy] || 0;
+    startDate.setDate(startDate.getDate() - daysAgo);
+    where.createdAt = {
+      gte: startDate,
+      lte: now,
+    };
+  }
+
+  calculateWhere(where: Prisma.PostWhereInput, isChild: boolean | undefined) {
+    if (isChild === undefined) return where;
+
+    where.parentPostId = isChild ? { not: null } : null;
+    return where;
+  }
+
+  async paginateResults(queryArgs: any, page: number, perPage: number) {
+    const paginate = createPaginator({ perPage });
+    return paginate<Post, Prisma.PostFindManyArgs>(
+      this.prisma.post,
+      queryArgs,
+      { page }
+    );
+  }
+
   async authorizeParentPosts(posts: any[], user: User | undefined) {
-    for (const post in posts) {
-      if (posts[post].parentPost) {
-        const parentPost = posts[post].parentPost;
-        const publicPost = parentPost.isPublic;
-        const friendshipFound = await this.friendshipsService.findOneByPair(
-          parentPost.author.userId,
-          user?.userId
+    const parentPostAuthorIds = posts
+      .map((post) => post.parentPost?.author.userId)
+      .filter(Boolean);
+    const friendships = user
+      ? await this.friendshipsService.findMultipleByPairs(
+          user.userId,
+          parentPostAuthorIds
+        )
+      : [];
+
+    for (const post of posts) {
+      if (post.parentPost) {
+        const parentPost = post.parentPost;
+        const isPublicPost = parentPost.isPublic;
+        const friendshipFound = friendships.find(
+          (f) =>
+            f.senderId === parentPost.author.userId ||
+            f.recipientId === parentPost.author.userId
         );
-        const acceptedFriendship =
+        const isAcceptedFriendship =
           friendshipFound?.status === FriendshipStatus.ACCEPTED;
-        const parentPostAuthorIsUser =
-          parentPost.author.userId === user?.userId;
-        if (!(publicPost || acceptedFriendship || parentPostAuthorIsUser)) {
-          posts[post].parentPost = "Unauthorized";
+        const isAuthorCurrentUser = parentPost.author.userId === user?.userId;
+
+        if (!(isPublicPost || isAcceptedFriendship || isAuthorCurrentUser)) {
+          post.parentPost = "Unauthorized";
         }
       }
     }

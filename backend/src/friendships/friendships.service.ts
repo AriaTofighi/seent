@@ -47,6 +47,23 @@ export class FriendshipsService {
     return friendship;
   }
 
+  async findMultipleByPairs(userId: string, userIds: string[]) {
+    const friendships = await this.prisma.friendship.findMany({
+      where: {
+        OR: userIds.flatMap((id) => [
+          {
+            AND: [{ senderId: userId }, { recipientId: id }],
+          },
+          {
+            AND: [{ senderId: id }, { recipientId: userId }],
+          },
+        ]),
+      },
+    });
+
+    return friendships;
+  }
+
   async findMany(params: FriendshipFindManyParams) {
     const { where, orderBy } = params;
 

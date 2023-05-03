@@ -124,6 +124,9 @@ const SideBar = () => {
           >
             Messages
           </MenuItem>
+          <MenuItem icon={<PersonIcon />} href={`/${user.username}`}>
+            Profile
+          </MenuItem>
           <MenuItem icon={<SettingsIcon />} href="/settings">
             Settings
           </MenuItem>

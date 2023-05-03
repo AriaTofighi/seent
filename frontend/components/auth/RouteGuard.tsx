@@ -27,7 +27,8 @@ function RouteGuard({ children }: Props) {
   function authCheck(url: string) {
     if (
       (url.includes("/notifications") ||
-        url.includes("/messages" || url.includes("/settings"))) &&
+        url.includes("/messages") ||
+        url.includes("/settings")) &&
       !user
     ) {
       router.push("/sign-in");
