@@ -8,7 +8,6 @@ import { UserEntity } from "src/users/entities/user.entity";
 import { JwtPayload } from "utils/types";
 import { OAuth2Client } from "google-auth-library";
 import { ImageType } from "@prisma/client";
-import { randomUUID } from "crypto";
 
 const client = new OAuth2Client(
   process.env.GOOGLE_CLIENT_ID,
