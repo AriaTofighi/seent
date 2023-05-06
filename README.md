@@ -66,7 +66,7 @@ Follow the steps below to set up the project on your local machine.
 
 ### Installation
 
-1. Clone the repository:
+First, clone the repository:
 
 ```git clone https://github.com/AriaTofighi/seent.git```
 
