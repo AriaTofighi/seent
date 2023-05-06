@@ -33,7 +33,7 @@ A modern and feature-rich social media application built with a backend leveragi
 
 ## Technology Stack
 
-- Backend: Nest.js REST API, Prisma, PostgreSQL
+- Backend: Nest.js REST API, Prisma, PostgreSQL, Amazon S3
 - Frontend: Next.js, React
 
 ## Database Schema
