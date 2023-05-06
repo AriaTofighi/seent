@@ -75,30 +75,30 @@ cd seent
 #### Backend
 
 1. Navigate to the backend folder:
-   cd backend
+   ```cd backend```
 
 2. Install the dependencies:
-   npm install
+   ```npm install```
 
 3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Apply the Prisma migrations to your database:
-   npx prisma migrate dev
+   ```npx prisma migrate dev```
 
 5. Start the development server:
-   npm run dev
+   npm run dev```
 
 #### Frontend
 
 1. Navigate to the frontend folder (from root):
-   cd frontend
+   ```cd frontend```
 
 2. Install the dependencies:
-   npm install
+   ```npm install```
 
 3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Start the development server:
-   npm run dev
+   ```npm run dev```
 
 5. Open your browser at `http://localhost:3000` and start using the application.
