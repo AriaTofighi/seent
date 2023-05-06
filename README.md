@@ -52,7 +52,7 @@ The database schema is designed using Prisma and PostgreSQL. It includes the fol
 - Tag
 - PostTag
 
-For a detailed schema with relationships, please refer to the `schema.prisma` file in the repository.
+For a detailed schema with relationships, please refer to the `schema.prisma` file in the backend/prisma folder.
 
 ## Getting Started
 
@@ -80,7 +80,7 @@ cd seent
 2. Install the dependencies:
    npm install
 
-3. Create a `.env.local` file and provide values based on the .env.local.example file.
+3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Apply the Prisma migrations to your database:
    npx prisma migrate dev
@@ -96,7 +96,7 @@ cd seent
 2. Install the dependencies:
    npm install
 
-3. Create a `.env.local` file and provide values based on the .env.local.example file.
+3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Start the development server:
    npm run dev
