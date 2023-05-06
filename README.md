@@ -11,8 +11,6 @@ A modern and feature-rich social media application built with a backend leveragi
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
    - [Environment Variables](#environment-variables)
-5. [Contributing](#contributing)
-6. [License](#license)
 
 ## Features
 
