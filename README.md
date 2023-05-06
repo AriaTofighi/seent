@@ -1,4 +1,4 @@
-# Social Media App
+# Seent
 
 A modern and feature-rich social media application built with a backend leveraging Nest.js, Prisma, and PostgreSQL, and a frontend using Next.js. This application provides a platform for users to create and share posts, interact with each other through likes, replies, and messaging, as well as manage friendships and notifications.
 
@@ -33,7 +33,7 @@ A modern and feature-rich social media application built with a backend leveragi
 
 ## Technology Stack
 
-- Backend: Nest.js REST API, Prisma, PostgreSQL
+- Backend: Nest.js REST API, Prisma, PostgreSQL, Amazon S3
 - Frontend: Next.js, React
 
 ## Database Schema
@@ -52,7 +52,7 @@ The database schema is designed using Prisma and PostgreSQL. It includes the fol
 - Tag
 - PostTag
 
-For a detailed schema with relationships, please refer to the `schema.prisma` file in the repository.
+For a detailed schema with relationships, please refer to the `schema.prisma` file in the backend/prisma folder.
 
 ## Getting Started
 
@@ -66,39 +66,47 @@ Follow the steps below to set up the project on your local machine.
 
 ### Installation
 
-1. Clone the repository:
+First, clone the repository:
 
-git clone https://github.com/AriaTofighi/seent.git
+```git clone https://github.com/AriaTofighi/seent.git```
 
-cd seent
+
+```cd seent```
 
 #### Backend
 
 1. Navigate to the backend folder:
-   cd backend
+
+   ```cd backend```
 
 2. Install the dependencies:
-   npm install
 
-3. Create a `.env.local` file and provide values based on the .env.local.example file.
+   ```npm install```
+
+3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Apply the Prisma migrations to your database:
-   npx prisma migrate dev
+
+   ```npx prisma migrate dev```
 
 5. Start the development server:
-   npm run dev
+
+   ```npm run dev```
 
 #### Frontend
 
 1. Navigate to the frontend folder (from root):
-   cd frontend
+
+   ```cd frontend```
 
 2. Install the dependencies:
-   npm install
 
-3. Create a `.env.local` file and provide values based on the .env.local.example file.
+   ```npm install```
+
+3. Create a `.env.local` file and provide values based on the .env.local.example file
 
 4. Start the development server:
-   npm run dev
+
+   ```npm run dev```
 
 5. Open your browser at `http://localhost:3000` and start using the application.
