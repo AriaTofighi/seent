@@ -10,7 +10,6 @@ A modern and feature-rich social media application built with a backend leveragi
 4. [Getting Started](#getting-started)
    - [Prerequisites](#prerequisites)
    - [Installation](#installation)
-   - [Environment Variables](#environment-variables)
 
 ## Features
 
