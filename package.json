@@ -1,7 +1,7 @@
 {
   "name": "seent",
   "version": "1.0.0",
-  "description": "A social network.",
+  "description": "Seent, a modern and feature-rich social media application.",
   "main": "index.js",
   "scripts": {},
   "repository": {
