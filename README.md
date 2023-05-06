@@ -2,6 +2,8 @@
 
 A modern and feature-rich social media application built with a backend leveraging Nest.js, Prisma, and PostgreSQL, and a frontend using Next.js. Seent provides a platform for users to create and share posts, interact with each other through likes, replies, and messaging, as well as manage friendships and notifications.
 
+To see the deployed version, visit https://seent.vercel.app.
+
 ## Table of Contents
 
 1. [Features](#features)
