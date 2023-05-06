@@ -1,13 +1,17 @@
+## Description
+
 This is the [Next.js](https://nextjs.org/) project powering the frontend of Seent.
 
-## Getting Started
-
-First, run the development server:
+## Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
+$ npm install
+```
+
+## Running the app
+
+```bash
+$ npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
