@@ -15,6 +15,7 @@ import { RouteGuard } from "../components/auth/RouteGuard";
 import { NavProvider } from "../contexts/NavContext";
 import { SocketProvider } from "../contexts/SocketContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Analytics } from "@vercel/analytics/react";
 
 type AppPropsWithLayout = AppProps & {
   Component: NextPageWithLayout;
@@ -37,6 +38,7 @@ function MyApp({ Component, pageProps }: AppPropsWithLayout) {
               <NavProvider>
                 <RouteGuard>{componentWithLayout}</RouteGuard>
                 <ToastContainer autoClose={2000} />
+                <Analytics />
               </NavProvider>
             </SocketProvider>
           </StyledEngineProvider>
