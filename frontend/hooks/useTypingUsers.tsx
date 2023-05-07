@@ -38,15 +38,17 @@ export const useTypingUsers = (
     if (!room) return null;
 
     const typingUserIds = Object.keys(typingUsers);
-    const typingUserNames = typingUserIds.map((userId) => {
-      const roomUser = room.roomUsers.find(
-        (roomUser: RoomUserEntity) => roomUser.userId === userId
-      );
-      return roomUser?.user?.name;
-    });
+    const typingUserNames = typingUserIds
+      .filter((userId) => userId !== user?.userId)
+      .map((userId) => {
+        const roomUser = room.roomUsers.find(
+          (roomUser: RoomUserEntity) => roomUser.userId === userId
+        );
+        return roomUser?.user?.name;
+      });
 
     const onlyUserIsTyping =
-      typingUserNames.length === 1 && typingUserNames[0] === user?.name;
+      typingUserIds.length === 1 && typingUserIds[0] === user?.userId;
     const noUsersAreTyping = typingUserNames.length === 0;
 
     if (onlyUserIsTyping || noUsersAreTyping) {
@@ -63,10 +65,9 @@ export const useTypingUsers = (
           variant="body2"
           color="text.secondary"
           sx={{
-            ml: 7,
             mb: 1,
             fontSize: "0.8rem",
-            color: "gray",
+            color: "text.secondary",
             fontStyle: "italic",
             textAlign: "center",
           }}
