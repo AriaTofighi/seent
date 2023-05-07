@@ -33,14 +33,6 @@ const styles: Styles = {
     borderBottom: "1px solid",
     borderColor: "divider",
   },
-  profileStatItem: {
-    borderRight: "1px solid",
-    borderColor: "divider",
-    paddingRight: 2,
-    "&:last-child": {
-      borderRight: "none",
-    },
-  },
   profileStats: {
     flexDirection: "row",
     justifyContent: "space-between",

@@ -23,7 +23,7 @@ const lmColours = {
 
 const dmColours = {
   primary: {
-    main: "#333333",
+    main: "#666666",
     light: "#4D4D4D",
     dark: "#1A1A1A",
   },
@@ -42,6 +42,7 @@ const dmColours = {
 
 const getTheme = (mode: PaletteMode) => {
   const lightMode = mode === "light";
+  const colors = lightMode ? lmColours : dmColours;
 
   return createTheme({
     breakpoints: {
@@ -61,31 +62,33 @@ const getTheme = (mode: PaletteMode) => {
       MuiCssBaseline: {
         styleOverrides: {
           body: {
-            scrollbarColor: "#6b6b6b #2b2b2b",
+            backgroundColor: colors.background.default,
+            color: colors.text.primary,
+            scrollbarColor: `${colors.text.secondary} ${colors.primary.dark}`,
             "&::-webkit-scrollbar, & *::-webkit-scrollbar": {
               borderRadius: 8,
-              backgroundColor: "#2b2b2b",
+              backgroundColor: colors.primary.dark,
             },
             "&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb": {
               borderRadius: 8,
-              backgroundColor: "#6b6b6b",
+              backgroundColor: colors.text.secondary,
               minHeight: 24,
-              border: "3px solid #2b2b2b",
+              border: `3px solid ${colors.primary.dark}`,
             },
             "&::-webkit-scrollbar-thumb:focus, & *::-webkit-scrollbar-thumb:focus":
               {
-                backgroundColor: "#959595",
+                backgroundColor: colors.text.primary,
               },
             "&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active":
               {
-                backgroundColor: "#959595",
+                backgroundColor: colors.text.primary,
               },
             "&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover":
               {
-                backgroundColor: "#959595",
+                backgroundColor: colors.text.primary,
               },
             "&::-webkit-scrollbar-corner, & *::-webkit-scrollbar-corner": {
-              backgroundColor: "#2b2b2b",
+              backgroundColor: colors.primary.dark,
             },
           },
         },
@@ -93,9 +96,7 @@ const getTheme = (mode: PaletteMode) => {
       MuiPaper: {
         styleOverrides: {
           root: {
-            backgroundColor: lightMode
-              ? lmColours.background.default
-              : dmColours.background.default,
+            backgroundColor: colors.background.default,
             backgroundImage: "none",
           },
         },
@@ -103,7 +104,7 @@ const getTheme = (mode: PaletteMode) => {
       MuiButton: {
         styleOverrides: {
           root: {
-            color: lightMode ? lmColours.text.primary : dmColours.text.primary,
+            color: colors.text.primary,
           },
         },
       },
@@ -113,41 +114,21 @@ const getTheme = (mode: PaletteMode) => {
       error: {
         main: "#f75f62",
       },
-      ...(lightMode
-        ? {
-            primary: {
-              main: lmColours.primary.main,
-              light: lmColours.primary.light,
-              dark: lmColours.primary.dark,
-            },
-            secondary: {
-              main: lmColours.secondary.main,
-              light: lmColours.secondary.light,
-            },
-            background: {
-              default: lmColours.background.default,
-            },
-            text: {
-              primary: grey[800],
-            },
-          }
-        : {
-            primary: {
-              main: dmColours.primary.main,
-              light: dmColours.primary.light,
-              dark: dmColours.primary.dark,
-            },
-            secondary: {
-              main: dmColours.secondary.main,
-              light: dmColours.secondary.light,
-            },
-            background: {
-              default: dmColours.background.default,
-            },
-            text: {
-              primary: dmColours.text.primary,
-            },
-          }),
+      primary: {
+        main: colors.primary.main,
+        light: colors.primary.light,
+        dark: colors.primary.dark,
+      },
+      secondary: {
+        main: colors.secondary.main,
+        light: colors.secondary.light,
+      },
+      background: {
+        default: colors.background.default,
+      },
+      text: {
+        primary: colors.text.primary,
+      },
     },
   });
 };
