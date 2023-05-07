@@ -29,7 +29,8 @@ function RouteGuard({ children }: Props) {
       (url.includes("/notifications") ||
         url.includes("/messages") ||
         url.includes("/settings")) &&
-      !user
+      !user &&
+      !loading
     ) {
       router.push("/sign-in");
     } else if (!loading) {

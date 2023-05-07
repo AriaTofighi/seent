@@ -36,41 +36,41 @@ export class MessagesGateway {
     this.server.to(`room-${roomId}`).emit("userLeft");
   }
 
+  @SubscribeMessage("userTyping")
+  handleUserTyping(
+    client: AuthenticatedSocket,
+    data: { roomId: string; isTyping: boolean }
+  ) {
+    const { roomId, isTyping } = data;
+    this.server
+      .to(`room-${roomId}`)
+      .emit("userTyping", { userId: client.user.userId, isTyping });
+  }
+
   @SubscribeMessage("sendMessage")
   async handleSendMessage(
     client: AuthenticatedSocket,
     data: { roomId: string }
   ) {
-    const { roomId } = data;
-    const roomUsers = (await this.roomUsersService.findMany({
-      where: { roomId },
-    })) as RoomUser[];
-    for (const roomUser of roomUsers) {
-      const userSocket = this.sessionManager.getUserSocket(roomUser.userId);
-      if (userSocket) {
-        userSocket.emit("newMessage");
-      }
-    }
+    await this.notifyRoomUsers(data.roomId, "newMessage");
   }
 
   @SubscribeMessage("newRoom")
   async handleNewRoom(client: AuthenticatedSocket, data: { roomId: string }) {
-    const { roomId } = data;
+    await this.notifyRoomUsers(data.roomId, "newRoom");
+  }
+
+  private async notifyRoomUsers(roomId: string, event: string) {
     const roomUsers = (await this.roomUsersService.findMany({
       where: { roomId },
     })) as RoomUser[];
+
     for (const roomUser of roomUsers) {
       const userSocket = this.sessionManager.getUserSocket(roomUser.userId);
       if (userSocket) {
-        userSocket.emit("newRoom");
+        userSocket.emit(event);
       }
     }
-  }
-
-  @SubscribeMessage("userTyping")
-  handleUserTyping(client: AuthenticatedSocket, data: { roomId: string }) {
-    const { roomId } = data;
-    this.server.to(`room-${roomId}`).emit("userTyping");
   }
 
   @SubscribeMessage("postEngagement")

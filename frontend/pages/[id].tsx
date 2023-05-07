@@ -1,173 +1,259 @@
-import { LinearProgress } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import {
+  CircularProgress,
+  IconButton,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useState } from "react";
-import Title from "../components/UI/Title";
-import { getMainLayout } from "../components/layouts/MainLayout";
-import TopAppBar from "../components/navigation/TopAppBar";
-import PostListSorting from "../components/posts/PostListSorting";
-import EditProfileDialog from "../components/profile/EditProfileDialog";
-import { useUser } from "../contexts/UserContext";
-import { useAPI } from "../hooks/useAPI";
-import useInfiniteAPI from "../hooks/useInfiniteAPI";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from "react-hook-form";
+import TextInput from "../../components/controls/TextInput";
+import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
+import MessageList from "../../components/messages/MessageList";
+import Header from "../../components/UI/Header";
+import Title from "../../components/UI/Title";
+import { useUser } from "../../contexts/UserContext";
+import { useAPI } from "../../hooks/useAPI";
+import { createMessage } from "../../services/api/messageAxios";
 import {
-  NextPageWithLayout,
-  POSTS_SORT_MODES,
-  PaginatedResult,
-  PostEntity,
-  UserEntity,
-} from "../types";
-import UserListModal from "../components/users/UserListDialog";
-import ProfileHeader from "../components/profile/ProfileHeader";
-import ProfileStats from "../components/profile/ProfileStats";
-import ProfileActions from "../components/profile/ProfileActions";
-import ProfileTabs from "../components/profile/ProfileTabs";
-import { useFriendship } from "../hooks/useFriendship";
-import { useTabs } from "../hooks/useTabs";
+  NotificationEntity,
+  RoomEntity,
+  RoomUserEntity,
+  Styles,
+  ThemedStyles,
+} from "../../types";
+import { mutate } from "swr";
+import { getDisplayedRoomTitle } from "../../utils";
+import { useAppSocket } from "../../contexts/SocketContext";
+import useSocketEvent from "../../hooks/useSocketEvent";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import OptionsIcon from "@mui/icons-material/MoreVert";
+import UserAvatar from "../../components/users/UserAvatar";
+import { useRoomInfo } from "../../hooks/useRoomInfo";
+import { markNotificationsRead } from "../../services/api/notificationAxios";
+import useMenu from "../../hooks/useMenu";
+import { deleteRoomUser } from "../../services/api/roomAxios";
+import { useTypingUsers } from "../../hooks/useTypingUsers";
+import { useRoomNotifications } from "../../hooks/useRoomNotifications";
 
-const TABS = ["posts", "replies"];
-
-const Profile: NextPageWithLayout = () => {
+const Room = () => {
   const router = useRouter();
-  const { query } = router;
-  const { t = TABS[0], id } = query;
+  const { id } = router.query;
   const { user } = useUser();
-  const [sortMode, setSortMode] = useState(POSTS_SORT_MODES.NEW);
-  const [showEditProfileDialog, setShowEditProfileDialog] = useState(false);
-  const [showFriendsDialog, setShowFriendsDialog] = useState(false);
-  const { handleChange, tabIndex } = useTabs(TABS, TABS[0], id as string);
+  const { anchorEl, handleClick, handleClose, open } = useMenu();
+  const [shouldGetNotis, setShouldGetNotis] = useState(false);
 
   const {
-    data: userData,
-    error: userError,
-    mutate: mutateUser,
-    loading: userLoading,
-  } = useAPI<UserEntity[]>(query?.id ? `users?username=${query.id}` : null);
+    data: room,
+    loading: roomLoading,
+    error: roomError,
+    mutate: mutateRoom,
+  } = useAPI<RoomEntity>(id ? `rooms/${id}` : null);
 
-  const profileUser = userData?.[0];
-  const userIsOwner = profileUser?.userId === user?.userId;
-
-  const { getFriendshipText, onFriendButtonClick } = useFriendship(
-    userIsOwner,
-    user,
-    profileUser
+  const { renderTypingUsers } = useTypingUsers(
+    id as string,
+    room as RoomEntity,
+    user
   );
 
-  const { data: reactionCount, error: reactionCountError } = useAPI<number>(
-    profileUser ? `users/${profileUser.userId}/posts/reactions/count` : null
-  );
+  const { mutateRoomNotifications } = useRoomNotifications({
+    roomId: id as string,
+    userId: user?.userId as string,
+    shouldGetNotis,
+  });
 
-  const { data: friends, error: friendsError } = useAPI<UserEntity[]>(
-    profileUser ? `users/${profileUser?.userId}/friends` : null
-  );
+  const [typingTimeout, setTypingTimeout] = useState<any>(null);
 
-  const getPostsKey = (index: number) =>
-    profileUser
-      ? `posts?page=${
-          index + 1
-        }&isChild=false&orderBy=${sortMode}&perPage=10&authorId=${
-          profileUser.userId
-        }`
-      : null;
+  const { control, handleSubmit, reset, watch } = useForm({
+    defaultValues: { message: "" },
+  });
+  const formRef = useRef();
+  const roomUserId = room?.roomUsers?.find(
+    (u: RoomUserEntity) => u.userId === user?.userId
+  )?.roomUserId;
+  const { socket } = useAppSocket();
+  const title = getDisplayedRoomTitle(room, user as any);
+  const { userId, username, avatarUrl } = useRoomInfo(room);
 
-  const getPostRepliesKey = (index: number) =>
-    profileUser
-      ? `posts?page=${
-          index + 1
-        }&isChild=true&orderBy=${sortMode}&perPage=10&authorId=${
-          profileUser.userId
-        }`
-      : null;
-
-  const {
-    data: postsRes,
-    error: postsError,
-    loading: postsLoading,
-  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostsKey);
-
-  const {
-    data: postRepliesRes,
-    error: postRepliesError,
-    loading: postRepliesLoading,
-  } = useInfiniteAPI<PaginatedResult<PostEntity>>(getPostRepliesKey);
-
-  const onSaveProfile = () => {
-    mutateUser();
-    setShowEditProfileDialog(false);
+  const handleSendMessage = async (data: any) => {
+    const { message } = data;
+    if (isInvalidByClick()) return;
+    await createMessage({ body: message, roomUserId: roomUserId as string });
+    socket?.emit("sendMessage", { roomId: id, message });
+    reset();
   };
 
-  const loading =
-    userLoading ||
-    (t === "posts" && postsLoading) ||
-    (t === "replies" && postRepliesLoading) ||
-    !profileUser;
-
-  const renderContent = () => {
-    if (
-      userError ||
-      reactionCountError ||
-      friendsError ||
-      (t === "posts" && postsError) ||
-      (t === "replies" && postRepliesError)
-    ) {
-      return <Box p={2}>Error loading data</Box>;
+  const isInvalidByClick = () => {
+    const form = formRef.current as unknown as HTMLFormElement;
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return true;
     }
-
-    if (loading) {
-      return <LinearProgress />;
-    }
-
-    return (
-      <>
-        <ProfileActions
-          getFriendshipText={getFriendshipText}
-          onEditProfileClick={() => setShowEditProfileDialog(true)}
-          onFriendButtonClick={onFriendButtonClick}
-          userIsOwner={userIsOwner}
-        />
-        <ProfileHeader
-          profileUser={profileUser}
-          userIsOwner={userIsOwner}
-          handleEditProfileClick={() => setShowEditProfileDialog(true)}
-        />
-        <ProfileStats
-          friendsCount={friends?.length || 0}
-          handleShowFriendsClick={() => setShowFriendsDialog(true)}
-          postsCount={postsRes?.[0].meta.total || 0}
-          reactionCount={reactionCount || 0}
-          repliesCount={postRepliesRes?.[0].meta.total || 0}
-        />
-        <ProfileTabs
-          getPostRepliesKey={getPostRepliesKey}
-          getPostsKey={getPostsKey}
-          onTabChange={handleChange}
-          tabIndex={tabIndex}
-        />
-        <EditProfileDialog
-          open={showEditProfileDialog}
-          setOpen={setShowEditProfileDialog}
-          onSave={onSaveProfile}
-        />
-        <UserListModal
-          open={showFriendsDialog}
-          setOpen={setShowFriendsDialog}
-          users={friends}
-        />
-      </>
-    );
   };
+
+  const handleTyping = useCallback(() => {
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    socket?.emit("userTyping", { roomId: id, isTyping: true });
+
+    const newTimeout = setTimeout(() => {
+      socket?.emit("userTyping", { roomId: id, isTyping: false });
+    }, 2000);
+
+    setTypingTimeout(newTimeout);
+  }, [socket, id, typingTimeout]);
+
+  const getMessagesKey = () => `messages?roomId=${id}`;
+
+  const onNewMessage = async () => {
+    mutateRoom();
+    mutate(getMessagesKey());
+  };
+
+  useSocketEvent("newMessage", onNewMessage);
+
+  const handleLeaveConversation = async () => {
+    if (!roomUserId) return;
+
+    await deleteRoomUser(roomUserId);
+    await mutateRoom();
+    await mutate(`rooms?userId=${user?.userId}`);
+    router.push("/messages");
+  };
+
+  useEffect(() => {
+    (async () => {
+      if (!room) return;
+      if (shouldGetNotis) {
+        await mutateRoomNotifications();
+      } else {
+        setShouldGetNotis(true);
+      }
+    })();
+  }, [room, shouldGetNotis]);
+
+  useEffect(() => {
+    if (!watch("message")) return;
+    handleTyping();
+  }, [watch("message")]);
+
+  if (roomError) return <Box p={2.5}>Error</Box>;
 
   return (
     <>
-      <Title title="Profile" />
-      <TopAppBar title="Profile">
-        <PostListSorting setMode={setSortMode} />
-      </TopAppBar>
-      {renderContent()}
+      {roomLoading ? (
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <CircularProgress />
+        </Box>
+      ) : (
+        <>
+          <Title title={title} />
+          <Header>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 2,
+                maxWidth: "90%",
+              }}
+            >
+              <IconButton onClick={() => router.push("/messages")}>
+                <ArrowBackIcon />
+              </IconButton>
+              <UserAvatar
+                userId={userId}
+                username={username}
+                avatarUrl={avatarUrl}
+              />{" "}
+              <Typography
+                variant="h6"
+                sx={{
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {title}
+              </Typography>
+            </Box>
+            <IconButton onClick={handleClick}>
+              <OptionsIcon />
+            </IconButton>
+            <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+              <MenuItem onClick={handleLeaveConversation}>
+                Leave conversation
+              </MenuItem>
+            </Menu>
+          </Header>
+          <Box
+            component="form"
+            ref={formRef}
+            onSubmit={handleSubmit(handleSendMessage)}
+            sx={styles.root as Styles}
+          >
+            <MessageList
+              getMessagesKey={getMessagesKey}
+              isGroupChat={(room?.roomUsers?.length ?? 0) > 2}
+            />
+
+            {renderTypingUsers()}
+
+            <Box sx={styles.messageInputContainer as Styles}>
+              <TextInput
+                name="message"
+                control={control}
+                type="text"
+                autoComplete="off"
+                placeholder="Message..."
+                InputProps={{
+                  sx: styles.messageInput as Styles,
+                }}
+                fullWidth
+              />
+              <IconButton onClick={handleSubmit(handleSendMessage)}>
+                <SendIcon />
+              </IconButton>
+            </Box>
+          </Box>
+        </>
+      )}
     </>
   );
 };
 
-Profile.getLayout = getMainLayout;
+const styles: ThemedStyles = {
+  root: {
+    p: 1.5,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    height: (theme) =>
+      `calc(100% - 10px - ${theme.mixins.toolbar.minHeight as number}px)`,
+  },
+  messageInputContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: 2,
+    mt: 1,
+  },
+  messageInput: {
+    height: 40,
+    borderRadius: 7,
+  },
+};
 
-export default Profile;
+Room.getLayout = getMessagesLayout;
+
+export default Room;

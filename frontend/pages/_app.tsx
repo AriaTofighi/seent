@@ -5,15 +5,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "react-toastify/dist/ReactToastify.css";
 import type { AppProps } from "next/app";
-import { useState } from "react";
-import {
-  CssBaseline,
-  PaletteMode,
-  StyledEngineProvider,
-  useMediaQuery,
-} from "@mui/material";
-import { ThemeProvider } from "@mui/system";
-import getTheme from "../styles/theme";
+import { CssBaseline, StyledEngineProvider } from "@mui/material";
 import { SWRConfig } from "swr";
 import swrConfig from "../config/swrConfig";
 import { UserProvider } from "../contexts/UserContext";

@@ -1,15 +1,24 @@
 import { useAppSocket } from "./../contexts/SocketContext";
 import { useEffect } from "react";
 
-const useSocketEvent = (eventName: string, callback: () => void) => {
+type EventCallback = (...args: any[]) => void;
+
+const useSocketEvent = (eventName: string, callback: EventCallback) => {
   const { socket } = useAppSocket();
 
   useEffect(() => {
-    socket?.on(eventName, callback);
-    return () => {
-      socket?.off(eventName, callback);
+    if (!socket) return;
+
+    const eventListener = (...args: any[]) => {
+      callback(...args);
     };
-  }, [eventName, callback]);
+
+    socket.on(eventName, eventListener);
+
+    return () => {
+      socket.off(eventName, eventListener);
+    };
+  }, [socket, eventName, callback]);
 };
 
 export default useSocketEvent;

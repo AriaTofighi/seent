@@ -126,6 +126,7 @@ export type ImageEntity = {
 export type RoomEntity = {
   roomId: string;
   title: string;
+  roomUsers: RoomUserEntity[];
   createdAt: Date;
   updatedAt: Date;
 };

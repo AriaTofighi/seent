@@ -1,6 +1,6 @@
 import moment from "moment";
 import { MouseEvent } from "react";
-import { PaginatedResult, UserEntity } from "../types";
+import { PaginatedResult, RoomEntity, UserEntity } from "../types";
 
 export const formatDate = (inputDate: Date) => {
   return moment(inputDate).format("MMM D YYYY, h:mm a");
@@ -84,7 +84,7 @@ export const getDisplayedRoomTitle = (room: any, user: UserEntity) => {
   return otherUsers.map((roomUser: any) => roomUser.user.name).join(", ");
 };
 
-export const getLatestMessage = (room: any) => {
+export const getLatestMessage = (room: RoomEntity) => {
   let latestMessage: any;
 
   room.roomUsers?.forEach((roomUser: any) => {
@@ -102,7 +102,7 @@ export const getLatestMessage = (room: any) => {
   return latestMessage;
 };
 
-export const sortRoomsByLatestMessage = (rooms: any[] | undefined) => {
+export const sortRoomsByLatestMessage = (rooms: RoomEntity[] | undefined) => {
   return rooms?.sort((a, b) => {
     const aLatestMessage = getLatestMessage(a);
     const bLatestMessage = getLatestMessage(b);

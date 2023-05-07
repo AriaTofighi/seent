@@ -19,17 +19,19 @@ const Feed: NextPageWithLayout = () => {
   const { query } = useRouter();
   const { tags } = query;
 
-  const getPostsKey = (index: number) =>
-    `posts?page=${index + 1}&perPage=10${
-      !Boolean(tags) ? "&isChild=false" : ""
-    }&orderBy=${sortMode}${Boolean(tags) ? `&tags=${tags}` : ""}`;
+  const createPostsKey = (index: number, friendsOnly: boolean = false) => {
+    const baseEndpoint = `posts?page=${index + 1}&perPage=10`;
+    const childFilter = !Boolean(tags) ? "&isChild=false" : "";
+    const sort = `&orderBy=${sortMode}`;
+    const friendFilter = friendsOnly ? "&friendsOnly=true" : "";
+    const tagFilter = Boolean(tags) ? `&tags=${tags}` : "";
 
-  const getFriendsOnlyPostsKey = (index: number) =>
-    `posts?page=${index + 1}&perPage=10${
-      !Boolean(tags) ? "&isChild=false" : ""
-    }&orderBy=${sortMode}&friendsOnly=true${
-      Boolean(tags) ? `&tags=${tags}` : ""
-    }`;
+    return `${baseEndpoint}${childFilter}${sort}${friendFilter}${tagFilter}`;
+  };
+
+  const getPostsKey = (index: number) => createPostsKey(index);
+
+  const getFriendsOnlyPostsKey = (index: number) => createPostsKey(index, true);
 
   const renderTab = (index: number) => {
     switch (index) {
