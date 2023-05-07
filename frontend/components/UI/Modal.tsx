@@ -1,6 +1,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogContentProps,
   DialogProps,
   IconButton,
   Stack,
@@ -14,6 +15,7 @@ import { ThemedStyles } from "../../types";
 type Props = {
   onClose: () => void;
   title?: string;
+  DialogContentProps?: DialogContentProps;
 };
 
 const Modal = ({
@@ -21,11 +23,17 @@ const Modal = ({
   onClose,
   title,
   maxWidth = "sm",
+  DialogContentProps,
   ...props
 }: Props & DialogProps) => {
+  const dialogContentSx = {
+    ...styles.root,
+    ...(DialogContentProps?.sx as SxProps<Theme>),
+  };
+
   return (
     <Dialog fullWidth maxWidth={maxWidth} onClose={onClose} {...props}>
-      <DialogContent sx={styles.root}>
+      <DialogContent {...DialogContentProps} sx={dialogContentSx}>
         <Stack
           direction="row"
           justifyContent="flex-end"

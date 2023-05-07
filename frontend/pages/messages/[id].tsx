@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { Box } from "@mui/system";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import TextInput from "../../components/controls/TextInput";
 import { getMessagesLayout } from "../../components/layouts/MessagesLayout";
@@ -18,7 +18,13 @@ import Title from "../../components/UI/Title";
 import { useUser } from "../../contexts/UserContext";
 import { useAPI } from "../../hooks/useAPI";
 import { createMessage } from "../../services/api/messageAxios";
-import { NotificationEntity, Styles, ThemedStyles } from "../../types";
+import {
+  NotificationEntity,
+  RoomEntity,
+  RoomUserEntity,
+  Styles,
+  ThemedStyles,
+} from "../../types";
 import { mutate } from "swr";
 import { getDisplayedRoomTitle } from "../../utils";
 import { useAppSocket } from "../../contexts/SocketContext";
@@ -30,36 +36,43 @@ import { useRoomInfo } from "../../hooks/useRoomInfo";
 import { markNotificationsRead } from "../../services/api/notificationAxios";
 import useMenu from "../../hooks/useMenu";
 import { deleteRoomUser } from "../../services/api/roomAxios";
+import { useTypingUsers } from "../../hooks/useTypingUsers";
+import { useRoomNotifications } from "../../hooks/useRoomNotifications";
 
 const Room = () => {
   const router = useRouter();
   const { id } = router.query;
   const { user } = useUser();
   const { anchorEl, handleClick, handleClose, open } = useMenu();
+  const [shouldGetNotis, setShouldGetNotis] = useState(false);
 
   const {
     data: room,
     loading: roomLoading,
     error: roomError,
     mutate: mutateRoom,
-  } = useAPI<any>(id ? `rooms/${id}` : null);
+  } = useAPI<RoomEntity>(id ? `rooms/${id}` : null);
 
-  const [shouldGetNotis, setShouldGetNotis] = useState(false);
-
-  const { data: roomNotifications, mutate: mutateRoomNotifications } = useAPI<
-    any[]
-  >(
-    shouldGetNotis
-      ? `notifications?roomId=${id}&read=false&recipientId=${user?.userId}`
-      : null
+  const { renderTypingUsers } = useTypingUsers(
+    id as string,
+    room as RoomEntity,
+    user
   );
 
-  const { control, handleSubmit, reset } = useForm({
+  const { mutateRoomNotifications } = useRoomNotifications({
+    roomId: id as string,
+    userId: user?.userId as string,
+    shouldGetNotis,
+  });
+
+  const [typingTimeout, setTypingTimeout] = useState<any>(null);
+
+  const { control, handleSubmit, reset, watch } = useForm({
     defaultValues: { message: "" },
   });
   const formRef = useRef();
   const roomUserId = room?.roomUsers?.find(
-    (u: any) => u.userId === user?.userId
+    (u: RoomUserEntity) => u.userId === user?.userId
   )?.roomUserId;
   const { socket } = useAppSocket();
   const title = getDisplayedRoomTitle(room, user as any);
@@ -81,6 +94,19 @@ const Room = () => {
     }
   };
 
+  const handleTyping = useCallback(() => {
+    if (typingTimeout) {
+      clearTimeout(typingTimeout);
+    }
+    socket?.emit("userTyping", { roomId: id, isTyping: true });
+
+    const newTimeout = setTimeout(() => {
+      socket?.emit("userTyping", { roomId: id, isTyping: false });
+    }, 2000);
+
+    setTypingTimeout(newTimeout);
+  }, [socket, id, typingTimeout]);
+
   const getMessagesKey = () => `messages?roomId=${id}`;
 
   const onNewMessage = async () => {
@@ -88,31 +114,16 @@ const Room = () => {
     mutate(getMessagesKey());
   };
 
-  const refreshNotifications = async () => {
-    mutate(`notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`);
-    const notificationIds = roomNotifications?.map(
-      (n: NotificationEntity) => n.notificationId
-    ) as string[];
-    if (notificationIds && notificationIds.length > 0) {
-      await markNotificationsRead(notificationIds, true);
-      mutate(
-        `notifications?recipientId=${user?.userId}&type=MESSAGE&read=false`
-      );
-    }
-  };
-
   useSocketEvent("newMessage", onNewMessage);
 
   const handleLeaveConversation = async () => {
+    if (!roomUserId) return;
+
     await deleteRoomUser(roomUserId);
     await mutateRoom();
     await mutate(`rooms?userId=${user?.userId}`);
     router.push("/messages");
   };
-
-  useEffect(() => {
-    refreshNotifications();
-  }, [roomNotifications]);
 
   useEffect(() => {
     (async () => {
@@ -124,6 +135,11 @@ const Room = () => {
       }
     })();
   }, [room, shouldGetNotis]);
+
+  useEffect(() => {
+    if (!watch("message")) return;
+    handleTyping();
+  }, [watch("message")]);
 
   if (roomError) return <Box p={2.5}>Error</Box>;
 
@@ -189,8 +205,11 @@ const Room = () => {
           >
             <MessageList
               getMessagesKey={getMessagesKey}
-              isGroupChat={room.roomUsers?.length > 2}
+              isGroupChat={(room?.roomUsers?.length ?? 0) > 2}
             />
+
+            {renderTypingUsers()}
+
             <Box sx={styles.messageInputContainer as Styles}>
               <TextInput
                 name="message"
