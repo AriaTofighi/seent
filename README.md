@@ -25,6 +25,7 @@ To see the deployed version, visit https://seent.vercel.app.
 - 👥 Friendships with request and acceptance flow
 - 🟢 Real-time online status indicators
 - 📩 Real-time private and group messaging
+- 🔤 Real-time user typing indicators in private and group chats
 - 📢 Real-time notifications for likes, replies, messages, friendship interactions
 - 🧑‍🤝‍🧑 User profiles with avatars and bios
 - 🔍 Sorting and filtering
