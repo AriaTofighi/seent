@@ -26,23 +26,23 @@ const UserAvatar = ({ userId, username, avatarUrl, AvatarProps }: Props) => {
     </>
   );
 
-  return (
-    <>
-      {!username ? (
-        <Box
-          sx={{ display: "inline-block", position: "relative", flexShrink: 0 }}
-        >
-          {avatarContent}
-        </Box>
-      ) : (
-        <Link href={`/${username}`}>
-          <a style={{ display: "inline-block", position: "relative" }}>
-            {avatarContent}
-          </a>
-        </Link>
-      )}
-    </>
-  );
+  return <>
+    {!username ? (
+      <Box
+        sx={{ display: "inline-block", position: "relative", flexShrink: 0 }}
+      >
+        {avatarContent}
+      </Box>
+    ) : (
+      (<Link
+        href={`/${username}`}
+        style={{ display: "inline-block", position: "relative" }}>
+
+        {avatarContent}
+
+      </Link>)
+    )}
+  </>;
 };
 
 const styles: Styles = {

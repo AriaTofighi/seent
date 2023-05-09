@@ -1,6 +1,6 @@
 import { Box, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import React from "react";
 import { Styles } from "../../types";
 

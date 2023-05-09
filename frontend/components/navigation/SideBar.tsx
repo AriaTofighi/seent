@@ -71,11 +71,11 @@ const SideBar = () => {
   const content = (
     <Box sx={styles.root}>
       <Link href="/">
-        <a>
-          <Typography variant="h6" my={2} fontWeight="bold">
-            Seent
-          </Typography>
-        </a>
+
+        <Typography variant="h6" my={2} fontWeight="bold">
+          Seent
+        </Typography>
+
       </Link>
       {user && (
         <Box p={1}>

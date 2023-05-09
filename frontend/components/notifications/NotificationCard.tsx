@@ -13,7 +13,7 @@ const NotificationCard = ({ message, url, sender, createdAt, post }: any) => {
     <StyledCard
       sx={{ cursor: "pointer", borderBottom: 1, borderColor: "divider" }}
     >
-      <Link href={url}>
+      <Link href={url} legacyBehavior>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
           <UserAvatar
             userId={userId}

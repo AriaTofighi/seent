@@ -123,7 +123,7 @@ const PostCard = ({
         variant="outlined"
         sx={{ ...getBoxStyles(), cursor: "pointer", pb: 1.5 }}
       >
-        <Link href={`/posts/${postId}`}>
+        <Link href={`/posts/${postId}`} legacyBehavior>
           <Box>
             <PostCardHeader
               author={post?.author}

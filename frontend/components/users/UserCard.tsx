@@ -12,19 +12,19 @@ const UserCard = ({ user, onClick }: Props) => {
   const avatar = user.images?.[0]?.url;
 
   return (
-    <Link href={`/${user.username}`}>
-      <a onClick={onClick}>
-        <StyledCard variant="outlined">
-          <Stack spacing={2} direction="row" alignItems="center">
-            <Avatar src={avatar} />
-            <Typography variant="body1">
-              {user.name}
-              {` (@${user.username})`}
-            </Typography>
-          </Stack>
-        </StyledCard>
-      </a>
-    </Link>
+    (<Link href={`/${user.username}`} onClick={onClick}>
+
+      <StyledCard variant="outlined">
+        <Stack spacing={2} direction="row" alignItems="center">
+          <Avatar src={avatar} />
+          <Typography variant="body1">
+            {user.name}
+            {` (@${user.username})`}
+          </Typography>
+        </Stack>
+      </StyledCard>
+
+    </Link>)
   );
 };
 

@@ -1,5 +1,5 @@
 import React from "react";
-import Image, { ImageLoader, ImageLoaderProps } from "next/image";
+import Image, { ImageLoader, ImageLoaderProps } from "next/legacy/image";
 import { Box } from "@mui/system";
 import { Typography } from "@mui/material";
 import ImageEnlargedModal from "../images/ImageEnlargedModal";

@@ -28,8 +28,8 @@ const MenuItem = ({
   return (
     <Box sx={{ height: 50 }} {...otherProps}>
       {href ? (
-        <Link href={href}>
-          <a style={{ width: "inherit" }}>{defaultContent}</a>
+        <Link href={href} style={{ width: "inherit" }}>
+          {defaultContent}
         </Link>
       ) : (
         <ButtonBase sx={{ width: "100%" }} onClick={onClick}>
