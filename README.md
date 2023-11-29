@@ -2,7 +2,7 @@
 
 Seent is a modern and feature-rich social media application. Built with a robust backend leveraging Nest.js, Prisma, and PostgreSQL, and a sleek frontend using Next.js, Seent offers a versatile platform for users to create and share posts, interact with each other through likes, replies, and messaging, as well as manage friendships and notifications.
 
-Incorporating features such as Facebook-inspired friendships for a more intimate experience, post threads, sorting and filtering options inspired by Reddit, and tagging functionality similar to Twitter, Seent provides both a rich private experience with close connections and an open, global platform for interacting with people around the world.
+With features such as Facebook-inspired friendships for a more intimate experience, post threads, sorting and filtering options inspired by Reddit, and tagging functionality similar to Twitter, Seent provides both a rich private experience with close connections and an open, global platform for interacting with people around the world.
 
 To see the deployed version, visit https://seent.vercel.app.
 
