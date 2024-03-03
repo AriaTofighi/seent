@@ -18,7 +18,7 @@ const NotificationCard = ({ message, url, sender, createdAt, post }: any) => {
           <UserAvatar
             userId={userId}
             username={username}
-            avatarUrl={images[0].url}
+            avatarUrl={images[0]?.url}
           />
           <Box
             sx={{
